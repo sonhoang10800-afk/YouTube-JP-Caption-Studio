@@ -1597,3 +1597,9 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - `scripts/reload-extension.sh` v2: run helper without early refresh, poll popup verify (6 s) if helper's 1 s check races, only then refresh first YouTube tab; global helper unchanged.
 - Verified 3/3 runs ok/verify ok, tab counts stable, no litter; new video page after reload gets 12 tokens/furigana (fixes first-page plain-cue scenario). Evidence bundle local PASS (36 artifacts); review `review/reload-helper-hardening-2026-10-24.md`.
 - TODOS #3 → Completed; #8 docs-only remains (AGENTS/README/reload doc pre-existing changes).
+
+## [2026-10-24] ingest | Real Chrome sidepanel smoke — PASS (dev bridge + window capture)
+
+- `scripts/bsk_sidepanel_bridge_smoke.js` (session vxvw): real side panel visible 360 px, URL/title correct, tabs subtitles/words/saved; Words→Saved clicks switched views; close ok, post-close ping `no_response`.
+- Visual: window-only `screencapture` shim (whole screen never captured) shows panel with JA/VI cue rows; logic via dev-only bridge (no bsk panel probe).
+- Evidence bundle local PASS (18 artifacts); review `review/sidepanel-smoke-2026-10-24.md`; TODOS T5/(f) → PASS, sidepanel item → Completed; #10 now only release cleanup.

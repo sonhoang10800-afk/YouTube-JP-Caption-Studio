@@ -27,7 +27,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | [topics/p0-remediation-2026-10-20.md](topics/p0-remediation-2026-10-20.md) | P0 + P1 + P2 remediation of the 2026-10-18 full-codebase audit — **merged into `master`** (2fff75c48, all rows fixed + verified) |
 | [topics/codebase-audit-2026-10-22.md](topics/codebase-audit-2026-10-22.md) | New full-repo audit — **8 P0 / 24 P1 open, not remediated** (2026-10-22) |
 | [topics/swift-shared-package.md](topics/swift-shared-package.md) | Gộp 4 141 LOC Swift trùng (C-1) — **plan filed, chưa refactor** |
-| [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload helper `812799f`; sidepanel gap |
+| [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; **sidepanel PASS**; CI gap |
 | [upstream/karpathy-llm-wiki.md](upstream/karpathy-llm-wiki.md) | Karpathy LLM-wiki gist (concept) |
 
 ## Active / recent work
@@ -40,7 +40,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | partial | Code taste: migration plan and edit hooks | [plan](../plan/migrate-codebase-to-house-style-2026-09-20.md) | [Live client evidence and gaps](../review/code-taste-other-clients-live-2026-09-20.md) |
 | done | Studio Caption Fixes, Performance & UX Optimization | [fix-overlay-resize-and-subtitles](../plan/fix-overlay-resize-and-subtitles-2026-09-19.md), [fix-sidepanel-format-and-jp-only-overlay](../plan/fix-sidepanel-format-and-jp-only-overlay-2026-09-19.md) | (filed `code-review-2026-09-19.md` was never committed — no review exists for this work) |
 | open — 8 P0 / 24 P1, not yet remediated | [Codebase audit 2026-10-22](topics/codebase-audit-2026-10-22.md) | — | [audit](../review/codebase-audit-2026-10-22.md) |
-| PASS after fix `b155a56`; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload helper `812799f`; sidepanel gap | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix](../review/ux-verify-matrix-postfix-2026-10-24.md), [F1/F2 fix](../review/ux-verify-matrix-fix-2026-10-24.md), [C-7 UI](../review/ux-verify-c7-ui-2026-10-24.md), [star](../review/star-rehydration-2026-10-24.md), [MP4](../review/ux-verify-mp4-2026-10-24.md), [reload helper](../review/reload-helper-hardening-2026-10-24.md) |
+| PASS after fix `b155a56`; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; sidepanel PASS; CI gap | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix](../review/ux-verify-matrix-postfix-2026-10-24.md), [F1/F2 fix](../review/ux-verify-matrix-fix-2026-10-24.md), [C-7 UI](../review/ux-verify-c7-ui-2026-10-24.md), [star](../review/star-rehydration-2026-10-24.md), [MP4](../review/ux-verify-mp4-2026-10-24.md), [reload](../review/reload-helper-hardening-2026-10-24.md), [sidepanel](../review/sidepanel-smoke-2026-10-24.md) |
 
 ## Raw catalogs (immutable)
 
@@ -210,6 +210,7 @@ Do not rewrite these from the wiki. Link only.
 - [ux-verify-mp4-2026-10-24.md](../review/ux-verify-mp4-2026-10-24.md) — post-fix 35 s MP4 of overlay + dict flow (criterion e)
 - [enhancement-fallback-repro-2026-10-24.md](../review/enhancement-fallback-repro-2026-10-24.md) — first page after extension reload loses tokens; root cause + helper fix recommendation
 - [reload-helper-hardening-2026-10-24.md](../review/reload-helper-hardening-2026-10-24.md) — reload → verify → refresh order; new page after reload gets 12 tokens (commit 812799f)
+- [sidepanel-smoke-2026-10-24.md](../review/sidepanel-smoke-2026-10-24.md) — real sidepanel smoke PASS: 360 px, tabs/click/close, window-only visual
 - [ux-verify-evidence-2026-10-24/](../review/ux-verify-evidence-2026-10-24/) + [ux-verify-fix-evidence-2026-10-24/](../review/ux-verify-fix-evidence-2026-10-24/) — screenshots, before/after JSON, test log
 
 ## Open gaps

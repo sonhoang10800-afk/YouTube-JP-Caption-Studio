@@ -48,6 +48,12 @@ bypassed; global helper unchanged). 3/3 runs ok/verify ok, no tab litter; a new 
 after reload gets 12 tokens/furigana, removing the plain-cue scenario above. Durable review:
 `review/reload-helper-hardening-2026-10-24.md`.
 
+**Real side panel smoke (2026-10-24): PASS** — script-owned bsk session opened the real panel
+(360 px, correct URL/title, tabs subtitles/words/saved); Words→Saved clicks switched views, close
+worked and post-close ping failed. Visual: window-only `screencapture` (shim; whole screen never
+recorded) showing the panel with JA/VI cue rows; panel logic via the dev-only bridge. Durable
+review: `review/sidepanel-smoke-2026-10-24.md`; bridge removal remains TODO #10.
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -64,6 +70,7 @@ after reload gets 12 tokens/furigana, removing the plain-cue scenario above. Dur
 - MP4 review: [review/ux-verify-mp4-2026-10-24.md](../../review/ux-verify-mp4-2026-10-24.md)
 - Enhancement repro review: [review/enhancement-fallback-repro-2026-10-24.md](../../review/enhancement-fallback-repro-2026-10-24.md)
 - Reload hardening review: [review/reload-helper-hardening-2026-10-24.md](../../review/reload-helper-hardening-2026-10-24.md)
+- Sidepanel smoke review: [review/sidepanel-smoke-2026-10-24.md](../../review/sidepanel-smoke-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

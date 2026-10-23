@@ -15,8 +15,10 @@ Post-fix MP4: **DONE** — 35 s H.264 clip of overlay + dict flow, criterion (e)
 Reload helper: **HARDENED** in `812799f` — reload → verify popup (polling) → then refresh YouTube
 tab; new page after reload gets 12 tokens (2026-10-24, `review/reload-helper-hardening-2026-10-24.md`).
 Enhancement fallback: **reproduced & root-caused** — first video page after extension reload can
-render plain cue (tok 0); second load restores tokens; fix belongs to reload helper (F3), content
-retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`).
+render plain cue (tok 0); second load restores tokens; fixed by reload helper `812799f`
+(2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`).
+Sidepanel: **PASS** — real Chrome side panel smoke via dev-only bridge + window-only capture
+(360 px, tabs/click/close), 2026-10-24 `review/sidepanel-smoke-2026-10-24.md`.
 
 ---
 
@@ -33,7 +35,7 @@ retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`
 | T2 | Preflight + session `--focus` + video + reload | **DONE** (caveat F3) | 5 reloads in-session; 4× `verify.ok:true`, 1 transient false; video `66E0wpL6O9Q` |
 | T3 | Bridge pre-check 3 trạng thái | **DONE** | `.ux-audit/fix-diag-aftercap.json`: marker DIV/api7/cap36/capture7/handler, `pb:true` |
 | T4 | 4 flow H/dict/star/off | **DONE** | `.ux-audit/final-flow{1..4}-*.json` + `review/ux-verify-fix-evidence-2026-10-24/` |
-| T5 | Probe popup + sidepanel | **PARTIAL** | popup render + C-7 UI row done (web app); **sidepanel thật chưa capture**; bsk chặn DOM trên `chrome-extension://` (F4) |
+| T5 | Probe popup + sidepanel | **DONE** | popup render + C-7 UI row; **real sidepanel smoke PASS** (360 px, tabs/click/close; `review/sidepanel-smoke-2026-10-24.md`) |
 | T6 | MP4 60 s | **DONE** | post-fix 35 s clip + frames: `review/ux-verify-mp4-2026-10-24/` (H.264 1280×690, 36 frames, 0 Unsafe) |
 | T7 | UX matrix 3 viewport | **DONE** | matrix post-fix desktop/tablet/mobile + fix F1/F2 (`9c233fe`, `d3b53f7`); T7 gap đã đóng |
 | T8 | Report + cleanup | **DONE** | `review/ux-verify-fix-2026-10-24.md`; session `fitc` stopped (`sessions: []`), bridge stopped, Chrome tabs verified |
@@ -47,7 +49,7 @@ retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`
 | c | 4 flow + screenshot/số đo | **PASS** | H-on 12 token, dict 453×569, star `☆→★`, H-off hidden |
 | d | 0 lỗi mới `Unsafe attempt to load URL` | **PASS** | 0; 2 `Extension context invalidated` là stale pre-reload |
 | e | 1 MP4 quay đúng tab | **PASS** | 35 s H.264 1280×690 post-fix clip (dict + H on/off), `review/ux-verify-mp4-2026-10-24/` |
-| f | popup + sidepanel có bằng chứng, không claim | **PARTIAL** | popup render OK; C-7 UI row verified (web app, 2 rows + videoTitle); sidepanel thật chưa capture |
+| f | popup + sidepanel có bằng chứng, không claim | **PASS** (caveat dev build) | popup render + C-7 UI; real sidepanel smoke 360 px/tabs/click/close via dev bridge + window capture |
 | g | report header + "Not tested" | **PASS** (format note) | nội dung đủ; cả 2 review dùng `**Backend:**` thay vì đúng dòng uppercase `BACKEND:` — TODO P4 |
 | h | cleanup | **PASS** | emulate off, không borrow, session stop, `session list` sạch |
 
@@ -75,21 +77,6 @@ retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`
 ---
 
 ## Extension UX verify (2026-10-24) — remaining work
-
-### 2. Sidepanel real-surface smoke + external capture
-
-**What:** Chạy `node scripts/bsk_sidepanel_bridge_smoke.js --out <dir>` trên sidepanel thật, đính
-kèm `screencapture` cửa sổ Chrome; ghi `SURFACE:`/`SIDEPANEL SOURCE:` và không claim bridge là
-bằng chứng visual.
-**Why:** AGENTS §10 mới thêm dev-only sidepanel bridge; T5/(f) vẫn thiếu bằng chứng sidepanel thật,
-trong khi popup Saved tab bị bsk chặn (LIM-1 của review C-7).
-**Context:** Bridge files đang untracked (`extension/content/sp_test_bridge.js`,
-`extension/sidepanel/sp_test_bridge.js`, manifest/sidepanel.html, smoke script). Chạy bằng
-test-evidence bundle profile `sidepanel`; Chrome có thể cần một lần mở panel tay (HUMAN STEP đúng
-format); dọn bridge theo TODO #10 trước release.
-**Effort:** M
-**Priority:** P2
-**Depends on:** Sidepanel bridge (dev-only) + macos screencapture permission
 
 ### 6. CI browser+extension regression for the MAIN-world bridge
 
@@ -142,13 +129,26 @@ raw cho debug. Hỏi user trước khi thêm (ux-verify skill rule).
 but it must not ship in the extension.
 **Context:** Smoke evidence: `scripts/bsk_sidepanel_bridge_smoke.js` (one bsk session, real
 sidepanel snapshot/click/close). Keep the smoke script for local verification only.
+**Status:** Sidepanel bridge smoke **PASS** 2026-10-24 (`review/sidepanel-smoke-2026-10-24.md`);
+removal is now only a release-packaging task.
 **Effort:** S
 **Priority:** P1
-**Depends on:** Sidepanel bridge tests complete; release packaging checklist.
+**Depends on:** Sidepanel bridge tests complete (done 2026-10-24); release packaging checklist.
 
 ---
 
 ## Completed
+
+### Real Chrome side panel smoke (dev bridge + window capture)
+
+**Completed:** 2026-10-24 (`review/sidepanel-smoke-2026-10-24.md`)
+
+Script-owned bsk session `vxvw`: real side panel opened (360 px, URL/title correct; tabs
+subtitles/words/saved), Words→Saved clicks switched views, close worked and post-close ping
+failed (`no_response`); window-only `screencapture` shim captured the Chrome window (whole screen
+never recorded) showing the panel with JA/VI cue rows. Evidence bundle local
+`.test-evidence/20261024-073911-sidepanel-smoke` (PASS, 18 artifacts). Dev bridge removal stays
+TODO #10.
 
 ### Reload helper — verify before refreshing tabs
 
