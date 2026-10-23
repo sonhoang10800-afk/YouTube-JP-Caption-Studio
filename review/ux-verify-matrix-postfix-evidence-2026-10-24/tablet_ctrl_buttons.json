@@ -1,0 +1,27 @@
+{
+  "ok": true,
+  "tab_id": 1847742549,
+  "value": {
+    "coarse": true,
+    "ctrlButtons": [
+      {
+        "h": 40,
+        "id": "lr-toggle-ap",
+        "w": 38
+      },
+      {
+        "h": 32,
+        "id": "lr-btn-move",
+        "w": 32
+      }
+    ],
+    "toggle": {
+      "h": 56,
+      "w": 79
+    },
+    "viewport": {
+      "h": 1133,
+      "w": 744
+    }
+  }
+}

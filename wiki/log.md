@@ -1554,3 +1554,9 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - `page_capture.js` đọc `currentCap()` tại thời điểm gửi (hết race token rỗng); `content.js` cho multi-lang 15 s + await kết quả muộn + cap SW 12 s; `panel.css` 44 px trên coarse pointer.
 - Verify live: `cues=50, status=ok, pageBridgeReady=true`; H bar 12 token/furigana; dict `時 [とき] Thời N5`; star `☆→★`; C-7 saved cue có `videoTitle`; mobile 44×44; 0 lỗi CSP; 15/15 suites + anti-fake + popup gate pass.
 - Post-fix review `review/ux-verify-fix-2026-10-24.md`; gaps: F3 reload helper transient, star rehydrate phụ thuộc segmentation, không có CI browser+extension regression.
+
+## [2026-10-24] ingest | Post-fix 3-viewport UX matrix — PASS WITH ISSUES (F1/F2)
+
+- Matrix trên `b155a56` trong một bsk session (`yrzh`, một tab, desktop UA): overlay render 12 token/furigana ở desktop 1440×900, tablet 744×1133, mobile 390×844; probe `value.ok:true`, 0 lỗi CSP; bar nằm trong viewport cả 3.
+- Findings: **F1 Medium** bar mobile 291×236 bottom 418 vs video bottom 285 (tràn xuống page content); **F2 Medium** `#lr-toggle-ap` 38×40, `#lr-btn-move` 32×32 trên coarse pointer (F5 trước đó chỉ sửa nav/toggle); **F3 Info** UA mobile → `m.youtube.com` (extension không match host); F4 keyboard tab order muộn; F5 probe blind spot; F6 sentence-cache warning; F7 page-level mobile overflow.
+- Report `review/ux-verify-matrix-postfix-2026-10-24.md` + evidence; TODO #1 mới (P1) fix F1/F2; TODO list cập nhật (matrix + one-session protocol + BACKEND label → Completed).

@@ -1,0 +1,217 @@
+{
+  "tab_id": 1847742549,
+  "entries": [
+    {
+      "sequence": 83,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778338637.204,
+      "truncated": false
+    },
+    {
+      "sequence": 84,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778338640.768,
+      "truncated": false
+    },
+    {
+      "sequence": 85,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778338640.827,
+      "truncated": false
+    },
+    {
+      "sequence": 86,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778339322.729,
+      "truncated": false
+    },
+    {
+      "sequence": 87,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778340565.383,
+      "truncated": false
+    },
+    {
+      "sequence": 88,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778341245.467,
+      "truncated": false
+    },
+    {
+      "sequence": 89,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778342433.091,
+      "truncated": false
+    },
+    {
+      "sequence": 90,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778342433.146,
+      "truncated": false
+    },
+    {
+      "sequence": 91,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778342433.157,
+      "truncated": false
+    },
+    {
+      "sequence": 92,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778348718.822,
+      "truncated": false
+    },
+    {
+      "sequence": 93,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778348718.88,
+      "truncated": false
+    },
+    {
+      "sequence": 94,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778348718.889,
+      "truncated": false
+    },
+    {
+      "sequence": 95,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778349309.823,
+      "truncated": false
+    },
+    {
+      "sequence": 96,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778352304.219,
+      "truncated": false
+    },
+    {
+      "sequence": 97,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778352304.252,
+      "truncated": false
+    },
+    {
+      "sequence": 98,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778352304.262,
+      "truncated": false
+    },
+    {
+      "sequence": 99,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=KrOO2Jd1rdplRgbS&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C6258%2C16948%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C13241%2C5258%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=3&docid=66E0wpL6O9Q&ei=UqDbavHCIOuH2roPsIXk8Q4&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehbsT5NebsRmX&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&cmt=25.118:22.000,25.131:22.000,25.211:22.000,30.012:22.000&vps=25.118:PA,25.131:S:ss.104,25.211:PA&bwm=30.012:2343550:3.032&bwe=30.012:1995596&bat=30.012:0.8:1&bh=30.012:49.338&df=30.012:1&qclc=ChBLck9PMkpkMXJkcGxSZ2JTEAM",
+      "timestamp": 1792778353509.029,
+      "truncated": false
+    },
+    {
+      "sequence": 100,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778356510.208,
+      "truncated": false
+    },
+    {
+      "sequence": 101,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778356510.25,
+      "truncated": false
+    },
+    {
+      "sequence": 102,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792778356510.258,
+      "truncated": false
+    },
+    {
+      "sequence": 103,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778356971.188,
+      "truncated": false
+    },
+    {
+      "sequence": 104,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5219,
+      "column": 27,
+      "timestamp": 1792778364987.688,
+      "truncated": false
+    }
+  ],
+  "next_since": 104,
+  "truncated": false
+}

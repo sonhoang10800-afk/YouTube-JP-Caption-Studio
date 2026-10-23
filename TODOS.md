@@ -4,6 +4,8 @@ Durable backlog for this repo. Item format: `~/.agents/skills/gstack/review/TODO
 Last re-check: **2026-10-24** — Plan v3 (`plan/extension-ux-verify-bsk-2026-10-24.md`) vs
 evidence after fix `b155a56` and reviews in `review/ux-verify-2026-10-24.md` /
 `review/ux-verify-fix-2026-10-24.md`.
+Post-fix matrix: **PASS WITH ISSUES** (2026-10-24) — F1/F2 thành TODO #1; xem
+`review/ux-verify-matrix-postfix-2026-10-24.md`.
 
 ---
 
@@ -63,20 +65,19 @@ evidence after fix `b155a56` and reviews in `review/ux-verify-2026-10-24.md` /
 
 ## Extension UX verify (2026-10-24) — remaining work
 
-### 1. Post-fix 3-viewport UX matrix with the overlay rendered
+### 1. Fix responsive overlay at narrow viewport + complete coarse-pointer targets
 
-**What:** Chạy lại matrix desktop/tablet/mobile trên bản `b155a56` (bar đã render), kèm
-`ux-probe.js`, console/network, keyboard walk, screenshot từng viewport.
-**Why:** T7 hiện chỉ có matrix pre-fix trên overlay hỏng; chưa có bằng chứng post-fix cho
-desktop/tablet, nên chưa thể kết luận UX responsive của overlay sau fix.
-**Context:** Dùng `~/.agents/skills/ux-verify/SKILL.md`; **một bsk session duy nhất** (lead
-owns, theo AGENTS browser rule §8 mới), `bsk emulate --device iphone-14` / `ipad-mini` /
-desktop `1440x900 dpr2`; lưu vào `review/ux-verify-matrix-postfix-2026-10-24/`. Trước khi
-đo: H on, seek tới cue có tiếng (22 s), bridge chạy nếu muốn furigana/token. Ghi rõ
-`value.ok` của probe và Not tested.
+**What:** (F1) clamp chiều cao/scale bar theo video ở viewport hẹp để bar không tràn xuống page
+content; (F2) mở rộng `@media (pointer: coarse)` cho `.lr-ap-toggle` và `#lr-btn-move` đạt ≥44×44.
+**Why:** Matrix post-fix phát hiện bar 291×236 phủ xuống 133 px dưới video ở 390 px, và 2 nút
+ctrl chỉ 38×40 / 32×32 trên touch — F5 trước đó mới sửa nav + player toggle.
+**Context:** `extension/styles/panel.css` (touch-target block + bar sizing); bar dùng
+`--bar-scale`/`--bar-box-h0`; verify lại bằng matrix 390/744/1440 (cùng một session, desktop UA)
++ đo trực tiếp 2 nút ctrl (probe có blind spot — F5 trong report). Report:
+`review/ux-verify-matrix-postfix-2026-10-24.md`.
 **Effort:** M
 **Priority:** P1
-**Depends on:** None (bridge optional; nếu bridge off, ghi "plain-text fallback")
+**Depends on:** None
 
 ### 2. C-7 UI row in Saved Items (popup "Câu đã lưu" hoặc web app localhost)
 
@@ -150,18 +151,6 @@ load unpacked qua CLI nên phải dùng Chrome for Testing/Chromium + `--load-ex
 **Priority:** P3
 **Depends on:** Fixture/timedtext testdata ổn định
 
-### 7. Run protocol cho các lần verify tiếp theo (bsk one-session rule)
-
-**What:** Tuân thủ AGENTS browser rule §8 mới: một bsk session/task, Lead sở hữu, dùng cùng
-`session_id` cho mọi viewport/check, không tạo/đóng tab giữa các check, stop đúng một lần.
-**Why:** Các lượt trước dùng nhiều session/tab (session bị purge sau reload, tab popup/sidepanel
-tạo thêm) — đúng cho điều tra nhưng không phải cách test UX chuẩn; rule mới yêu cầu tránh.
-**Context:** Áp dụng cho TODO #1 và #2; extension reload chỉ một lần mỗi lần đổi code, rồi
-test trong cùng session. Ghi rõ session id + một lần stop trong report.
-**Effort:** S
-**Priority:** P2
-**Depends on:** None
-
 ---
 
 ## Housekeeping
@@ -191,20 +180,32 @@ raw cho debug. Hỏi user trước khi thêm (ux-verify skill rule).
 **Priority:** P3
 **Depends on:** None
 
-### 10. Chuẩn hoá nhãn `BACKEND:` trong report UX
-
-**What:** Các report UX sau dùng đúng dòng `BACKEND: bsk | instance: ... | PLAYWRIGHT: no`
-(uppercase, không bold) thay vì `**Backend:**`.
-**Why:** AGENTS browser rule §7 yêu cầu đúng nhãn; hiện 2 review đã file dùng `**Backend:**`
-nội dung đúng nhưng format lệch.
-**Context:** Không sửa raw review đã filed (immutable); chỉ áp dụng cho report mới (TODO #1/#2).
-**Effort:** S
-**Priority:** P4
-**Depends on:** None
-
 ---
 
 ## Completed
+
+### Post-fix 3-viewport UX matrix
+
+**Completed:** 2026-10-24 (matrix + evidence; `review/ux-verify-matrix-postfix-2026-10-24.md`)
+
+Matrix desktop/tablet/mobile trên `b155a56` trong một bsk session (`yrzh`, một tab `1847742549`),
+bridge chạy; overlay render 12 token/furigana ở cả 3 viewport, probe `value.ok:true`, 0 lỗi CSP.
+Verdict **PASS WITH ISSUES**; findings F1 (mobile bar overflow) + F2 (ctrl tap targets <44) trở
+thành TODO #1 mới; F3 m.youtube.com là limitation; F4/F5/F6/F7 là info.
+
+### bsk one-session protocol applied
+
+**Completed:** 2026-10-24
+
+Matrix chạy đúng AGENTS browser rule §8: 1 session `yrzh`, 1 tab `1847742549`, không tạo/đóng
+tab giữa 3 viewport, không reload extension (build đã `b155a56`), stop 1 lần sau khi đo.
+
+### Chuẩn hoá nhãn `BACKEND:` trong report UX
+
+**Completed:** 2026-10-24 (matrix report dùng đúng dòng uppercase)
+
+`review/ux-verify-matrix-postfix-2026-10-24.md` mở đầu bằng
+`BACKEND: bsk | instance: 35138c57 (Youtube-Agent) | Chrome 155.0.0.0 | PLAYWRIGHT: no`.
 
 ### Plan v3 filed + eng review CLEAR
 

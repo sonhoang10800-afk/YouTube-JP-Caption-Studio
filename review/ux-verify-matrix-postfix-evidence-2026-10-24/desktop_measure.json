@@ -1,0 +1,90 @@
+{
+  "ok": true,
+  "tab_id": 1847742549,
+  "value": {
+    "bar": {
+      "font": "38.4588px",
+      "fontWeight": "700",
+      "hasText": "1",
+      "hidden": false,
+      "inside": true,
+      "rect": {
+        "bottom": 540,
+        "h": 176,
+        "right": 918,
+        "w": 742,
+        "x": 175,
+        "y": 364
+      },
+      "text": "時ときの総点そうてんです。大陸たいりくしっかり出でてきます。",
+      "tok": 12
+    },
+    "ctrl": {
+      "hidden": false,
+      "rect": {
+        "bottom": 392,
+        "h": 88,
+        "right": 998,
+        "w": 38,
+        "x": 960,
+        "y": 304
+      }
+    },
+    "docOverflowX": false,
+    "hidden": false,
+    "nav": {
+      "buttons": [
+        {
+          "h": 38,
+          "id": "lr-btn-prev",
+          "w": 38
+        },
+        {
+          "h": 38,
+          "id": "lr-btn-repeat",
+          "w": 38
+        },
+        {
+          "h": 38,
+          "id": "lr-btn-next",
+          "w": 38
+        }
+      ],
+      "hidden": false,
+      "rect": {
+        "bottom": 417,
+        "h": 138,
+        "right": 68,
+        "w": 38,
+        "x": 30,
+        "y": 279
+      }
+    },
+    "toggle": {
+      "rect": {
+        "bottom": 628,
+        "h": 56,
+        "right": 314,
+        "w": 79,
+        "x": 235,
+        "y": 572
+      }
+    },
+    "video": {
+      "paused": true,
+      "rect": {
+        "bottom": 628,
+        "h": 560,
+        "right": 1012,
+        "w": 996,
+        "x": 16,
+        "y": 68
+      },
+      "t": 22
+    },
+    "viewport": {
+      "h": 900,
+      "w": 1440
+    }
+  }
+}

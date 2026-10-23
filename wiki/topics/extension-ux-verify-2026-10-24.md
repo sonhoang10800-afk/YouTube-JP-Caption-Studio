@@ -7,6 +7,11 @@ Youtube-Agent, Chrome 155). Pre-fix run: **FAIL** (overlay never rendered cues d
 healthy MAIN-world/CSP bridge). Fix commit **`b155a56`** then re-verified: **PASS** for the
 overlay + dict + star + C-7 data-layer + mobile touch targets.
 
+Post-fix **3-viewport matrix (2026-10-24): PASS WITH ISSUES** — overlay renders at
+desktop/tablet/mobile (12 tokens, furigana, probe `value.ok:true`, 0 CSP errors) but F1 mobile
+bar overflows below the video and F2 right-side ctrl buttons are still <44 px on touch;
+mobile-UA navigation redirects to `m.youtube.com` where the extension does not inject.
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -14,6 +19,8 @@ overlay + dict + star + C-7 data-layer + mobile touch targets.
 - Evidence pre-fix: [review/ux-verify-evidence-2026-10-24/](../../review/ux-verify-evidence-2026-10-24/)
 - Post-fix review (PASS): [review/ux-verify-fix-2026-10-24.md](../../review/ux-verify-fix-2026-10-24.md)
 - Evidence post-fix: [review/ux-verify-fix-evidence-2026-10-24/](../../review/ux-verify-fix-evidence-2026-10-24/)
+- Matrix post-fix: [review/ux-verify-matrix-postfix-2026-10-24.md](../../review/ux-verify-matrix-postfix-2026-10-24.md)
+- Evidence matrix: [review/ux-verify-matrix-postfix-evidence-2026-10-24/](../../review/ux-verify-matrix-postfix-evidence-2026-10-24/)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped
@@ -38,6 +45,10 @@ overlay + dict + star + C-7 data-layer + mobile touch targets.
 - C-7: saved cue in `data/config/extension_state.json` carries
   `videoId=66E0wpL6O9Q` and the real `videoTitle`.
 - Mobile: nav 44×44, toggle 79×44; probe `tapTargets.below44` extension-related = 0.
+- Matrix (one session `yrzh`, one tab): desktop 1440×900 bar 742×176 font 38.46; tablet 744×1133
+  bar 555×145 font 28.78; mobile 390×844 bar 291×236 font 27.20; all inside viewport, 12 tokens,
+  0 `Unsafe attempt to load URL`. F1: mobile bar bottom 418 vs video bottom 285. F2: `#lr-toggle-ap`
+  38×40, `#lr-btn-move` 32×32 on coarse pointers (probe blind spot).
 - Console: 0 `Unsafe attempt to load URL`; tests 15/15 extension suites + anti-fake + popup
   asset gate pass.
 

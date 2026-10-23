@@ -1,0 +1,515 @@
+{
+  "ok": true,
+  "tab_id": 1847742549,
+  "value": {
+    "data": {
+      "checks": {
+        "clickableNoName": [
+          {
+            "selector": "div.ytSearchboxComponentInputBox > div > ytd-text-input-assistant.ytdTextInputAssistantHost > button.ytdTextInputAssistantButton",
+            "tag": "button"
+          },
+          {
+            "selector": "div.style-scope:nth-of-type(2) > ytd-button-renderer.style-scope > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText",
+            "tag": "button"
+          }
+        ],
+        "clippedText": [
+          {
+            "clientH": 419,
+            "overflow": "clip visible",
+            "scrollH": 628,
+            "selector": "#full-bleed-container"
+          },
+          {
+            "clientH": 52,
+            "overflow": "auto hidden",
+            "scrollH": 64,
+            "selector": "div.item.style-scope:nth-of-type(2) > div.style-scope.ytd-watch-metadata > div.style-scope.ytd-watch-metadata:nth-of-type(1) > ytd-menu-renderer.style-scope.ytd-watch-metadata"
+          }
+        ],
+        "contrastUnknown": [],
+        "focusNotVisible": [
+          {
+            "selector": "#button",
+            "tag": "button",
+            "text": "Hướng dẫn"
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+            "tag": "button",
+            "text": "Bỏ qua điều hướng"
+          },
+          {
+            "selector": "div > div.ytSearchboxComponentInputBox > form > input.ytSearchboxComponentInput.yt-searchbox-input",
+            "tag": "input",
+            "text": ""
+          },
+          {
+            "selector": "div.ytSearchboxComponentInputBox > div > ytd-text-input-assistant.ytdTextInputAssistantHost > button.ytdTextInputAssistantButton",
+            "tag": "button",
+            "text": ""
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead:nth-of-type(1) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText",
+            "tag": "button",
+            "text": "Tìm kiếm bằng giọng nói"
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead:nth-of-type(2) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+            "tag": "button",
+            "text": "Tạo"
+          },
+          {
+            "selector": "#button",
+            "tag": "button",
+            "text": "Thông báo"
+          },
+          {
+            "selector": "#avatar-btn",
+            "tag": "button",
+            "text": "Trình đơn tài khoản"
+          },
+          {
+            "selector": "div.html5-video-player.ytp-transparent > div.ytp-chrome-bottom:nth-of-type(28) > div.ytp-progress-bar-container:nth-of-type(1) > div.ytp-progress-bar:nth-of-type(2)",
+            "tag": "div",
+            "text": "Thanh trượt tìm kiếm"
+          },
+          {
+            "selector": "div.ytp-chrome-bottom:nth-of-type(28) > div.ytp-chrome-controls:nth-of-type(2) > div.ytp-left-controls:nth-of-type(1) > button.ytp-play-button.ytp-button:nth-of-type(1)",
+            "tag": "button",
+            "text": "Phát phím tắt k"
+          },
+          {
+            "selector": "div.ytp-left-controls:nth-of-type(1) > span.ytp-volume-area > div.ytp-mute-button:nth-of-type(1) > button.ytp-volume-icon.ytp-button",
+            "tag": "button",
+            "text": "Tắt tiếng phím tắt m"
+          },
+          {
+            "selector": "#hardsub-ocr-player-toggle",
+            "tag": "button",
+            "text": "Language Reactor ON"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-autonav-toggle:nth-of-type(2)",
+            "tag": "button",
+            "text": "Chế độ tự động phát đang bật"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-subtitles-button.ytp-button:nth-of-type(3)",
+            "tag": "button",
+            "text": "Phụ đề phím tắt c"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-settings-button:nth-of-type(4)",
+            "tag": "button",
+            "text": "Cài đặt"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-size-button.ytp-button:nth-of-type(1)",
+            "tag": "button",
+            "text": "Chế độ rạp chiếu phim phím tắt t"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-fullscreen-button.ytp-button:nth-of-type(3...",
+            "tag": "button",
+            "text": "Toàn màn hình phím tắt f"
+          },
+          {
+            "selector": "yt-smartimation.style-scope.ytd-subscribe-button-renderer > div.ytSmartImationsContent > yt-button-shape.style-scope.ytd-subscribe-button-renderer > button.ytSpecButtonShapeNextHos...",
+            "tag": "button",
+            "text": "Đăng ký ウェザーニュース."
+          },
+          {
+            "selector": "like-button-view-model.ytLikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTo...",
+            "tag": "button",
+            "text": "cùng 78 người khác thích video này"
+          },
+          {
+            "selector": "dislike-button-view-model.ytDislikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShape...",
+            "tag": "button",
+            "text": "Không thích video này"
+          },
+          {
+            "selector": "div.top-level-buttons.style-scope:nth-of-type(1) > yt-button-view-model.ytd-menu-renderer > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecButtonShapeNextHo...",
+            "tag": "button",
+            "text": "Chia sẻ"
+          },
+          {
+            "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(1) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+            "tag": "button",
+            "text": "Đặt câu hỏi"
+          },
+          {
+            "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(2) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+            "tag": "button",
+            "text": "Lưu vào danh sách phát"
+          },
+          {
+            "selector": "div.style-scope.ytd-watch-metadata:nth-of-type(1) > ytd-menu-renderer.style-scope.ytd-watch-metadata > yt-button-shape.style-scope.ytd-menu-renderer > button.ytSpecButtonShapeNextH...",
+            "tag": "button",
+            "text": "Thao tác khác"
+          },
+          {
+            "selector": "#expand",
+            "tag": "tp-yt-paper-button",
+            "text": "thêm"
+          },
+          {
+            "selector": "yt-chip-cloud-chip-renderer.style-scope.yt-chip-cloud-renderer:nth-of-type(1) > div.style-scope.yt-chip-cloud-chip-renderer > chip-shape.ytChipShapeHost > button.ytChipShapeButtonR...",
+            "tag": "button",
+            "text": "Tất cả"
+          },
+          {
+            "selector": "yt-chip-cloud-chip-renderer.style-scope.yt-chip-cloud-renderer:nth-of-type(2) > div.style-scope.yt-chip-cloud-chip-renderer > chip-shape.ytChipShapeHost > button.ytChipShapeButtonR...",
+            "tag": "button",
+            "text": "Video khác về tin bài này"
+          },
+          {
+            "selector": "yt-chip-cloud-chip-renderer.style-scope.yt-chip-cloud-renderer:nth-of-type(3) > div.style-scope.yt-chip-cloud-chip-renderer > chip-shape.ytChipShapeHost > button.ytChipShapeButtonR...",
+            "tag": "button",
+            "text": "Của ウェザーニュース"
+          },
+          {
+            "selector": "yt-chip-cloud-chip-renderer.style-scope.yt-chip-cloud-renderer:nth-of-type(4) > div.style-scope.yt-chip-cloud-chip-renderer > chip-shape.ytChipShapeHost > button.ytChipShapeButtonR...",
+            "tag": "button",
+            "text": "Tin tức chính trị"
+          },
+          {
+            "selector": "yt-chip-cloud-chip-renderer.style-scope.yt-chip-cloud-renderer:nth-of-type(5) > div.style-scope.yt-chip-cloud-chip-renderer > chip-shape.ytChipShapeHost > button.ytChipShapeButtonR...",
+            "tag": "button",
+            "text": "Video có liên quan"
+          }
+        ],
+        "headings": {
+          "issues": [
+            {
+              "level": 3,
+              "previous": 1,
+              "text": "Restream hôm qua.........................."
+            }
+          ],
+          "sequence": [
+            {
+              "level": 1,
+              "text": "【最新気象】あすは寒気流入により北海道・東北北部では雪や風に注意／気温も前日より大幅に下がる予想"
+            },
+            {
+              "level": 3,
+              "text": "Restream hôm qua.........................."
+            },
+            {
+              "level": 2,
+              "text": "Xem và chơi Chơi trong khi xem video"
+            },
+            {
+              "level": 3,
+              "text": "Trình mô phỏng tiến hóa"
+            },
+            {
+              "level": 3,
+              "text": "Fortress Merge"
+            },
+            {
+              "level": 3,
+              "text": "Obby: +1 Sức mạnh đào bới mỗi lần nhấp chuột"
+            },
+            {
+              "level": 3,
+              "text": "Vải pha lê"
+            },
+            {
+              "level": 3,
+              "text": "Coloring: Mosaic by Symbols"
+            },
+            {
+              "level": 3,
+              "text": "Stick War: Legacy"
+            },
+            {
+              "level": 3,
+              "text": "Chiến binh Slime: Thời đại chiến tranh"
+            },
+            {
+              "level": 3,
+              "text": "Lu bình luận HLE vs TES (BO1) | Vòng Thụy Sĩ | CKTG 2026"
+            },
+            {
+              "level": 3,
+              "text": "【解説まとめ】テーマは“スパイ”！ロシアが新聞記者を拘束、アメリカが中国工作員を逮捕…今、世界中がスパイに警戒モード"
+            },
+            {
+              "level": 3,
+              "text": "lofi hip hop mix 📚 beats to relax/study to (Part 1)"
+            },
+            {
+              "level": 3,
+              "text": "24/7 halloween ambience 🎃 spooky lofi to get chills to"
+            },
+            {
+              "level": 3,
+              "text": "【台風情報】台風30号 西日本接近へ…広範囲で警報級大雨に警戒を ──気象ニュースライブ（日テレNEWS LIVE）"
+            },
+            {
+              "level": 3,
+              "text": "【LIVE】１０月２２日（木）お昼の北海道のニュースとお天気"
+            },
+            {
+              "level": 3,
+              "text": "消費税減税に10兆円、本当に最善の対策？給付との比較を問う(10/21)"
+            },
+            {
+              "level": 2,
+              "text": "Bình luận"
+            }
+          ]
+        },
+        "horizontalOverflow": {
+          "culprits": [],
+          "ok": true,
+          "scrollWidth": 744,
+          "viewportWidth": 744
+        },
+        "imagesMissingAlt": [
+          {
+            "selector": "a.yt-simple-endpoint.style-scope > ytd-yoodle-renderer.style-scope.ytd-topbar-logo-renderer > picture.style-scope.ytd-yoodle-renderer > img.style-scope.ytd-yoodle-renderer",
+            "src": "https://www.youtube.com/watch?v=66E0wpL6O9Q"
+          },
+          {
+            "selector": "a.yt-simple-endpoint.style-scope > ytd-yoodle-renderer.style-scope.ytd-topbar-logo-renderer > picture.style-scope.ytd-yoodle-renderer > img.style-scope.ytd-yoodle-renderer",
+            "src": "https://www.youtube.com/watch?v=66E0wpL6O9Q"
+          },
+          {
+            "selector": "div.ytp-button.ytp-suggested-action-badge > div:nth-of-type(2) > a > img",
+            "src": ""
+          },
+          {
+            "selector": "div:nth-of-type(2) > a > div:nth-of-type(1) > img",
+            "src": ""
+          },
+          {
+            "selector": "div.ytp-progress-bar:nth-of-type(2) > div.ytp-scrubber-container:nth-of-type(5) > div.ytp-scrubber-button.ytp-swatch-background-color > img.ytp-decorated-scrubber-button",
+            "src": ""
+          }
+        ],
+        "inputsMissingLabel": [
+          {
+            "placeholder": "Tìm kiếm",
+            "placeholderOnly": true,
+            "selector": "div > div.ytSearchboxComponentInputBox > form > input.ytSearchboxComponentInput.yt-searchbox-input",
+            "type": "text"
+          }
+        ],
+        "lowContrast": [],
+        "media": {
+          "coarsePointer": true,
+          "forcedColors": false,
+          "prefersDark": true,
+          "prefersReducedMotion": false
+        },
+        "perf": {
+          "cls": 0.131,
+          "lcpMs": 3340,
+          "ttfbMs": 878
+        },
+        "smallFonts": [
+          {
+            "fontSize": "10px",
+            "selector": "#country-code",
+            "text": "JP"
+          }
+        ],
+        "tapTargets": {
+          "below24": [
+            {
+              "h": 22,
+              "selector": "div.style-scope.ytd-channel-name > div.style-scope.ytd-channel-name > yt-formatted-string.style-scope.ytd-channel-name > a.yt-simple-endpoint.style-scope",
+              "text": "ウェザーニュース",
+              "w": 127
+            }
+          ],
+          "below44": [
+            {
+              "h": 24,
+              "selector": "#button",
+              "text": "Hướng dẫn",
+              "w": 24
+            },
+            {
+              "h": 40,
+              "selector": "div.style-scope.ytd-masthead > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+              "text": "Bỏ qua điều hướng",
+              "w": 150
+            },
+            {
+              "h": 24,
+              "selector": "div > div.ytSearchboxComponentInputBox > form > input.ytSearchboxComponentInput.yt-searchbox-input",
+              "text": "",
+              "w": 66
+            },
+            {
+              "h": 27,
+              "selector": "div.ytSearchboxComponentInputBox > div > ytd-text-input-assistant.ytdTextInputAssistantHost > button.ytdTextInputAssistantButton",
+              "text": "",
+              "w": 27
+            },
+            {
+              "h": 40,
+              "selector": "yt-searchbox.ytSearchboxComponentHost.ytSearchboxComponentDesktop > div:nth-of-type(1) > div > button",
+              "text": "Search",
+              "w": 64
+            },
+            {
+              "h": 40,
+              "selector": "div.style-scope.ytd-masthead:nth-of-type(1) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText",
+              "text": "Tìm kiếm bằng giọng nói",
+              "w": 40
+            },
+            {
+              "h": 40,
+              "selector": "div.style-scope.ytd-masthead:nth-of-type(2) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+              "text": "Tạo",
+              "w": 86
+            },
+            {
+              "h": 40,
+              "selector": "#button",
+              "text": "Thông báo",
+              "w": 40
+            },
+            {
+              "h": 34,
+              "selector": "#avatar-btn",
+              "text": "Trình đơn tài khoản",
+              "w": 54
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-bottom:nth-of-type(28) > div.ytp-chrome-controls:nth-of-type(2) > div.ytp-left-controls:nth-of-type(1) > button.ytp-play-button.ytp-button:nth-of-type(1)",
+              "text": "Phát (k)",
+              "w": 40
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-left-controls:nth-of-type(1) > span.ytp-volume-area > div.ytp-mute-button:nth-of-type(1) > button.ytp-volume-icon.ytp-button",
+              "text": "Tắt tiếng (m)",
+              "w": 40
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-left-controls:nth-of-type(1) > div.ytp-time-display.notranslate:nth-of-type(1) > div.ytp-time-wrapper.ytp-time-wrapper-delhi > div.ytp-time-contents",
+              "text": "0 Phút 22 Giây / 2 Phút 47 Giây",
+              "w": 67
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-autonav-toggle:nth-of-type(2)",
+              "text": "Chế độ tự động phát đang bật",
+              "w": 48
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-subtitles-button.ytp-button:nth-of-type(3)",
+              "text": "Không có phụ đề",
+              "w": 48
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-settings-button:nth-of-type(4)",
+              "text": "Cài đặt",
+              "w": 48
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-size-button.ytp-button:nth-of-type(1)",
+              "text": "Chế độ rạp chiếu phim (t)",
+              "w": 48
+            },
+            {
+              "h": 40,
+              "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-fullscreen-button.ytp-button:nth-of-type(3...",
+              "text": "Toàn màn hình (f)",
+              "w": 48
+            },
+            {
+              "h": 43,
+              "selector": "div.style-scope.ytd-watch-metadata:nth-of-type(2) > div.item.style-scope:nth-of-type(1) > ytd-video-owner-renderer.style-scope.ytd-watch-metadata > a.yt-simple-endpoint.style-scope",
+              "text": "ウェザーニュース",
+              "w": 52
+            },
+            {
+              "h": 40,
+              "selector": "yt-smartimation.style-scope.ytd-subscribe-button-renderer > div.ytSmartImationsContent > yt-button-shape.style-scope.ytd-subscribe-button-renderer > button.ytSpecButtonShapeNextHos...",
+              "text": "Đăng ký ウェザーニュース.",
+              "w": 82
+            },
+            {
+              "h": 40,
+              "selector": "like-button-view-model.ytLikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTo...",
+              "text": "cùng 78 người khác thích video này",
+              "w": 78
+            },
+            {
+              "h": 40,
+              "selector": "dislike-button-view-model.ytDislikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShape...",
+              "text": "Không thích video này",
+              "w": 56
+            },
+            {
+              "h": 40,
+              "selector": "div.top-level-buttons.style-scope:nth-of-type(1) > yt-button-view-model.ytd-menu-renderer > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecButtonShapeNextHo...",
+              "text": "Chia sẻ",
+              "w": 40
+            },
+            {
+              "h": 40,
+              "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(1) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+              "text": "Đặt câu hỏi",
+              "w": 40
+            },
+            {
+              "h": 40,
+              "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(2) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+              "text": "Lưu vào danh sách phát",
+              "w": 40
+            }
+          ]
+        },
+        "typographyWarnings": [
+          {
+            "fontSize": "12px",
+            "selector": "#owner-sub-count",
+            "text": "1,68 Tr người đăng ký"
+          }
+        ]
+      },
+      "doc": {
+        "clientWidth": 744,
+        "scrollHeight": 3040,
+        "scrollWidth": 744
+      },
+      "notes": {
+        "contrastSkipped": 0,
+        "iframes": {
+          "crossOrigin": 1,
+          "sameOrigin": 1
+        },
+        "scanned": 3000,
+        "shadowRoots": 0,
+        "truncated": [
+          "scan-cap"
+        ]
+      },
+      "title": "(1) 【最新気象】あすは寒気流入により北海道・東北北部では雪や風に注意／気温も前日より大幅に下がる予想 - YouTube",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "viewport": {
+        "dpr": 2,
+        "h": 1133,
+        "innerH": 1133,
+        "innerW": 744,
+        "w": 744
+      }
+    },
+    "ok": true
+  }
+}
