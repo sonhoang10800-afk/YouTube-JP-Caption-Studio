@@ -1591,3 +1591,9 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Repro: baseline 12 tokens; after `reload-extension.sh` + new video page → plain cue (`tok:0`, `ruby:0`) though bridge healthy; reloading same tab restores 12 tokens.
 - Content-side enrichment retry (3×1.5 s) did not recover the first page → reverted; tests pass, no product diff kept.
 - Root cause inferred: helper refreshes/loads tabs while the reloaded extension is starting; fix moved into F3 reload-helper TODO (wait for popup verify, then refresh). Evidence bundle local PASS (39 artifacts); review `review/enhancement-fallback-repro-2026-10-24.md`.
+
+## [2026-10-24] ingest | Reload helper hardened — verify before refresh (`812799f`)
+
+- `scripts/reload-extension.sh` v2: run helper without early refresh, poll popup verify (6 s) if helper's 1 s check races, only then refresh first YouTube tab; global helper unchanged.
+- Verified 3/3 runs ok/verify ok, tab counts stable, no litter; new video page after reload gets 12 tokens/furigana (fixes first-page plain-cue scenario). Evidence bundle local PASS (36 artifacts); review `review/reload-helper-hardening-2026-10-24.md`.
+- TODOS #3 → Completed; #8 docs-only remains (AGENTS/README/reload doc pre-existing changes).

@@ -42,6 +42,12 @@ fix belongs to reload-helper hardening (wait for popup verify before refreshing 
 review: `review/enhancement-fallback-repro-2026-10-24.md`; evidence bundle local (PASS, 39
 artifacts).
 
+**Reload helper hardened (2026-10-24, `812799f`):** `scripts/reload-extension.sh` now does
+reload → poll popup verify → only then refresh the YouTube tab (the shared helper's early refresh
+bypassed; global helper unchanged). 3/3 runs ok/verify ok, no tab litter; a new video page loaded
+after reload gets 12 tokens/furigana, removing the plain-cue scenario above. Durable review:
+`review/reload-helper-hardening-2026-10-24.md`.
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -57,6 +63,7 @@ artifacts).
 - Star rehydration review: [review/star-rehydration-2026-10-24.md](../../review/star-rehydration-2026-10-24.md)
 - MP4 review: [review/ux-verify-mp4-2026-10-24.md](../../review/ux-verify-mp4-2026-10-24.md)
 - Enhancement repro review: [review/enhancement-fallback-repro-2026-10-24.md](../../review/enhancement-fallback-repro-2026-10-24.md)
+- Reload hardening review: [review/reload-helper-hardening-2026-10-24.md](../../review/reload-helper-hardening-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

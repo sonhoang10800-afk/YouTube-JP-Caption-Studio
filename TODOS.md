@@ -12,6 +12,8 @@ Star rehydration: **FIXED** in `6a70ea7` — matcher keeps ★ across cue re-key
 live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
 Post-fix MP4: **DONE** — 35 s H.264 clip of overlay + dict flow, criterion (e) satisfied
 (2026-10-24, `review/ux-verify-mp4-2026-10-24.md`).
+Reload helper: **HARDENED** in `812799f` — reload → verify popup (polling) → then refresh YouTube
+tab; new page after reload gets 12 tokens (2026-10-24, `review/reload-helper-hardening-2026-10-24.md`).
 Enhancement fallback: **reproduced & root-caused** — first video page after extension reload can
 render plain cue (tok 0); second load restores tokens; fix belongs to reload helper (F3), content
 retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`).
@@ -89,34 +91,6 @@ format); dọn bridge theo TODO #10 trước release.
 **Priority:** P2
 **Depends on:** Sidepanel bridge (dev-only) + macos screencapture permission
 
-### 3. Harden reload-extension verify (F3: transient false + stray tab)
-
-**What:** Làm helper `reload-chrome-extension`/`scripts/reload-extension.sh` ổn định: chờ
-popup title bằng polling thay vì `delay 1.0`, luôn đóng tab verify bằng URL, và trả
-`verify.ok:false` không để lại tab rác.
-**Why:** Lần reload đầu trong session trả `verify.ok:false` (title/url rỗng) và để lại 1 tab
-popup trong cửa sổ user (đã đóng tay); 4 lần sau OK nên đây là race timing, không phải
-extension hỏng.
-**Context:** Helper thật ở `~/.local/bin/reload-chrome-extension` (tool dùng chung, ngoài
-repo); repo wrapper `scripts/reload-extension.sh` hiện **untracked** (xem Housekeeping).
-Verify bằng 5 reload liên tiếp: `verify.ok:true` cả 5, tab count trước/sau bằng nhau, không
-tab `chrome-extension://` còn sót trong cửa sổ user. **Bằng chứng mới (2026-10-24):**
-native `reload_chrome_extension` trả `extension_not_loaded` dù extension chạy trong Agent
-Window; bsk `navigate` tới `chrome-extension://<id>/reload.html` fail `cdp_failed: Not
-allowed` trên Chrome 155 (không dùng được làm fallback ổn định). Helper lần 1:
-`reload_page.verdict=closed_after_reload` nhưng `verify_failed` (transient); lần 2 `ok:true`,
-popup title đúng. Helper thao tác trên **front window** nên có thể chạm tab popup/agent còn
-sót và làm bsk session chết sau reload. Cần: polling verify, đóng tab verify theo URL, chọn
-đúng profile/window; đừng coi exit 3 là "chưa Load unpacked" khi extension đang chạy.
-**Bằng chứng mới (2026-10-24, enhancement repro):** video page đầu tiên load ngay sau helper
-reload render plain cue (`tok:0`) dù bridge healthy; reload lại tab đó thì 12 token trở lại;
-content-side retry (3×1.5 s) không cứu được và đã revert. Vì vậy helper phải chờ reload page
-đóng **và** popup verify OK rồi mới refresh tab YouTube; đừng refresh khi extension đang khởi
-động. Evidence: `.test-evidence/20261024-061405-enhancement-repro` (local PASS).
-**Effort:** S
-**Priority:** P2
-**Depends on:** Housekeeping (commit wrapper) + quyết định có sửa global helper hay không
-
 ### 6. CI browser+extension regression for the MAIN-world bridge
 
 **What:** Thêm gate CI chạy extension trong Chrome for Testing/Chromium với profile tạm,
@@ -135,18 +109,17 @@ load unpacked qua CLI nên phải dùng Chrome for Testing/Chromium + `--load-ex
 
 ## Housekeeping
 
-### 8. Review + commit reload automation đang untracked
+### 8. Review + commit docs reload automation (wrapper đã commit)
 
-**What:** `AGENTS.md` §9, `README.md`, `extension/Scripts/reload-extension.md` (modified) và
-`scripts/reload-extension.sh` (untracked) là thay đổi có sẵn từ trước phiên audit; cần review
-rồi commit thành một thay đổi riêng (kèm test/lint).
-**Why:** AGENTS §9 đã tham chiếu `./scripts/reload-extension.sh` nhưng file chưa được track;
-clone khác sẽ thiếu script trong khi docs nói có.
-**Context:** `git status` hiện: `M AGENTS.md`, `M README.md`, `M extension/Scripts/reload-extension.md`,
-`?? scripts/reload-extension.sh`. Không thuộc commit `b155a56`/`6d25d8d`; cần chủ repo quyết
-định nội dung trước khi commit.
+**What:** `AGENTS.md` §9, `README.md`, `extension/Scripts/reload-extension.md` (modified) là thay
+đổi có sẵn từ trước phiên audit; cần review rồi commit thành một thay đổi riêng.
+**Why:** Docs mô tả reload automation; wrapper đã được track nhưng docs sửa đổi vẫn untracked,
+clone khác đọc docs sẽ thấy mô tả lệch.
+**Context:** Wrapper `scripts/reload-extension.sh` đã commit trong `812799f` (hardened order).
+`git status` còn `M AGENTS.md`, `M README.md`, `M extension/Scripts/reload-extension.md` — nội
+dung có sẵn trước phiên audit, cần chủ repo review trước khi commit.
 **Effort:** S
-**Priority:** P2
+**Priority:** P3
 **Depends on:** Review nội dung docs (không phải của lượt fix)
 
 ### 9. `.ux-audit/` raw artifacts chưa được ignore
@@ -176,6 +149,16 @@ sidepanel snapshot/click/close). Keep the smoke script for local verification on
 ---
 
 ## Completed
+
+### Reload helper — verify before refreshing tabs
+
+**Completed:** 812799f (2026-10-24; `review/reload-helper-hardening-2026-10-24.md`)
+
+Wrapper `scripts/reload-extension.sh` v2: reload → poll popup verify → then refresh the YouTube
+tab (helper's early refresh bypassed). Verified 3 runs `ok:true`/verify ok, no tab litter; new
+video page after reload gets 12 tokens/furigana (fixes the enhancement plain-cue scenario).
+Evidence bundle local `.test-evidence/20261024-063617-reload-helper-hardening` (PASS, 36
+artifacts).
 
 ### Desktop plain cue after extension reload — reproduced & root-caused
 
