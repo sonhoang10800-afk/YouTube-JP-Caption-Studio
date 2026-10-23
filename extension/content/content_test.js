@@ -183,4 +183,28 @@ assert.strictEqual(snap.start_media_time, 1.25);
 assert.strictEqual(snap.videoTitle, "Fixture 動画タイトル",
   "the snapshot must carry the page title for the Saved Items Video column");
 
+// Re-keyed cues (intercept vs ANDROID segmentation) must still read the saved
+// star: match on video + start + source when the direct saved id is gone.
+assert.strictEqual(typeof content.savedCueMatches, "function", "savedCueMatches must be exposed");
+assert.strictEqual(typeof content.findSavedCueForCue, "function", "findSavedCueForCue must be exposed");
+assert.strictEqual(typeof content.isCueStarred, "function", "isCueStarred must be exposed");
+const savedOld = { id: "old-id", source: "日本語 の 文", start_media_time: 1.25, videoId: "vid1" };
+assert.strictEqual(content.savedCueMatches({ source: "日本語 の 文", start_media_time: 1.25 },
+  { ...savedOld, videoId: "" }, "vid1"), true, "same video/start/source must match");
+assert.strictEqual(content.savedCueMatches({ source: "日本語 の 文", start_media_time: 1.25 },
+  savedOld, "vid2"), false, "a saved cue from another video must not match");
+assert.strictEqual(content.savedCueMatches({ source: "日本語 の 文", start_media_time: 4 },
+  savedOld, "vid1"), false, "a different start time must not match");
+assert.strictEqual(content.savedCueMatches({ source: "別の文", start_media_time: 1.25 },
+  savedOld, "vid1"), false, "different source text must not match");
+content.setSavedCuesForTest({ "old-id": savedOld });
+assert.strictEqual(content.isCueStarred("old-id"), true, "direct saved id still wins");
+assert.strictEqual(content.isCueStarred({ id: "new-id", source: "日本語  の 文", start_media_time: 1.25 }),
+  true, "a re-keyed cue must inherit the saved star via matcher");
+assert.strictEqual(content.isCueStarred({ id: "new-id", source: "日本語 の 文", start_media_time: 9 }),
+  false, "a cue at another time must stay unstarred");
+assert.strictEqual(content.findSavedCueForCue({ id: "new-id", source: "日本語 の 文", start_media_time: 1.25 })?.id,
+  "old-id", "findSavedCueForCue must return the re-keyed saved row by normalized source");
+content.setSavedCuesForTest({});
+
 console.log("content_test: all assertions passed");

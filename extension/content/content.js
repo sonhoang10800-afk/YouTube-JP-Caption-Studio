@@ -1510,11 +1510,37 @@
     });
   }
 
+  /**
+   * Segmentation can re-key a cue between load paths (intercept vs ANDROID),
+   * so a saved cue may live under a different id than the current projection.
+   * Match on video + start + source text as a fallback; the direct id wins.
+   */
+  function savedCueMatches(cue, saved, videoId) {
+    if (!cue || !saved) return false;
+    if (saved.videoId && videoId && saved.videoId !== videoId) return false;
+    const start = Number(cue.start_media_time ?? cue.startTime ?? cue.start);
+    const savedStart = Number(saved.start_media_time ?? saved.startTime ?? saved.start);
+    if (!Number.isFinite(start) || !Number.isFinite(savedStart) || Math.abs(start - savedStart) > 0.3) {
+      return false;
+    }
+    const a = normalizeCueText(cue.source);
+    const b = normalizeCueText(saved.source);
+    return !!a && a === b;
+  }
+
+  function findSavedCueForCue(cue) {
+    if (!cue || !savedCues) return null;
+    for (const saved of Object.values(savedCues)) {
+      if (savedCueMatches(cue, saved, currentVideoId)) return saved;
+    }
+    return null;
+  }
+
   function isCueStarred(cueOrId) {
     const cue = typeof cueOrId === "object" && cueOrId ? cueOrId : enhancedCues.find(c => c.id === cueOrId);
     const id = cue?.savedCueId || cue?.id || String(cueOrId || "");
-    if (!id) return false;
-    return !!savedCues[id];
+    if (id && savedCues[id]) return true;
+    return cue ? !!findSavedCueForCue(cue) : false;
   }
 
   /** The exact object stored for a starred cue (also what the Saved Items page reads). */
@@ -1543,18 +1569,23 @@
       cueObj = cues.find((c) => c.id === id) || enhancedCues.find(c => c.id === id) || null;
     }
     id = cueObj?.savedCueId || cueObj?.id || id;
-    if (!id || (!cueObj && !savedCues[id])) return false;
+    if (!id) return false;
+    // A re-keyed cue can be saved under another id; unstar that row instead of
+    // creating a duplicate.
+    const matched = cueObj && !savedCues[id] ? findSavedCueForCue(cueObj) : null;
+    const targetId = matched?.id || id;
+    if (!cueObj && !savedCues[targetId]) return false;
 
-    const snapshot = cueObj ? savedCueSnapshot(cueObj, id) : null;
-    const result = await chrome.runtime.sendMessage({ type: "SAVED_CUES_MUTATE", id,
+    const snapshot = cueObj && targetId === id ? savedCueSnapshot(cueObj, id) : null;
+    const result = await chrome.runtime.sendMessage({ type: "SAVED_CUES_MUTATE", id: targetId,
       op: snapshot ? "toggle" : "delete", cue: snapshot });
     if (!result?.ok) throw new Error(result?.error || "Saved state unavailable");
     savedCues = result.savedCues;
-    toast(savedCues[id] ? "Đã lưu câu vào mục Đã lưu ★" : "Đã bỏ lưu câu");
+    toast(savedCues[targetId] ? "Đã lưu câu vào mục Đã lưu ★" : "Đã bỏ lưu câu");
     const active = getActiveDisplayCue();
     if (active) updateBar(active);
     publishSidePanelState();
-    return !!savedCues[id];
+    return !!savedCues[targetId];
   }
 
   function findVideo() {
@@ -6361,6 +6392,12 @@
       normalizeCueText,
       pageTitle,
       savedCueSnapshot,
+      savedCueMatches,
+      findSavedCueForCue,
+      isCueStarred,
+      setSavedCuesForTest: (value) => {
+        savedCues = value && typeof value === "object" ? value : {};
+      },
       capAcceptsReply,
       resolveCueIndex,
       onNavigate,
