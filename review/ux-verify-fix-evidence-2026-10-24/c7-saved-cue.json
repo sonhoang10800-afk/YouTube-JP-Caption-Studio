@@ -1,0 +1,14 @@
+{
+  "source_file": "data/config/extension_state.json (synced from chrome.storage.local)",
+  "savedCueCount": 2,
+  "matches": 1,
+  "cue": {
+    "id_prefix": "ss:[\"sg:[2,\\\"youtube:66E0wpL6O9Q:ja\\\",\\\"577d79c35abb6467deebbb66d6afd7fb2985abe41cf8397f50c69e3c91b92938\\\",[[\\\"c-19.400-時の総点です。大陸しっかり出てきます。\\\",19.4,22.359,\\\"時の総点",
+    "videoId": "66E0wpL6O9Q",
+    "videoTitle": "【最新気象】あすは寒気流入により北海道・東北北部では雪や風に注意／気温も前日より大幅に下がる予想",
+    "source": "時の総点です。大陸しっかり出てきます。",
+    "start_media_time": 19.4,
+    "end_media_time": 22.359,
+    "savedAt": 1792774895734
+  }
+}

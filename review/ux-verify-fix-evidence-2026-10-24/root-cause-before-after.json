@@ -1,0 +1,110 @@
+{
+  "before": {
+    "debug_initial": "{\"n\":0,\"m\":\"enhanced\",\"e\":0,\"s\":\"loading\",\"i\":\"\",\"b\":false,\"k\":\"asr\",\"t\":12}",
+    "debug_final_none": "{\"n\":0,\"m\":\"enhanced\",\"e\":0,\"s\":\"loading\",\"i\":\"\",\"b\":false,\"k\":\"asr\",\"t\":61}",
+    "cap_probe": {
+      "equal": false,
+      "markerCapLen": 36,
+      "replyCapLen": 0,
+      "result": {
+        "apiVer": 7,
+        "ok": true,
+        "ready": true
+      }
+    },
+    "web_timedtext_fetch": {
+      "baseLen": 340,
+      "fmt3": {
+        "bytes": 0,
+        "head": "",
+        "ms": 515,
+        "status": 200
+      },
+      "fmtsrv": {
+        "bytes": 0,
+        "head": "",
+        "ms": 257,
+        "status": 200
+      },
+      "hasBase": true,
+      "hasExp": true,
+      "hasPot": false
+    },
+    "multi_timing": [
+      {
+        "count": 55,
+        "i": 0,
+        "ms": 9961,
+        "ok": true,
+        "via": "page_multi_android"
+      },
+      {
+        "count": 55,
+        "i": 1,
+        "ms": 2699,
+        "ok": true,
+        "via": "page_multi_android"
+      }
+    ],
+    "debug_none_timedtext_empty": "{\"n\":0,\"m\":\"enhanced\",\"e\":0,\"s\":\"none\",\"i\":\"timedtext_empty\",\"b\":false,\"k\":\"asr\",\"t\":31}"
+  },
+  "after": {
+    "debug_after_fix": "{\"n\":50,\"m\":\"enhanced\",\"e\":38,\"s\":\"ok\",\"i\":\"page_multi_android · en:37 vi:46\",\"b\":false,\"k\":\"asr\",\"ap\":4,\"lc\":\"GET_MEDIA_TIME:ok\",\"pb\":true,\"pcv\":\"66E0wpL6O9Q\",\"t\":12}",
+    "h_on": {
+      "hidden": false,
+      "pill": "Local Bridge: Connected",
+      "star": {
+        "active": true,
+        "text": "★"
+      },
+      "text": "時ときの総点そうてんです。大陸たいりくしっかり出でてきます。",
+      "tok": 12
+    },
+    "dict": {
+      "dictHidden": false,
+      "dictText": "時\n[とき]\nThời\nN5\nMazii JA-VI\n✕\nÝ NGHĨA CHÍNH (TIẾNG VIỆT)\nlúc, giờ\n1\nDanh từ\ntime; hour; moment\n2\nDanh từ\noccasion; case\n3\nDanh từ\nchance; opp",
+      "rect": {
+        "h": 569,
+        "w": 453
+      }
+    },
+    "star_after_toggle": {
+      "after2": {
+        "active": true,
+        "text": "★",
+        "title": "Bỏ lưu câu này (phím S)"
+      }
+    },
+    "h_off": {
+      "barHidden": true,
+      "navHidden": true
+    },
+    "mobile_targets": {
+      "barHidden": false,
+      "navBtns": [
+        {
+          "h": 44,
+          "id": "lr-btn-prev",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "id": "lr-btn-repeat",
+          "w": 44
+        },
+        {
+          "h": 44,
+          "id": "lr-btn-next",
+          "w": 44
+        }
+      ],
+      "toggle": {
+        "h": 44,
+        "w": 79
+      },
+      "vw": 424
+    },
+    "mobile_probe_extension_below44": 0,
+    "mobile_probe_page_below44": 15
+  }
+}

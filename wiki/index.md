@@ -27,6 +27,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | [topics/p0-remediation-2026-10-20.md](topics/p0-remediation-2026-10-20.md) | P0 + P1 + P2 remediation of the 2026-10-18 full-codebase audit — **merged into `master`** (2fff75c48, all rows fixed + verified) |
 | [topics/codebase-audit-2026-10-22.md](topics/codebase-audit-2026-10-22.md) | New full-repo audit — **8 P0 / 24 P1 open, not remediated** (2026-10-22) |
 | [topics/swift-shared-package.md](topics/swift-shared-package.md) | Gộp 4 141 LOC Swift trùng (C-1) — **plan filed, chưa refactor** |
+| [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay caption pipeline **FAIL → fix `b155a56` → PASS live**; 44px touch targets; F3/segmentation gaps |
 | [upstream/karpathy-llm-wiki.md](upstream/karpathy-llm-wiki.md) | Karpathy LLM-wiki gist (concept) |
 
 ## Active / recent work
@@ -39,6 +40,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | partial | Code taste: migration plan and edit hooks | [plan](../plan/migrate-codebase-to-house-style-2026-09-20.md) | [Live client evidence and gaps](../review/code-taste-other-clients-live-2026-09-20.md) |
 | done | Studio Caption Fixes, Performance & UX Optimization | [fix-overlay-resize-and-subtitles](../plan/fix-overlay-resize-and-subtitles-2026-09-19.md), [fix-sidepanel-format-and-jp-only-overlay](../plan/fix-sidepanel-format-and-jp-only-overlay-2026-09-19.md) | (filed `code-review-2026-09-19.md` was never committed — no review exists for this work) |
 | open — 8 P0 / 24 P1, not yet remediated | [Codebase audit 2026-10-22](topics/codebase-audit-2026-10-22.md) | — | [audit](../review/codebase-audit-2026-10-22.md) |
+| PASS after fix `b155a56`; F3/segmentation gaps remain | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md) |
 
 ## Raw catalogs (immutable)
 
@@ -93,6 +95,7 @@ Do not rewrite these from the wiki. Link only.
 - [timeline-yt-multi-sub-2026-08-02.md](../plan/timeline-yt-multi-sub-2026-08-02.md)
 - [vietnamese-caption-fixes-2026-08-21.md](../plan/vietnamese-caption-fixes-2026-08-21.md)
 - [yt-write-all-subs-2026-08-02.md](../plan/yt-write-all-subs-2026-08-02.md)
+- [extension-ux-verify-bsk-2026-10-24.md](../plan/extension-ux-verify-bsk-2026-10-24.md) — Plan v3: verify extension UX/UI in the real Chrome via bsk; executed with review + fix
 
 ### Reviews
 
@@ -194,6 +197,11 @@ Do not rewrite these from the wiki. Link only.
 - [plans-completion-check-2026-08-07.md](../review/plans-completion-check-2026-08-07.md)
 
 - [youtube-sentence-mvp-bridge-regression-runtime-2026-10-10.md](../review/youtube-sentence-mvp-bridge-regression-runtime-2026-10-10.md)
+
+- [ux-test-2026-10-23.md](../review/ux-test-2026-10-23.md) — real-machine backend/iOS/extension test round 2026-10-23; CSP inject bug + iOS Debug crash evidence
+- [ux-verify-2026-10-24.md](../review/ux-verify-2026-10-24.md) — pre-fix FAIL: overlay never renders cues (stale cap in MAIN world + slow ANDROID path discarded); evidence pack
+- [ux-verify-fix-2026-10-24.md](../review/ux-verify-fix-2026-10-24.md) — post-fix PASS after `b155a56`: 4/4 flows, C-7 data layer, mobile 44px
+- [ux-verify-evidence-2026-10-24/](../review/ux-verify-evidence-2026-10-24/) + [ux-verify-fix-evidence-2026-10-24/](../review/ux-verify-fix-evidence-2026-10-24/) — screenshots, before/after JSON, test log
 
 ## Open gaps
 

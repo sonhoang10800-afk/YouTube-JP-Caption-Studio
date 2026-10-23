@@ -1,0 +1,30 @@
+== extension suite (node per file) ==
+exit=0 extension/shared/gemini_storage_test.js :: ALL GEMINI STORAGE TESTS PASSED!
+exit=0 extension/shared/gemini_translate_test.js :: PASS: two production clients share one broker; 90 jobs HTTP peak 3, valid Settings probe admitted, oversized/foreign/unsupported rejected
+exit=0 extension/shared/html_entities_test.js :: All HTML entity tests passed!
+exit=0 extension/shared/import_parse_test.js :: 
+exit=0 extension/shared/japanese_diff_test.js :: ALL JAPANESE DIFF TESTS PASSED!
+exit=0 extension/shared/romaji_kana_test.js :: romaji_kana_test: all assertions passed
+exit=0 extension/shared/sentence_candidates_test.js :: PASS: all candidate lifecycle and data protection invariant tests passed!
+exit=0 extension/shared/sentence_groups_test.js :: PASS: captured ordinal fragment joins with exact source spans/clocks; generalized numeral forms and independent safety boundaries retained
+exit=0 extension/shared/timedtext_parse_test.js :: All timedtext parse tests passed!
+exit=0 extension/shared/url_canonical_test.js :: ALL URL CANONICALIZATION & HASH TESTS PASSED!
+exit=0 extension/shared/vocab_style_test.js :: All vocab_style active-cue JLPT, source fidelity, escaping, and fallback tests passed!
+exit=0 extension/offscreen/audio_capture_test.js :: ALL OFFSCREEN AUDIO CAPTURE TESTS PASSED!
+exit=0 extension/sidepanel/sidepanel_pure_test.js :: sidepanel_pure_test: all assertions passed
+exit=0 extension/background/service_worker_test.js :: ALL SERVICE WORKER TESTS PASSED!
+exit=0 extension/content/content_test.js :: content_test: all assertions passed
+
+== anti-fake gate ==
+Anti-Fake-Test Gate: PASSED (no assertion on file bytes or on a literal)
+exit=0
+
+== popup assets ==
+extension popup: OK (19 referenced assets all present, 8 JS chunks)
+exit=0
+
+== diff stat ==
+ extension/content/content.js       | 43 +++++++++++++++++++++++++++++++-------
+ extension/injected/page_capture.js | 21 ++++++++++++++++---
+ extension/styles/panel.css         | 14 +++++++++++++
+ 3 files changed, 68 insertions(+), 10 deletions(-)

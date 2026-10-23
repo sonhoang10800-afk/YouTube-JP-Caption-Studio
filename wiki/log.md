@@ -1543,3 +1543,14 @@ trang) + marker element mang `data-cap`/`data-api` + guard-reset khi force-reinj
 
 Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 `parser: object`, `markerCap: 36` ký tự, **0 lỗi CSP/Unsafe** (trước: 2 lỗi/inject).
+
+## [2026-10-24] ingest | Plan v3 verify extension UX/UI trong Chrome thật (bsk) — exec + eng review
+
+- Plan `plan/extension-ux-verify-bsk-2026-10-24.md` (viết lại sau review v2) đã thực thi trong Chrome thật qua bsk `35138c57`; review `plan-eng-review` ghi CLEAR (7 corrections, 0 unresolved).
+- Pre-fix verdict `review/ux-verify-2026-10-24.md`: **FAIL** — bridge MAIN-world sống nhưng reply mang cap rỗng (content script reject toàn bộ), WEB timedtext 200/0 byte, path ANDROID 55 cue mất 2.7–10 s bị bỏ vì timeout 750 ms; mobile touch targets 38×38/79×32.
+
+## [2026-10-24] ingest | Overlay caption pipeline fix + touch targets — `b155a56` → PASS live
+
+- `page_capture.js` đọc `currentCap()` tại thời điểm gửi (hết race token rỗng); `content.js` cho multi-lang 15 s + await kết quả muộn + cap SW 12 s; `panel.css` 44 px trên coarse pointer.
+- Verify live: `cues=50, status=ok, pageBridgeReady=true`; H bar 12 token/furigana; dict `時 [とき] Thời N5`; star `☆→★`; C-7 saved cue có `videoTitle`; mobile 44×44; 0 lỗi CSP; 15/15 suites + anti-fake + popup gate pass.
+- Post-fix review `review/ux-verify-fix-2026-10-24.md`; gaps: F3 reload helper transient, star rehydrate phụ thuộc segmentation, không có CI browser+extension regression.
