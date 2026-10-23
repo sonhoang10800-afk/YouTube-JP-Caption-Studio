@@ -24,6 +24,21 @@
   } catch (_) {
     CAP_TOKEN = "";
   }
+  // The content script mints a fresh token per inject and rewrites the marker.
+  // A reinject can race this script's startup (marker absent or replaced), which
+  // used to freeze an empty token at load time and made the content script
+  // reject every reply. Resolve the token at send time; cached value is fallback.
+  function currentCap() {
+    try {
+      const el = document.getElementById("hardsub-ocr-page-script");
+      const cap = String(el?.dataset?.cap || "");
+      if (cap) {
+        CAP_TOKEN = cap;
+        return cap;
+      }
+    } catch (_) {}
+    return CAP_TOKEN;
+  }
   if (typeof window.__hardsubPageMsgHandler === "function") {
     try {
       window.removeEventListener("message", window.__hardsubPageMsgHandler);
@@ -733,7 +748,7 @@
               sourceLang: lang,
               tlang: tlang,
               cues,
-              cap: CAP_TOKEN,
+              cap: currentCap(),
             },
             PAGE_TARGET_ORIGIN
           );
@@ -1084,7 +1099,7 @@
           source: "netflix",
           lang,
           count: cues.length,
-          cap: CAP_TOKEN,
+          cap: currentCap(),
         },
         PAGE_TARGET_ORIGIN
       );
@@ -1999,7 +2014,7 @@
 
     const reply = (result) => {
       window.postMessage(
-        { source: "hardsub-ocr-page", requestId, result, cap: CAP_TOKEN },
+        { source: "hardsub-ocr-page", requestId, result, cap: currentCap() },
         PAGE_TARGET_ORIGIN
       );
     };

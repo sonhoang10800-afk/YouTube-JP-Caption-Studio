@@ -4306,13 +4306,20 @@
         lang: settings.sourceLang,
         force: !!force,
       });
+    // The page-world multi-lang fetch is the only path that survives empty WEB
+    // timedtext bodies: it falls back to ANDROID Innertube and takes 2.7–10 s
+    // (measured live 2026-10-24). The SW cascade can also hang when its worker
+    // stops responding, so both await points need a real budget.
+    const MULTI_TIMEOUT_MS = 15000;
+    const SW_TIMEOUT_MS = 12000;
+    const swTimed = () => Promise.race([swPromise, sleep(SW_TIMEOUT_MS).then(() => null)]);
 
     // Parallel path 2: Direct in-page player 3-track concurrent fetch (JA, EN, VI)
     const multiPromise = (async () => {
       try {
         if (!pageBridgeReady) await waitForPageBridge(200);
         if (pageBridgeReady) {
-          return await pageCall("FETCH_MULTI_LANG_CAPTIONS", { videoId: currentVideoId, lang: settings.sourceLang }, 750);
+          return await pageCall("FETCH_MULTI_LANG_CAPTIONS", { videoId: currentVideoId, lang: settings.sourceLang }, MULTI_TIMEOUT_MS);
         }
       } catch (_) {}
       return null;
@@ -4347,6 +4354,28 @@
       return;
     }
 
+    // Fast window only catches warm paths. On YouTube the WEB timedtext URLs
+    // return HTTP 200 with an empty body, and the page-world fetch needs
+    // seconds to fall back to ANDROID Innertube. Await it for real before
+    // falling through to the WEB-only paths that are known-empty.
+    if (!fastPack) {
+      const late = await Promise.race([
+        multiPromise,
+        sleep(MULTI_TIMEOUT_MS).then(() => null),
+      ]);
+      if (stale()) return;
+      if (late?.ok && late.cues?.length) {
+        await applyLoadedCues(late.cues, late.via || "page_multi", {
+          ...applyOpts,
+          enCues: late.enCues,
+          viCues: late.viCues,
+          sourceTrack: late.sourceTrack,
+        });
+        if (stale()) return;
+        return;
+      }
+    }
+
     const ready =
       opts.bridgeReady === true
         ? true
@@ -4362,7 +4391,7 @@
     if (stale()) return;
 
     if (ready === "sw") {
-      const sw = await swPromise;
+      const sw = await swTimed();
       if (stale()) return;
       if (swOk(sw)) {
         await applyLoadedCues(sw.cues || [], swLabel(sw), swApplyOpts(sw));
@@ -4387,7 +4416,7 @@
           applyOpts
         );
         if (stale()) return;
-        kickSecondaryFill(await swPromise);
+        kickSecondaryFill(await swTimed());
         return;
       }
 
@@ -4429,13 +4458,13 @@
             applyOpts
           );
           if (stale()) return;
-          kickSecondaryFill(await swPromise);
+          kickSecondaryFill(await swTimed());
           return;
         }
       }
     }
 
-    let sw = await swPromise;
+    let sw = await swTimed();
     if (stale()) return;
     if (!swUsable(sw) && pageLink?.baseUrl) {
       const urlLang = langFromTimedtextUrl(pageLink.baseUrl);
@@ -4460,7 +4489,7 @@
       const multi = await pageCall(
         "FETCH_MULTI_LANG",
         { videoId: currentVideoId, lang: settings.sourceLang },
-        5000
+        MULTI_TIMEOUT_MS
       );
       if (stale()) return;
       if (Array.isArray(multi?.cues) && multi.cues.length) {
@@ -4518,7 +4547,7 @@
         }
       }
       if (!cues.length) {
-        const swFallback = await swPromise;
+        const swFallback = await swTimed();
         if (swOk(swFallback)) {
           await applyLoadedCues(
             swFallback.cues || [],

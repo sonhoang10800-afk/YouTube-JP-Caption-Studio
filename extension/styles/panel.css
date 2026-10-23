@@ -1903,3 +1903,17 @@ body.lr-hide-native-subs [class*="ytp-caption"] {
 .tok-trans.jlpt-n3 { color: var(--jlpt-n3, #f5d76e) !important; font-weight: 700; }
 .tok-trans.jlpt-n2 { color: var(--jlpt-n2, #e08a4a) !important; font-weight: 700; }
 .tok-trans.jlpt-n1 { color: var(--jlpt-n1, #e74c5c) !important; font-weight: 700; }
+
+/* Touch targets: keep interactive overlays at >=44x44 on coarse pointers
+   (WCAG 2.5.5). Mouse pointers keep the compact 38px nav buttons. */
+@media (pointer: coarse) {
+  .lr-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .hardsub-ytp-toggle.ytp-button {
+    min-height: 44px;
+    padding-top: 6px !important;
+    padding-bottom: 6px !important;
+  }
+}
