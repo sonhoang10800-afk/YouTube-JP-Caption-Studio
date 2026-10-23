@@ -17,6 +17,13 @@ mobile-UA navigation redirects to `m.youtube.com` where the extension does not i
 44×44 on coarse pointers; tablet/desktop unchanged (fit 1). Desktop run showed plain cue
 (`tok:0`) while mobile/tablet had 12 tokens — tracked as TODO #1 (enhancement/SW fallback).
 
+**C-7 UI row verified (2026-10-24): PASS WITH ISSUES** — Saved Items UI ("Câu đã lưu")
+renders 2 real cues; first row `00:19 – 00:22` + real `videoTitle` `【最新気象】あすは寒気流入により…`
++ source text (title 12px, 576×18, no overflow). Real extension popup tab could not be switched:
+bsk refuses `chrome-extension://` DOM/input and macOS System Events has no assistive access;
+documented as LIM-1. Durable review: `review/ux-verify-c7-ui-2026-10-24.md`; evidence bundle is
+local (`.test-evidence/…`, not committed).
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -28,6 +35,7 @@ mobile-UA navigation redirects to `m.youtube.com` where the extension does not i
 - Evidence matrix: [review/ux-verify-matrix-postfix-evidence-2026-10-24/](../../review/ux-verify-matrix-postfix-evidence-2026-10-24/)
 - Fix review F1/F2: [review/ux-verify-matrix-fix-2026-10-24.md](../../review/ux-verify-matrix-fix-2026-10-24.md)
 - Evidence fix: [review/ux-verify-matrix-fix-evidence-2026-10-24/](../../review/ux-verify-matrix-fix-evidence-2026-10-24/)
+- C-7 UI review: [review/ux-verify-c7-ui-2026-10-24.md](../../review/ux-verify-c7-ui-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

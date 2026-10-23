@@ -6,6 +6,8 @@ evidence after fix `b155a56` and reviews in `review/ux-verify-2026-10-24.md` /
 `review/ux-verify-fix-2026-10-24.md`.
 Post-fix matrix: **PASS WITH ISSUES** → F1/F2 **fixed & verified** in `d3b53f7` (2026-10-24);
 xem `review/ux-verify-matrix-postfix-2026-10-24.md` + `review/ux-verify-matrix-fix-2026-10-24.md`.
+C-7 UI row: **PASS WITH ISSUES** — Saved Items UI row renders `videoTitle`; real popup tab
+blocked by bsk (2026-10-24, `review/ux-verify-c7-ui-2026-10-24.md`).
 
 ---
 
@@ -22,9 +24,9 @@ xem `review/ux-verify-matrix-postfix-2026-10-24.md` + `review/ux-verify-matrix-f
 | T2 | Preflight + session `--focus` + video + reload | **DONE** (caveat F3) | 5 reloads in-session; 4× `verify.ok:true`, 1 transient false; video `66E0wpL6O9Q` |
 | T3 | Bridge pre-check 3 trạng thái | **DONE** | `.ux-audit/fix-diag-aftercap.json`: marker DIV/api7/cap36/capture7/handler, `pb:true` |
 | T4 | 4 flow H/dict/star/off | **DONE** | `.ux-audit/final-flow{1..4}-*.json` + `review/ux-verify-fix-evidence-2026-10-24/` |
-| T5 | Probe popup + sidepanel | **PARTIAL** | popup post-fix có `popup-500px.jpg`; **sidepanel post-fix chưa chụp lại**; bsk chặn DOM trên `chrome-extension://` (F4) |
+| T5 | Probe popup + sidepanel | **PARTIAL** | popup render + C-7 UI row done (web app); **sidepanel thật chưa capture**; bsk chặn DOM trên `chrome-extension://` (F4) |
 | T6 | MP4 60 s | **PARTIAL** | chỉ có clip repro **20 s** pre-fix `.ux-audit/20261024-ux-verify-ext/overlay-flow-repro.mp4`; chưa quay post-fix |
-| T7 | UX matrix 3 viewport | **PARTIAL** | matrix 3 viewport pre-fix trên overlay hỏng (`matrix_*.json`); post-fix chỉ mobile F5 + desktop flow shots; **chưa matrix post-fix 3 viewport** |
+| T7 | UX matrix 3 viewport | **DONE** | matrix post-fix desktop/tablet/mobile + fix F1/F2 (`9c233fe`, `d3b53f7`); T7 gap đã đóng |
 | T8 | Report + cleanup | **DONE** | `review/ux-verify-fix-2026-10-24.md`; session `fitc` stopped (`sessions: []`), bridge stopped, Chrome tabs verified |
 
 ### Success criteria (a)–(h)
@@ -36,7 +38,7 @@ xem `review/ux-verify-matrix-postfix-2026-10-24.md` + `review/ux-verify-matrix-f
 | c | 4 flow + screenshot/số đo | **PASS** | H-on 12 token, dict 453×569, star `☆→★`, H-off hidden |
 | d | 0 lỗi mới `Unsafe attempt to load URL` | **PASS** | 0; 2 `Extension context invalidated` là stale pre-reload |
 | e | 1 MP4 quay đúng tab | **PARTIAL** | chỉ clip repro 20 s pre-fix; không quay post-fix |
-| f | popup + sidepanel có bằng chứng, không claim | **PARTIAL** | popup render OK; sidepanel post-fix chưa chụp; C-7 chứng minh ở data layer, chưa UI row |
+| f | popup + sidepanel có bằng chứng, không claim | **PARTIAL** | popup render OK; C-7 UI row verified (web app, 2 rows + videoTitle); sidepanel thật chưa capture |
 | g | report header + "Not tested" | **PASS** (format note) | nội dung đủ; cả 2 review dùng `**Backend:**` thay vì đúng dòng uppercase `BACKEND:` — TODO P4 |
 | h | cleanup | **PASS** | emulate off, không borrow, session stop, `session list` sạch |
 
@@ -80,22 +82,20 @@ render plain fallback.
 **Priority:** P2
 **Depends on:** None
 
-### 2. C-7 UI row in Saved Items (popup "Câu đã lưu" hoặc web app localhost)
+### 2. Sidepanel real-surface smoke + external capture
 
-**What:** Chụp/verify row đã lưu có `videoTitle` trong UI thật, không chỉ data layer.
-**Why:** criterion (f) và C-7 hiện chỉ được chứng minh bằng `extension_state.json`; chưa có
-bằng chứng UI hiển thị đúng cột Video/tiêu đề.
-**Context:** bsk chặn DOM trên tab `chrome-extension://`, nên không click được tab
-"Câu đã lưu" trong popup. Hai đường hợp lệ: (a) chạy `local-bridge/start.sh` (kèm Saved
-Items tại `http://127.0.0.1:3000`) rồi mở web app bằng bsk — đây là UI đầy đủ, không phải
-extension page bị chặn; (b) chụp cửa sổ Chrome thật bằng `screencapture` sau khi user mở
-popup và tab Saved. Với **sidepanel**, dùng dev-only bridge mới (AGENTS §10):
-`node scripts/bsk_sidepanel_bridge_smoke.js --out <dir>` — snapshot/click real sidepanel;
-Chrome có thể cần một lần mở panel tay (HUMAN STEP), và bằng chứng phải là `screencapture`.
-Ghi rõ cách nào đã dùng; dọn bridge theo TODO #10 trước release.
+**What:** Chạy `node scripts/bsk_sidepanel_bridge_smoke.js --out <dir>` trên sidepanel thật, đính
+kèm `screencapture` cửa sổ Chrome; ghi `SURFACE:`/`SIDEPANEL SOURCE:` và không claim bridge là
+bằng chứng visual.
+**Why:** AGENTS §10 mới thêm dev-only sidepanel bridge; T5/(f) vẫn thiếu bằng chứng sidepanel thật,
+trong khi popup Saved tab bị bsk chặn (LIM-1 của review C-7).
+**Context:** Bridge files đang untracked (`extension/content/sp_test_bridge.js`,
+`extension/sidepanel/sp_test_bridge.js`, manifest/sidepanel.html, smoke script). Chạy bằng
+test-evidence bundle profile `sidepanel`; Chrome có thể cần một lần mở panel tay (HUMAN STEP đúng
+format); dọn bridge theo TODO #10 trước release.
 **Effort:** M
 **Priority:** P2
-**Depends on:** Local bridge + Saved Items (npm) hoặc human screenshot; sidepanel bridge (dev-only)
+**Depends on:** Sidepanel bridge (dev-only) + macos screencapture permission
 
 ### 3. Harden reload-extension verify (F3: transient false + stray tab)
 
@@ -205,6 +205,16 @@ sidepanel snapshot/click/close). Keep the smoke script for local verification on
 ---
 
 ## Completed
+
+### C-7 saved-cue UI row (videoTitle)
+
+**Completed:** 2026-10-24 (`review/ux-verify-c7-ui-2026-10-24.md`)
+
+Saved Items UI ("Câu đã lưu") renders 2 real cues; first row `00:19 – 00:22` + real
+`videoTitle` `【最新気象】あすは寒気流入により…` + source text; title 12px/576×18, no overflow.
+Evidence bundle (local, not committed) `PASS WITH ISSUES`, 45 artifacts. Real extension popup
+tab could not be switched (bsk blocks `chrome-extension://` DOM/input; System Events no
+assistive access) — documented as LIM-1; popup render screenshot kept.
 
 ### Responsive overlay + coarse ctrl targets (matrix F1/F2)
 

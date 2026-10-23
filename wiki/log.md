@@ -1567,3 +1567,9 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - F2: `@media (pointer: coarse)` mở rộng `.lr-ap-toggle`/`.lr-move-btn` → 44×44 (mobile + tablet); nav/toggle giữ 44.
 - Live verify bsk `35138c57`/Chrome 155: 0 lỗi CSP, content_test + anti-fake pass; desktop run plain cue (`tok:0`) được ghi thành TODO #1 (enhancement/SW fallback), không phải regression của fix.
 - Report `review/ux-verify-matrix-fix-2026-10-24.md` + evidence; TODO cập nhật (F1/F2 → Completed; F3 reload có thêm bằng chứng tool/profile).
+
+## [2026-10-24] ingest | C-7 saved-cue UI row — PASS WITH ISSUES (Saved Items UI; popup blocked)
+
+- Saved Items UI "Câu đã lưu" render 2 cues; row `00:19 – 00:22` + real `videoTitle` + source; title 12px/576×18, no overflow; 2 rows total.
+- Real extension popup tab không switch được: bsk từ chối `chrome-extension://` (screenshot/evaluate/input) và System Events `-25211` (no assistive access) → LIM-1; popup render vẫn chụp được.
+- Evidence bundle local `.test-evidence/20261024-042328-c7-saved-cue-ui` (PASS WITH ISSUES, 45 artifacts, không commit); review `review/ux-verify-c7-ui-2026-10-24.md`; TODOS #2 → Completed, thêm TODO sidepanel thật (P2).
