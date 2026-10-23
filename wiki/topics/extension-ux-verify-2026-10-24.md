@@ -30,6 +30,11 @@ fallback matches videoId + start (±0.3 s) + normalized source text so a re-keye
 matcher; live bsk run keeps a pre-existing ★ through reload (12 tokens, 0 CSP errors). Durable
 review: `review/star-rehydration-2026-10-24.md`.
 
+**Post-fix MP4 (2026-10-24): DONE** — `review/ux-verify-mp4-2026-10-24/overlay-flow-fixed.mp4`:
+35 s H.264 1280×690, 36 frames, 2,345,695 bytes (SHA-256 `b4c7065b…81994a`), recorded from the
+real tab (H ON → token dict → Escape → H OFF → H ON); 0 Unsafe console entries; dict frame at
+3 s. Completes criterion (e). Durable review: `review/ux-verify-mp4-2026-10-24.md`.
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -43,6 +48,7 @@ review: `review/star-rehydration-2026-10-24.md`.
 - Evidence fix: [review/ux-verify-matrix-fix-evidence-2026-10-24/](../../review/ux-verify-matrix-fix-evidence-2026-10-24/)
 - C-7 UI review: [review/ux-verify-c7-ui-2026-10-24.md](../../review/ux-verify-c7-ui-2026-10-24.md)
 - Star rehydration review: [review/star-rehydration-2026-10-24.md](../../review/star-rehydration-2026-10-24.md)
+- MP4 review: [review/ux-verify-mp4-2026-10-24.md](../../review/ux-verify-mp4-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

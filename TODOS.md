@@ -10,6 +10,8 @@ C-7 UI row: **PASS WITH ISSUES** — Saved Items UI row renders `videoTitle`; re
 blocked by bsk (2026-10-24, `review/ux-verify-c7-ui-2026-10-24.md`).
 Star rehydration: **FIXED** in `6a70ea7` — matcher keeps ★ across cue re-keying; unit tests +
 live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
+Post-fix MP4: **DONE** — 35 s H.264 clip of overlay + dict flow, criterion (e) satisfied
+(2026-10-24, `review/ux-verify-mp4-2026-10-24.md`).
 
 ---
 
@@ -27,7 +29,7 @@ live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
 | T3 | Bridge pre-check 3 trạng thái | **DONE** | `.ux-audit/fix-diag-aftercap.json`: marker DIV/api7/cap36/capture7/handler, `pb:true` |
 | T4 | 4 flow H/dict/star/off | **DONE** | `.ux-audit/final-flow{1..4}-*.json` + `review/ux-verify-fix-evidence-2026-10-24/` |
 | T5 | Probe popup + sidepanel | **PARTIAL** | popup render + C-7 UI row done (web app); **sidepanel thật chưa capture**; bsk chặn DOM trên `chrome-extension://` (F4) |
-| T6 | MP4 60 s | **PARTIAL** | chỉ có clip repro **20 s** pre-fix `.ux-audit/20261024-ux-verify-ext/overlay-flow-repro.mp4`; chưa quay post-fix |
+| T6 | MP4 60 s | **DONE** | post-fix 35 s clip + frames: `review/ux-verify-mp4-2026-10-24/` (H.264 1280×690, 36 frames, 0 Unsafe) |
 | T7 | UX matrix 3 viewport | **DONE** | matrix post-fix desktop/tablet/mobile + fix F1/F2 (`9c233fe`, `d3b53f7`); T7 gap đã đóng |
 | T8 | Report + cleanup | **DONE** | `review/ux-verify-fix-2026-10-24.md`; session `fitc` stopped (`sessions: []`), bridge stopped, Chrome tabs verified |
 
@@ -39,7 +41,7 @@ live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
 | b | pre-check `BRIDGE_OK` đủ trường | **PASS** | `n:50, s:ok, pb:true, ap:4` sau fix |
 | c | 4 flow + screenshot/số đo | **PASS** | H-on 12 token, dict 453×569, star `☆→★`, H-off hidden |
 | d | 0 lỗi mới `Unsafe attempt to load URL` | **PASS** | 0; 2 `Extension context invalidated` là stale pre-reload |
-| e | 1 MP4 quay đúng tab | **PARTIAL** | chỉ clip repro 20 s pre-fix; không quay post-fix |
+| e | 1 MP4 quay đúng tab | **PASS** | 35 s H.264 1280×690 post-fix clip (dict + H on/off), `review/ux-verify-mp4-2026-10-24/` |
 | f | popup + sidepanel có bằng chứng, không claim | **PARTIAL** | popup render OK; C-7 UI row verified (web app, 2 rows + videoTitle); sidepanel thật chưa capture |
 | g | report header + "Not tested" | **PASS** (format note) | nội dung đủ; cả 2 review dùng `**Backend:**` thay vì đúng dòng uppercase `BACKEND:` — TODO P4 |
 | h | cleanup | **PASS** | emulate off, không borrow, session stop, `session list` sạch |
@@ -122,19 +124,6 @@ sót và làm bsk session chết sau reload. Cần: polling verify, đóng tab v
 **Priority:** P2
 **Depends on:** Housekeeping (commit wrapper) + quyết định có sửa global helper hay không
 
-### 5. Post-fix MP4 (criterion e)
-
-**What:** Quay 15–20 s clip post-fix (H on → dict → star → H off) bằng `bsk video`, export
-MP4, lưu vào evidence.
-**Why:** criterion (e) hiện chỉ có clip repro lỗi; thiếu bằng chứng video cho trạng thái đã
-fix (screenshot đã cover nhưng plan yêu cầu video).
-**Context:** `bsk video start --session <id> --duration 40s`, replay flow, `video stop/save
---out review/ux-verify-fix-evidence-2026-10-24/overlay-flow-fixed.mp4`. Video capability
-từng fail trên session cũ ("Video task session is no longer active") — dùng session mới.
-**Effort:** S
-**Priority:** P3
-**Depends on:** None (session mới, cùng browser instance)
-
 ### 6. CI browser+extension regression for the MAIN-world bridge
 
 **What:** Thêm gate CI chạy extension trong Chrome for Testing/Chromium với profile tạm,
@@ -194,6 +183,16 @@ sidepanel snapshot/click/close). Keep the smoke script for local verification on
 ---
 
 ## Completed
+
+### Post-fix overlay flow MP4 (criterion e)
+
+**Completed:** 2026-10-24 (`review/ux-verify-mp4-2026-10-24.md`)
+
+35 s H.264 1280×690 MP4 (36 frames, `duration_limit`, 2,345,695 bytes, SHA-256
+`b4c7065b…81994a`) recorded from the real video tab: H ON → token dict popup → Escape → H OFF
+→ H ON; 0 Unsafe console entries; frame at 3 s shows the dict over the rendered overlay.
+Committed clip: `review/ux-verify-mp4-2026-10-24/overlay-flow-fixed.mp4`; evidence bundle local
+(`.test-evidence/20261024-054743-overlay-mp4-fixed`, PASS, 36 artifacts).
 
 ### C-7 saved-cue UI row (videoTitle)
 

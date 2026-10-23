@@ -1580,3 +1580,8 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Unit tests in `content_test.js` (same match, wrong video/start/source, whitespace normalization, direct-id precedence); anti-fake pass.
 - Live bsk: pre-existing ★ persists through page reload, 12 tokens, 0 CSP errors; limitation: cross-path re-keying not forceable live (unit-tested), non-destructive run. Evidence bundle local PASS (39 artifacts); review `review/star-rehydration-2026-10-24.md`.
 - F3 reload TODO context updated: bsk navigate to reload.html now `Not allowed`; helper first run `verify_failed` then `ok:true`; front-window/profile caveat.
+
+## [2026-10-24] ingest | Post-fix overlay flow MP4 — criterion (e) done
+
+- `review/ux-verify-mp4-2026-10-24/overlay-flow-fixed.mp4`: H.264 1280×690, 35 s, 36 frames, 2,345,695 bytes, SHA-256 `b4c7065b…81994a`; flow H ON → dict token → Escape → H OFF → H ON; 0 Unsafe console.
+- Evidence bundle local `.test-evidence/20261024-054743-overlay-mp4-fixed` (PASS, 36 artifacts); review committed; TODOS #5/T6/criterion (e) → Done; no audio (bsk limitation).
