@@ -4,8 +4,8 @@ Durable backlog for this repo. Item format: `~/.agents/skills/gstack/review/TODO
 Last re-check: **2026-10-24** — Plan v3 (`plan/extension-ux-verify-bsk-2026-10-24.md`) vs
 evidence after fix `b155a56` and reviews in `review/ux-verify-2026-10-24.md` /
 `review/ux-verify-fix-2026-10-24.md`.
-Post-fix matrix: **PASS WITH ISSUES** (2026-10-24) — F1/F2 thành TODO #1; xem
-`review/ux-verify-matrix-postfix-2026-10-24.md`.
+Post-fix matrix: **PASS WITH ISSUES** → F1/F2 **fixed & verified** in `d3b53f7` (2026-10-24);
+xem `review/ux-verify-matrix-postfix-2026-10-24.md` + `review/ux-verify-matrix-fix-2026-10-24.md`.
 
 ---
 
@@ -65,18 +65,19 @@ Post-fix matrix: **PASS WITH ISSUES** (2026-10-24) — F1/F2 thành TODO #1; xem
 
 ## Extension UX verify (2026-10-24) — remaining work
 
-### 1. Fix responsive overlay at narrow viewport + complete coarse-pointer targets
+### 1. Desktop furigana enhancement falls back to plain cue after SW sleep/reload
 
-**What:** (F1) clamp chiều cao/scale bar theo video ở viewport hẹp để bar không tràn xuống page
-content; (F2) mở rộng `@media (pointer: coarse)` cho `.lr-ap-toggle` và `#lr-btn-move` đạt ≥44×44.
-**Why:** Matrix post-fix phát hiện bar 291×236 phủ xuống 133 px dưới video ở 390 px, và 2 nút
-ctrl chỉ 38×40 / 32×32 trên touch — F5 trước đó mới sửa nav + player toggle.
-**Context:** `extension/styles/panel.css` (touch-target block + bar sizing); bar dùng
-`--bar-scale`/`--bar-box-h0`; verify lại bằng matrix 390/744/1440 (cùng một session, desktop UA)
-+ đo trực tiếp 2 nút ctrl (probe có blind spot — F5 trong report). Report:
-`review/ux-verify-matrix-postfix-2026-10-24.md`.
+**What:** Tái hiện + harden: có lúc cue desktop render plain text (`tok:0`, không furigana) dù
+bridge `/health` ready; mobile/tablet cùng lúc vẫn 12 token. Kiểm tra enhancement request qua
+service worker sau khi SW sleep/reload; thêm retry/wake hoặc log rõ.
+**Why:** Người dùng có thể thấy overlay mất furigana/color ở lần đầu sau khi extension reload
+hoặc tab idle lâu; matrix run trước desktop có 12 token, fix run này desktop 0 token.
+**Context:** Bridge `127.0.0.1:8765` Connected; console có `[jpcap] Sentence cache unavailable`.
+Change F1/F2 không chạm token pipeline. Repro tối thiểu: reload extension, mở 3 tab video liên
+tiếp, đo `tok` từng tab + log SW/network 8765; nếu là SW sleep thì thêm retry/wake trước khi
+render plain fallback.
 **Effort:** M
-**Priority:** P1
+**Priority:** P2
 **Depends on:** None
 
 ### 2. C-7 UI row in Saved Items (popup "Câu đã lưu" hoặc web app localhost)
@@ -88,10 +89,13 @@ bằng chứng UI hiển thị đúng cột Video/tiêu đề.
 "Câu đã lưu" trong popup. Hai đường hợp lệ: (a) chạy `local-bridge/start.sh` (kèm Saved
 Items tại `http://127.0.0.1:3000`) rồi mở web app bằng bsk — đây là UI đầy đủ, không phải
 extension page bị chặn; (b) chụp cửa sổ Chrome thật bằng `screencapture` sau khi user mở
-popup và tab Saved. Ghi rõ cách nào đã dùng.
+popup và tab Saved. Với **sidepanel**, dùng dev-only bridge mới (AGENTS §10):
+`node scripts/bsk_sidepanel_bridge_smoke.js --out <dir>` — snapshot/click real sidepanel;
+Chrome có thể cần một lần mở panel tay (HUMAN STEP), và bằng chứng phải là `screencapture`.
+Ghi rõ cách nào đã dùng; dọn bridge theo TODO #10 trước release.
 **Effort:** M
 **Priority:** P2
-**Depends on:** Local bridge + Saved Items (npm) hoặc human screenshot
+**Depends on:** Local bridge + Saved Items (npm) hoặc human screenshot; sidepanel bridge (dev-only)
 
 ### 3. Harden reload-extension verify (F3: transient false + stray tab)
 
@@ -104,7 +108,12 @@ extension hỏng.
 **Context:** Helper thật ở `~/.local/bin/reload-chrome-extension` (tool dùng chung, ngoài
 repo); repo wrapper `scripts/reload-extension.sh` hiện **untracked** (xem Housekeeping).
 Verify bằng 5 reload liên tiếp: `verify.ok:true` cả 5, tab count trước/sau bằng nhau, không
-tab `chrome-extension://` còn sót trong cửa sổ user.
+tab `chrome-extension://` còn sót trong cửa sổ user. **Bằng chứng mới (fix run 2026-10-24):**
+`reload_chrome_extension` (native) trả `extension_not_loaded` dù extension đang chạy trong bsk
+Agent Window; helper AppleScript có thể mở reload page ở cửa sổ/profile khác. Workaround đã
+dùng: navigate chính tab bsk tới `chrome-extension://<id>/reload.html` (chrome.runtime.reload)
+— cùng profile, không click. Helper nên thử profile/window hiện tại trước, hoặc fallback sang
+bsk session tab; đừng coi exit 3 là "chưa Load unpacked" khi extension đang chạy.
 **Effort:** S
 **Priority:** P2
 **Depends on:** Housekeeping (commit wrapper) + quyết định có sửa global helper hay không
@@ -180,9 +189,32 @@ raw cho debug. Hỏi user trước khi thêm (ux-verify skill rule).
 **Priority:** P3
 **Depends on:** None
 
+### 10. Remove dev sidepanel test bridge before release
+
+**What:** Remove or extract `extension/content/sp_test_bridge.js`,
+`extension/sidepanel/sp_test_bridge.js`, the manifest content-script entry, the
+`sidepanel.html` script tag, and the `#sp-test-open` injection before packaging a release.
+**Why:** It is a dev-only test hook. It is gated by an unpacked build, `?sp_test=1`, and a token,
+but it must not ship in the extension.
+**Context:** Smoke evidence: `scripts/bsk_sidepanel_bridge_smoke.js` (one bsk session, real
+sidepanel snapshot/click/close). Keep the smoke script for local verification only.
+**Effort:** S
+**Priority:** P1
+**Depends on:** Sidepanel bridge tests complete; release packaging checklist.
+
 ---
 
 ## Completed
+
+### Responsive overlay + coarse ctrl targets (matrix F1/F2)
+
+**Completed:** d3b53f7 (2026-10-24)
+
+`--bar-fit-scale` (rect.width/520) + `clampBarIntoVideo()` keeps the bar ≤92% video height and
+inside the player; `@media (pointer: coarse)` grows `.lr-ap-toggle`/`.lr-move-btn` to 44×44.
+Live post-fix: mobile bar bottom 418→281 (video 285), font 27.2→20.4 px, ctrl 44×44; tablet
+unchanged (fit 1); desktop unchanged; 0 CSP. Tests: content_test + anti-fake + syntax + diff
+check pass. Report: `review/ux-verify-matrix-fix-2026-10-24.md`.
 
 ### Post-fix 3-viewport UX matrix
 
@@ -190,8 +222,8 @@ raw cho debug. Hỏi user trước khi thêm (ux-verify skill rule).
 
 Matrix desktop/tablet/mobile trên `b155a56` trong một bsk session (`yrzh`, một tab `1847742549`),
 bridge chạy; overlay render 12 token/furigana ở cả 3 viewport, probe `value.ok:true`, 0 lỗi CSP.
-Verdict **PASS WITH ISSUES**; findings F1 (mobile bar overflow) + F2 (ctrl tap targets <44) trở
-thành TODO #1 mới; F3 m.youtube.com là limitation; F4/F5/F6/F7 là info.
+Verdict **PASS WITH ISSUES**; F1/F2 đã fix ở `d3b53f7` (review fix riêng); F3 m.youtube.com là
+limitation; F4/F5/F6/F7 là info.
 
 ### bsk one-session protocol applied
 
@@ -229,6 +261,7 @@ MP4 repro 20 s, cleanup. Report: `review/ux-verify-2026-10-24.md`.
 `currentCap()` tại thời điểm gửi (page_capture), multi-lang 15 s + late await + SW cap 12 s
 (content), 44 px coarse-pointer targets (panel.css); 15/15 extension suites + anti-fake +
 popup asset gate pass.
+**Follow-up:** F5 hoàn tất ở `d3b53f7` — AP toggle/move button 44×44 trên coarse pointer.
 
 ### Post-fix PASS verify + evidence
 

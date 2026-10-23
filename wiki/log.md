@@ -1560,3 +1560,10 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Matrix trên `b155a56` trong một bsk session (`yrzh`, một tab, desktop UA): overlay render 12 token/furigana ở desktop 1440×900, tablet 744×1133, mobile 390×844; probe `value.ok:true`, 0 lỗi CSP; bar nằm trong viewport cả 3.
 - Findings: **F1 Medium** bar mobile 291×236 bottom 418 vs video bottom 285 (tràn xuống page content); **F2 Medium** `#lr-toggle-ap` 38×40, `#lr-btn-move` 32×32 trên coarse pointer (F5 trước đó chỉ sửa nav/toggle); **F3 Info** UA mobile → `m.youtube.com` (extension không match host); F4 keyboard tab order muộn; F5 probe blind spot; F6 sentence-cache warning; F7 page-level mobile overflow.
 - Report `review/ux-verify-matrix-postfix-2026-10-24.md` + evidence; TODO #1 mới (P1) fix F1/F2; TODO list cập nhật (matrix + one-session protocol + BACKEND label → Completed).
+
+## [2026-10-24] ingest | F1/F2 matrix findings fixed — overlay inside video + 44px ctrl targets (`d3b53f7`)
+
+- F1: `--bar-fit-scale` (width/520) + `clampBarIntoVideo()`; mobile bar 291×236 bottom 418 → 291×149 bottom 281 (video 285), font 27.2→20.4 px; tablet/desktop fit=1 unchanged.
+- F2: `@media (pointer: coarse)` mở rộng `.lr-ap-toggle`/`.lr-move-btn` → 44×44 (mobile + tablet); nav/toggle giữ 44.
+- Live verify bsk `35138c57`/Chrome 155: 0 lỗi CSP, content_test + anti-fake pass; desktop run plain cue (`tok:0`) được ghi thành TODO #1 (enhancement/SW fallback), không phải regression của fix.
+- Report `review/ux-verify-matrix-fix-2026-10-24.md` + evidence; TODO cập nhật (F1/F2 → Completed; F3 reload có thêm bằng chứng tool/profile).

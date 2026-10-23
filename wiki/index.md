@@ -27,7 +27,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | [topics/p0-remediation-2026-10-20.md](topics/p0-remediation-2026-10-20.md) | P0 + P1 + P2 remediation of the 2026-10-18 full-codebase audit — **merged into `master`** (2fff75c48, all rows fixed + verified) |
 | [topics/codebase-audit-2026-10-22.md](topics/codebase-audit-2026-10-22.md) | New full-repo audit — **8 P0 / 24 P1 open, not remediated** (2026-10-22) |
 | [topics/swift-shared-package.md](topics/swift-shared-package.md) | Gộp 4 141 LOC Swift trùng (C-1) — **plan filed, chưa refactor** |
-| [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; matrix **PASS WITH ISSUES** (F1 mobile bar overflow, F2 ctrl tap targets); F3/segmentation gaps |
+| [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; matrix PASS WITH ISSUES → **F1/F2 fixed in `d3b53f7`**; F3/enhancement/segmentation gaps |
 | [upstream/karpathy-llm-wiki.md](upstream/karpathy-llm-wiki.md) | Karpathy LLM-wiki gist (concept) |
 
 ## Active / recent work
@@ -40,7 +40,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | partial | Code taste: migration plan and edit hooks | [plan](../plan/migrate-codebase-to-house-style-2026-09-20.md) | [Live client evidence and gaps](../review/code-taste-other-clients-live-2026-09-20.md) |
 | done | Studio Caption Fixes, Performance & UX Optimization | [fix-overlay-resize-and-subtitles](../plan/fix-overlay-resize-and-subtitles-2026-09-19.md), [fix-sidepanel-format-and-jp-only-overlay](../plan/fix-sidepanel-format-and-jp-only-overlay-2026-09-19.md) | (filed `code-review-2026-09-19.md` was never committed — no review exists for this work) |
 | open — 8 P0 / 24 P1, not yet remediated | [Codebase audit 2026-10-22](topics/codebase-audit-2026-10-22.md) | — | [audit](../review/codebase-audit-2026-10-22.md) |
-| PASS after fix `b155a56`; matrix PASS WITH ISSUES (F1/F2 fix pending); F3/segmentation gaps | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix post-fix](../review/ux-verify-matrix-postfix-2026-10-24.md) |
+| PASS after fix `b155a56`; matrix PASS WITH ISSUES → F1/F2 resolved in `d3b53f7`; enhancement/segmentation gaps | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix post-fix](../review/ux-verify-matrix-postfix-2026-10-24.md), [F1/F2 fix](../review/ux-verify-matrix-fix-2026-10-24.md) |
 
 ## Raw catalogs (immutable)
 
@@ -203,6 +203,8 @@ Do not rewrite these from the wiki. Link only.
 - [ux-verify-fix-2026-10-24.md](../review/ux-verify-fix-2026-10-24.md) — post-fix PASS after `b155a56`: 4/4 flows, C-7 data layer, mobile 44px
 - [ux-verify-matrix-postfix-2026-10-24.md](../review/ux-verify-matrix-postfix-2026-10-24.md) — 3-viewport matrix PASS WITH ISSUES: F1 mobile bar overflow, F2 ctrl touch targets <44
 - [ux-verify-matrix-postfix-evidence-2026-10-24/](../review/ux-verify-matrix-postfix-evidence-2026-10-24/) — matrix screenshots, probe/measure/console/keyboard JSON
+- [ux-verify-matrix-fix-2026-10-24.md](../review/ux-verify-matrix-fix-2026-10-24.md) — F1/F2 fix verified: mobile bar inside video + ctrl 44×44; tablet/desktop unchanged
+- [ux-verify-matrix-fix-evidence-2026-10-24/](../review/ux-verify-matrix-fix-evidence-2026-10-24/) — pre/post measurements, fix screenshots, probe/console JSON
 - [ux-verify-evidence-2026-10-24/](../review/ux-verify-evidence-2026-10-24/) + [ux-verify-fix-evidence-2026-10-24/](../review/ux-verify-fix-evidence-2026-10-24/) — screenshots, before/after JSON, test log
 
 ## Open gaps

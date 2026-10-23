@@ -12,6 +12,11 @@ desktop/tablet/mobile (12 tokens, furigana, probe `value.ok:true`, 0 CSP errors)
 bar overflows below the video and F2 right-side ctrl buttons are still <44 px on touch;
 mobile-UA navigation redirects to `m.youtube.com` where the extension does not inject.
 
+**F1/F2 fixed & verified (2026-10-24, `d3b53f7`):** bar now fits inside the player
+(mobile 291×149, bottom 281 vs video bottom 285; font 20.4 px; fit 0.75) and AP/move buttons are
+44×44 on coarse pointers; tablet/desktop unchanged (fit 1). Desktop run showed plain cue
+(`tok:0`) while mobile/tablet had 12 tokens — tracked as TODO #1 (enhancement/SW fallback).
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -21,6 +26,8 @@ mobile-UA navigation redirects to `m.youtube.com` where the extension does not i
 - Evidence post-fix: [review/ux-verify-fix-evidence-2026-10-24/](../../review/ux-verify-fix-evidence-2026-10-24/)
 - Matrix post-fix: [review/ux-verify-matrix-postfix-2026-10-24.md](../../review/ux-verify-matrix-postfix-2026-10-24.md)
 - Evidence matrix: [review/ux-verify-matrix-postfix-evidence-2026-10-24/](../../review/ux-verify-matrix-postfix-evidence-2026-10-24/)
+- Fix review F1/F2: [review/ux-verify-matrix-fix-2026-10-24.md](../../review/ux-verify-matrix-fix-2026-10-24.md)
+- Evidence fix: [review/ux-verify-matrix-fix-evidence-2026-10-24/](../../review/ux-verify-matrix-fix-evidence-2026-10-24/)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped
