@@ -1224,7 +1224,7 @@ body.lr-hide-native-subs [class*="ytp-caption"] {
 }
 
 .hardsub-bar .lr-card-ja .lr-text-ja {
-  font-size: calc(26px * var(--bar-scale) * var(--bar-user-scale-h, 1));
+  font-size: calc(26px * var(--bar-scale) * var(--bar-user-scale-h, 1) * var(--bar-fit-scale, 1));
   flex: 1 1 auto;
   min-width: 0;
   width: 100%;
@@ -1910,6 +1910,11 @@ body.lr-hide-native-subs [class*="ytp-caption"] {
   .lr-nav-btn {
     width: 44px;
     height: 44px;
+  }
+  .lr-ap-toggle,
+  .lr-move-btn {
+    min-width: 44px;
+    min-height: 44px;
   }
   .hardsub-ytp-toggle.ytp-button {
     min-height: 44px;

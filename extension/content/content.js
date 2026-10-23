@@ -2750,6 +2750,31 @@
     bar.style.minHeight = "";
   }
 
+  /**
+   * Keep the caption bar inside the player on narrow/short videos: shrink the
+   * JP text (--bar-fit-scale) and nudge top up so the bar never covers page
+   * content below the player. Desktop/tablet widths keep fit=1.
+   */
+  function clampBarIntoVideo(bar, rect) {
+    if (!bar || !rect) return;
+    const maxH = rect.height * 0.92;
+    let r = bar.getBoundingClientRect();
+    if (r.height > maxH) {
+      const cur = Number(getComputedStyle(bar).getPropertyValue("--bar-fit-scale")) || 1;
+      const next = Math.max(0.5, (cur * maxH) / r.height);
+      if (next < cur - 0.01) {
+        bar.style.setProperty("--bar-fit-scale", String(next));
+        r = bar.getBoundingClientRect();
+      }
+    }
+    const maxBottom = rect.bottom - 4;
+    if (r.bottom > maxBottom) {
+      bar.style.top = `${Math.max(rect.top + 4, maxBottom - r.height)}px`;
+    } else if (r.top < rect.top + 4) {
+      bar.style.top = `${rect.top + 4}px`;
+    }
+  }
+
   function applyBarPosition() {
     const bar = document.getElementById("hardsub-ocr-bar");
     if (!bar) return;
@@ -2766,6 +2791,7 @@
       bar.style.bottom = "14vh";
       bar.style.transform = "translateX(-50%)";
       bar.style.setProperty("--bar-scale", String(userScale));
+      bar.style.setProperty("--bar-fit-scale", "1");
       applyBarBoxSize(bar, null, scaleW, scaleH);
       applyBarStyle(bar);
       return;
@@ -2774,6 +2800,8 @@
     const base = Math.max(0.55, Math.min(1.45, rect.height / 720));
     const scale = base * userScale;
     bar.style.setProperty("--bar-scale", String(scale));
+    // Narrow players: shrink JP text so a wrapped cue fits above the page.
+    bar.style.setProperty("--bar-fit-scale", String(Math.max(0.55, Math.min(1, rect.width / 520))));
     applyBarBoxSize(bar, rect, scaleW, scaleH);
     applyBarStyle(bar);
     bar.style.bottom = "auto";
@@ -2828,6 +2856,7 @@
       ctrlRight.style.top = `${rect.top + rect.height / 2}px`;
       ctrlRight.style.transform = "translateY(-50%)";
     }
+    clampBarIntoVideo(bar, rect);
   }
 
   const BAR_RESIZE_DIRS = ["n", "s", "e", "w", "nw", "ne", "sw", "se"];

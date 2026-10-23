@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "tab_id": 1847742618,
+  "value": {
+    "barRect": {
+      "bottom": 417.7734375,
+      "h": 236.203125,
+      "right": 352.90625,
+      "w": 290.609375,
+      "x": 62.296875,
+      "y": 181.5703125
+    },
+    "bodyScroll": {},
+    "css": {
+      "barScale": "0.55",
+      "boxH0": "88px",
+      "boxSizing": "border-box",
+      "height": "236.203px",
+      "maxHeight": "675.2px",
+      "minHeight": "48px",
+      "overflowY": "visible",
+      "padding": "0px",
+      "userScaleH": "1.9018078988390519"
+    },
+    "scroll": {
+      "ch": 236,
+      "h": 242
+    },
+    "videoRect": {
+      "bottom": 285,
+      "h": 219,
+      "w": 390,
+      "x": 0,
+      "y": 66
+    },
+    "viewport": {
+      "h": 919,
+      "w": 424
+    }
+  }
+}

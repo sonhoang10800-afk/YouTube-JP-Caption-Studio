@@ -1,0 +1,683 @@
+{
+  "tab_id": 1847742720,
+  "entries": [
+    {
+      "sequence": 1,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.",
+      "timestamp": 1792781357831.116,
+      "truncated": false
+    },
+    {
+      "sequence": 2,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.",
+      "timestamp": 1792781357831.132,
+      "truncated": false
+    },
+    {
+      "sequence": 3,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'join-ad-interest-group'.",
+      "timestamp": 1792781357831.137,
+      "truncated": false
+    },
+    {
+      "sequence": 4,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.",
+      "timestamp": 1792781357831.143,
+      "truncated": false
+    },
+    {
+      "sequence": 5,
+      "kind": "log",
+      "level": "warning",
+      "text": "Manifest: property 'migrate_from' ignored, manifest must specify an 'id' property in order to receive a migration.",
+      "url": "https://www.youtube.com/manifest.webmanifest",
+      "timestamp": 1792781358403.015,
+      "truncated": false
+    },
+    {
+      "sequence": 6,
+      "kind": "console",
+      "level": "info",
+      "text": "LegacyDataMixin will be applied to all legacy elements.\nSet `_legacyUndefinedCheck: true` on element class to enable.",
+      "url": "https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.S-3XIVWH93E.es5.O/am=AAAAEAAAcASQ/d=1/br=1/rs=AGKMywHXSTNKVCgvbvOLZ3ApO2VhBrQMGQ/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk",
+      "line": 13170,
+      "column": 9,
+      "timestamp": 1792781358960.977,
+      "truncated": false
+    },
+    {
+      "sequence": 7,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781359065.085,
+      "truncated": false
+    },
+    {
+      "sequence": 8,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781359065.394,
+      "truncated": false
+    },
+    {
+      "sequence": 9,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781359065.642,
+      "truncated": false
+    },
+    {
+      "sequence": 10,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781359065.877,
+      "truncated": false
+    },
+    {
+      "sequence": 11,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781359066.107,
+      "truncated": false
+    },
+    {
+      "sequence": 12,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.com/pagead/lvz?evtid=ACd6Ktwq89Dw16bC52Oqq8vwt0UEaaQg5KPuRxFrx9waL2yjvlfRhwGpBspD23jWCLEJAySeoVcQ1WpEGTwH30-Aay0a63OZxg&req_ts=1792781358&pg=MainAppBootstrap%3AWatch&az=1&sigh=AB9vU41ikDs2m_sQf1UEgmBcMW92mCuN_w",
+      "timestamp": 1792781359184.938,
+      "truncated": false
+    },
+    {
+      "sequence": 13,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.co.jp/pagead/lvz?evtid=ACd6Ktwq89Dw16bC52Oqq8vwt0UEaaQg5KPuRxFrx9waL2yjvlfRhwGpBspD23jWCLEJAySeoVcQ1WpEGTwH30-Aay0a63OZxg&req_ts=1792781358&pg=MainAppBootstrap%3AWatch&az=1&sigh=AB9vU41ikDs2m_sQf1UEgmBcMW92mCuN_w",
+      "timestamp": 1792781359184.953,
+      "truncated": false
+    },
+    {
+      "sequence": 14,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/generate_204?YjMVeA",
+      "timestamp": 1792781359423.475,
+      "truncated": false
+    },
+    {
+      "sequence": 15,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=gJyQ1d0CtBpb-j2e&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C23206%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C18499%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=1&docid=66E0wpL6O9Q&ei=Lazbap2RLd-CvcAPzdXS6AM&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehm_9f34s-1zu&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&vps=0.000:N,0.023:B,0.731:B,0.731:B&cat=streaming,mta,sabr&cmt=0.023:0.000,0.731:0.000&stream=0.070:A&vfs=0.731:399:399::a:sms.2:CAEoAQ&view=0.731:943:530:2&bwm=0.731:20523:0.708&bwe=0.731:531334&bat=0.731:0.8:1&vis=0.731:0&bh=0.731:0.000&qclc=ChBnSnlRMWQwQ3RCcGItajJlEAE",
+      "timestamp": 1792781359492.588,
+      "truncated": false
+    },
+    {
+      "sequence": 16,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781359713.146,
+      "truncated": false
+    },
+    {
+      "sequence": 17,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781359724.603,
+      "truncated": false
+    },
+    {
+      "sequence": 18,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781359835.868,
+      "truncated": false
+    },
+    {
+      "sequence": 19,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781359945.877,
+      "truncated": false
+    },
+    {
+      "sequence": 20,
+      "kind": "log",
+      "level": "error",
+      "text": "Framing 'https://accounts.youtube.com/' violates the following report-only Content Security Policy directive: \"frame-ancestors 'self'\". The violation has been logged, but no further action has been taken.\n",
+      "timestamp": 1792781360319.295,
+      "truncated": false
+    },
+    {
+      "sequence": 21,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.",
+      "timestamp": 1792781360320.346,
+      "truncated": false
+    },
+    {
+      "sequence": 22,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.",
+      "timestamp": 1792781360320.356,
+      "truncated": false
+    },
+    {
+      "sequence": 23,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'join-ad-interest-group'.",
+      "timestamp": 1792781360320.361,
+      "truncated": false
+    },
+    {
+      "sequence": 24,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.",
+      "timestamp": 1792781360320.364,
+      "truncated": false
+    },
+    {
+      "sequence": 25,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.com/pagead/1p-user-list/962985656/?backend=innertube&cname=1&cver=2_20261023&data=backend%3Dinnertube%3Bcname%3D1%3Bcver%3D2_20261023%3Bptype%3Df_view%3Btype%3Dview%3Butuid%3DNsidkYpIAQ4QaufptQBPHQ%3Butvid%3D66E0wpL6O9Q&is_vtc=0&ptype=f_view&random=700687429&utuid=NsidkYpIAQ4QaufptQBPHQ",
+      "timestamp": 1792781360414.6,
+      "truncated": false
+    },
+    {
+      "sequence": 26,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/ptracking?html5=1&video_id=66E0wpL6O9Q&cpn=gJyQ1d0CtBpb-j2e&ei=Lazbap2RLd-CvcAPzdXS6AM&ptk=youtube_single&oid=nUxmKJ2ZN-qlFmMxvskvqw&ptchn=NsidkYpIAQ4QaufptQBPHQ&pltype=content",
+      "timestamp": 1792781360416.467,
+      "truncated": false
+    },
+    {
+      "sequence": 27,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/pagead/viewthroughconversion/962985656/?backend=innertube&cname=1&cver=2_20261023&foc_id=NsidkYpIAQ4QaufptQBPHQ&label=followon_view&ptype=no_rmkt&random=405316265",
+      "timestamp": 1792781360416.504,
+      "truncated": false
+    },
+    {
+      "sequence": 28,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781360477.565,
+      "truncated": false
+    },
+    {
+      "sequence": 29,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5248,
+      "column": 27,
+      "timestamp": 1792781360579.142,
+      "truncated": false
+    },
+    {
+      "sequence": 30,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781360589.4,
+      "truncated": false
+    },
+    {
+      "sequence": 31,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781360706.333,
+      "truncated": false
+    },
+    {
+      "sequence": 32,
+      "kind": "log",
+      "level": "info",
+      "text": "Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781361169.94,
+      "truncated": false
+    },
+    {
+      "sequence": 33,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=gJyQ1d0CtBpb-j2e&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C23206%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C18499%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=2&docid=66E0wpL6O9Q&ei=Lazbap2RLd-CvcAPzdXS6AM&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehm_9f34s-1zu&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&ctmp=agc:t.764;stnorm.0;env.-18.889999;fml.-18.889999;tmin.-31;tmax.-14;ng.0&cfs=1.424:a.ja:::s&user_intent=0.005&bh=1.657:0.434,2.474:1.948&cmt=1.657:0.016,2.446:0.746,2.474:0.774&vps=1.657:PL,2.474:N&bwm=2.474:441023:1.545&bwe=2.474:626334&bat=2.474:0.8:1&df=2.474:0&qclc=ChBnSnlRMWQwQ3RCcGItajJlEAI",
+      "timestamp": 1792781361210.737,
+      "truncated": false
+    },
+    {
+      "sequence": 34,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781361213.976,
+      "truncated": false
+    },
+    {
+      "sequence": 35,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.",
+      "timestamp": 1792781361654.327,
+      "truncated": false
+    },
+    {
+      "sequence": 36,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.",
+      "timestamp": 1792781361654.342,
+      "truncated": false
+    },
+    {
+      "sequence": 37,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'join-ad-interest-group'.",
+      "timestamp": 1792781361654.345,
+      "truncated": false
+    },
+    {
+      "sequence": 38,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.",
+      "timestamp": 1792781361654.347,
+      "truncated": false
+    },
+    {
+      "sequence": 39,
+      "kind": "log",
+      "level": "warning",
+      "text": "Manifest: property 'migrate_from' ignored, manifest must specify an 'id' property in order to receive a migration.",
+      "url": "https://www.youtube.com/manifest.webmanifest",
+      "timestamp": 1792781361927.679,
+      "truncated": false
+    },
+    {
+      "sequence": 40,
+      "kind": "console",
+      "level": "info",
+      "text": "LegacyDataMixin will be applied to all legacy elements.\nSet `_legacyUndefinedCheck: true` on element class to enable.",
+      "url": "https://www.youtube.com/s/_/ytmainappweb/_/js/k=ytmainappweb.kevlar_base.en_US.S-3XIVWH93E.es5.O/am=AAAAEAAAcASQ/d=1/br=1/rs=AGKMywHXSTNKVCgvbvOLZ3ApO2VhBrQMGQ/m=kevlar_base_module,kevlar_main_module,kevlar_base_sync_mod_chunk",
+      "line": 13170,
+      "column": 9,
+      "timestamp": 1792781362535.179,
+      "truncated": false
+    },
+    {
+      "sequence": 41,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781362636.795,
+      "truncated": false
+    },
+    {
+      "sequence": 42,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781362637.107,
+      "truncated": false
+    },
+    {
+      "sequence": 43,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781362637.35,
+      "truncated": false
+    },
+    {
+      "sequence": 44,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781362637.588,
+      "truncated": false
+    },
+    {
+      "sequence": 45,
+      "kind": "log",
+      "level": "error",
+      "text": "Blocked script execution in 'about:blank' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.",
+      "url": "chrome-extension://ddkjiahejlhfcafbddmgiahcphecmpfh/rulesets/scripting/scriptlet/main/scriptlet-begin.js",
+      "line": 3217,
+      "timestamp": 1792781362637.824,
+      "truncated": false
+    },
+    {
+      "sequence": 46,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=lb8cT0ezqOCpgLrt&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C23206%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C18499%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=1&docid=66E0wpL6O9Q&ei=MazbasDWIfb0pt8Pm-3J8QI&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehnA3XCovLoLS&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&vps=0.000:N,0.023:B,0.361:B,0.361:B&cat=streaming,mta,sabr&cmt=0.023:0.000,0.361:0.000&stream=0.071:A&vfs=0.361:399:399::a:sms.2:CAEoAQ&view=0.361:990:557:2&bwm=0.361:38604:0.339&bwe=0.361:531334&bat=0.361:0.8:1&vis=0.361:0&bh=0.361:0.000&qclc=ChBsYjhjVDBlenFPQ3BnTHJ0EAE",
+      "timestamp": 1792781362676.372,
+      "truncated": false
+    },
+    {
+      "sequence": 47,
+      "kind": "log",
+      "level": "info",
+      "text": "Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781362756.194,
+      "truncated": false
+    },
+    {
+      "sequence": 48,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/generate_204?TDJXTA",
+      "timestamp": 1792781362764.943,
+      "truncated": false
+    },
+    {
+      "sequence": 49,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781362808.693,
+      "truncated": false
+    },
+    {
+      "sequence": 50,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.com/pagead/lvz?evtid=ACd6KtxXkMR4kghlAxhoftTjrrtBmExilvf2dFvBa0JIAo_Tb1jbHh0V5l1TdNfE-WgzLa66k02YMv-DcRuzQZHr9rUglDRyBg&req_ts=1792781362&pg=MainAppBootstrap%3AWatch&az=1&sigh=AB9vU42QqlsN_XnE93YwWs5HY2e1SLUzFQ",
+      "timestamp": 1792781362853.455,
+      "truncated": false
+    },
+    {
+      "sequence": 51,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.co.jp/pagead/lvz?evtid=ACd6KtxXkMR4kghlAxhoftTjrrtBmExilvf2dFvBa0JIAo_Tb1jbHh0V5l1TdNfE-WgzLa66k02YMv-DcRuzQZHr9rUglDRyBg&req_ts=1792781362&pg=MainAppBootstrap%3AWatch&az=1&sigh=AB9vU42QqlsN_XnE93YwWs5HY2e1SLUzFQ",
+      "timestamp": 1792781362853.469,
+      "truncated": false
+    },
+    {
+      "sequence": 52,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.google.com/pagead/1p-user-list/962985656/?backend=innertube&cname=1&cver=2_20261023&data=backend%3Dinnertube%3Bcname%3D1%3Bcver%3D2_20261023%3Bptype%3Df_view%3Btype%3Dview%3Butuid%3DNsidkYpIAQ4QaufptQBPHQ%3Butvid%3D66E0wpL6O9Q&is_vtc=0&ptype=f_view&random=1034867173&utuid=NsidkYpIAQ4QaufptQBPHQ",
+      "timestamp": 1792781363551.406,
+      "truncated": false
+    },
+    {
+      "sequence": 53,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/ptracking?html5=1&video_id=66E0wpL6O9Q&cpn=lb8cT0ezqOCpgLrt&ei=MazbasDWIfb0pt8Pm-3J8QI&ptk=youtube_single&oid=nUxmKJ2ZN-qlFmMxvskvqw&ptchn=NsidkYpIAQ4QaufptQBPHQ&pltype=content",
+      "timestamp": 1792781363555.018,
+      "truncated": false
+    },
+    {
+      "sequence": 54,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/pagead/viewthroughconversion/962985656/?backend=innertube&cname=1&cver=2_20261023&foc_id=NsidkYpIAQ4QaufptQBPHQ&label=followon_view&ptype=no_rmkt&random=521234111",
+      "timestamp": 1792781363555.045,
+      "truncated": false
+    },
+    {
+      "sequence": 55,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781363680.505,
+      "truncated": false
+    },
+    {
+      "sequence": 56,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781363792.129,
+      "truncated": false
+    },
+    {
+      "sequence": 57,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781363817.517,
+      "truncated": false
+    },
+    {
+      "sequence": 58,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'attribution-reporting'.",
+      "timestamp": 1792781363832.417,
+      "truncated": false
+    },
+    {
+      "sequence": 59,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'private-aggregation'.",
+      "timestamp": 1792781363832.427,
+      "truncated": false
+    },
+    {
+      "sequence": 60,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'join-ad-interest-group'.",
+      "timestamp": 1792781363832.43,
+      "truncated": false
+    },
+    {
+      "sequence": 61,
+      "kind": "log",
+      "level": "warning",
+      "text": "Error with Permissions-Policy header: Unrecognized feature: 'run-ad-auction'.",
+      "timestamp": 1792781363832.433,
+      "truncated": false
+    },
+    {
+      "sequence": 62,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781368286.953,
+      "truncated": false
+    },
+    {
+      "sequence": 63,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/youtubei/v1/log_event?alt=json",
+      "timestamp": 1792781368403.302,
+      "truncated": false
+    },
+    {
+      "sequence": 64,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=lb8cT0ezqOCpgLrt&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C23206%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C18499%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=2&docid=66E0wpL6O9Q&ei=MazbasDWIfb0pt8Pm-3J8QI&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehnA3XCovLoLS&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&user_intent=0.005&bh=1.220:0.300,10.012:22.027&cmt=1.220:0.021,2.006:0.747,10.012:8.753&vps=1.220:PL,10.012:PL&cfs=1.356:a.ja:::s&bwm=10.012:3099662:8.532&bwe=10.012:403697&bat=10.012:0.8:1&df=10.012:0&qclc=ChBsYjhjVDBlenFPQ3BnTHJ0EAI",
+      "timestamp": 1792781372303.424,
+      "truncated": false
+    },
+    {
+      "sequence": 65,
+      "kind": "console",
+      "level": "warning",
+      "text": "[jpcap] Sentence cache unavailable; Original script save continues",
+      "url": "chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/content/content.js",
+      "line": 5248,
+      "column": 27,
+      "timestamp": 1792781377412.318,
+      "truncated": false
+    },
+    {
+      "sequence": 66,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781379963.758,
+      "truncated": false
+    },
+    {
+      "sequence": 67,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781379963.805,
+      "truncated": false
+    },
+    {
+      "sequence": 68,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781379963.824,
+      "truncated": false
+    },
+    {
+      "sequence": 69,
+      "kind": "log",
+      "level": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT",
+      "url": "https://www.youtube.com/api/stats/qoe?fmt=399&afmt=251&cpn=lb8cT0ezqOCpgLrt&el=detailpage&ns=yt&fexp=v1%2C100673025%2C-76668381%2C15321210%2C11737789%2C31835%2C2821%2C47714%2C76960%2C77203%2C65%2C13917%2C26504%2C9252%2C16509%2C23206%2C69841%2C8206%2C2625%2C1904%2C18126%2C15105%2C25059%2C4174%2C12720%2C17726%2C18706%2C26008%2C13015%2C16088%2C6621%2C2783%2C23826%2C9500%2C1840%2C24119%2C440%2C70278%2C20589%2C2364%2C31949%2C6491%2C2690%2C7242%2C51437%2C336%2C1168%2C4165%2C3965%2C34321%2C50023%2C3361%2C4366%2C9717%2C3613%2C26539%2C3843%2C18499%2C6470%2C24908%2C111%2C34473%2C2416%2C4%2C17953%2C3464%2C9086%2C4%2C2835%2C9177%2C8039%2C1655%2C12071%2C1804%2C759%2C456%2C2422%2C5326%2C2267%2C1929%2C979%2C1875%2C12149%2C15%2C32%2C1887%2C5545%2C1504%2C3363%2C8803%2C8812%2C86%2C3420%2C1815%2C4269%2C165%2C3905%2C489%2C450%2C7868%2C183%2C1612%2C3574%2C282%2C1647%2C3553%2C1401%2C5721%2C93%2C6577%2C1389%2C4061%2C3089&cl=1003072181&dai=unspecified&seq=3&docid=66E0wpL6O9Q&ei=MazbasDWIfb0pt8Pm-3J8QI&event=streamingstats&osid=AAAABjXXosE%3AAOeUNAbdpsxL71SBcHlIrH7AUsFDn9d7ww&plid=AAZehnA3XCovLoLS&cbrand=apple&cbr=Chrome&cbrver=155.0.0.0&c=WEB&cver=2.20261023.01.00&cplayer=UNIPLAYER&cos=Macintosh&cosver=10_15_7&cplatform=DESKTOP&cmt=12.489:22.000,12.498:22.000,12.554:22.000,20.012:22.000&vps=12.489:PA,12.498:S:ss.104,12.554:PA&bwm=20.012:1026057:2.038&bwe=20.012:533677&bat=20.012:0.8:1&bh=20.012:19.842&qclc=ChBsYjhjVDBlenFPQ3BnTHJ0EAM",
+      "timestamp": 1792781382304.852,
+      "truncated": false
+    },
+    {
+      "sequence": 70,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781385305.719,
+      "truncated": false
+    },
+    {
+      "sequence": 71,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781385305.754,
+      "truncated": false
+    },
+    {
+      "sequence": 72,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781385305.76,
+      "truncated": false
+    },
+    {
+      "sequence": 73,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr3---sn-g530uxow2-ioqs.googlevideo.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781404627.714,
+      "truncated": false
+    },
+    {
+      "sequence": 74,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://i.ytimg.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781404627.753,
+      "truncated": false
+    },
+    {
+      "sequence": 75,
+      "kind": "log",
+      "level": "warning",
+      "text": "The resource https://rr1---sn-oguesn6r.c.youtube.com/generate_204 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "timestamp": 1792781404627.764,
+      "truncated": false
+    }
+  ],
+  "next_since": 75,
+  "truncated": false
+}

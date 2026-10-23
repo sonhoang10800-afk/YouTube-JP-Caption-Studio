@@ -1,0 +1,397 @@
+{
+  "ok": true,
+  "tab_id": 1847742720,
+  "value": {
+    "data": {
+      "checks": {
+        "clickableNoName": [
+          {
+            "selector": "div.ytSearchboxComponentInputBox > div > ytd-text-input-assistant.ytdTextInputAssistantHost > button.ytdTextInputAssistantButton",
+            "tag": "button"
+          },
+          {
+            "selector": "div.style-scope:nth-of-type(2) > ytd-button-renderer.style-scope > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText",
+            "tag": "button"
+          }
+        ],
+        "clippedText": [
+          {
+            "clientH": 52,
+            "overflow": "auto hidden",
+            "scrollH": 64,
+            "selector": "div.item.style-scope:nth-of-type(2) > div.style-scope.ytd-watch-metadata > div.style-scope.ytd-watch-metadata:nth-of-type(1) > ytd-menu-renderer.style-scope.ytd-watch-metadata"
+          }
+        ],
+        "contrastUnknown": [],
+        "focusNotVisible": [
+          {
+            "selector": "#button",
+            "tag": "button",
+            "text": "Hướng dẫn"
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+            "tag": "button",
+            "text": "Bỏ qua điều hướng"
+          },
+          {
+            "selector": "div > div.ytSearchboxComponentInputBox > form > input.ytSearchboxComponentInput.yt-searchbox-input",
+            "tag": "input",
+            "text": ""
+          },
+          {
+            "selector": "div.ytSearchboxComponentInputBox > div > ytd-text-input-assistant.ytdTextInputAssistantHost > button.ytdTextInputAssistantButton",
+            "tag": "button",
+            "text": ""
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead:nth-of-type(1) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextText",
+            "tag": "button",
+            "text": "Tìm kiếm bằng giọng nói"
+          },
+          {
+            "selector": "div.style-scope.ytd-masthead:nth-of-type(2) > ytd-button-renderer.style-scope.ytd-masthead > yt-button-shape > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTonal",
+            "tag": "button",
+            "text": "Tạo"
+          },
+          {
+            "selector": "#button",
+            "tag": "button",
+            "text": "Thông báo"
+          },
+          {
+            "selector": "#avatar-btn",
+            "tag": "button",
+            "text": "Trình đơn tài khoản"
+          },
+          {
+            "selector": "div.html5-video-player.ytp-transparent > div.ytp-chrome-bottom:nth-of-type(28) > div.ytp-progress-bar-container:nth-of-type(1) > div.ytp-progress-bar:nth-of-type(2)",
+            "tag": "div",
+            "text": "Thanh trượt tìm kiếm"
+          },
+          {
+            "selector": "div.ytp-chrome-bottom:nth-of-type(28) > div.ytp-chrome-controls:nth-of-type(2) > div.ytp-left-controls:nth-of-type(1) > button.ytp-play-button.ytp-button:nth-of-type(1)",
+            "tag": "button",
+            "text": "Phát phím tắt k"
+          },
+          {
+            "selector": "div.ytp-left-controls:nth-of-type(1) > span.ytp-volume-area > div.ytp-mute-button:nth-of-type(1) > button.ytp-volume-icon.ytp-button",
+            "tag": "button",
+            "text": "Tắt tiếng phím tắt m"
+          },
+          {
+            "selector": "#hardsub-ocr-player-toggle",
+            "tag": "button",
+            "text": "Language Reactor ON"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-autonav-toggle:nth-of-type(2)",
+            "tag": "button",
+            "text": "Chế độ tự động phát đang bật"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-subtitles-button.ytp-button:nth-of-type(3)",
+            "tag": "button",
+            "text": "Phụ đề phím tắt c"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-left:nth-of-type(1) > button.ytp-button.ytp-settings-button:nth-of-type(4)",
+            "tag": "button",
+            "text": "Cài đặt"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-size-button.ytp-button:nth-of-type(1)",
+            "tag": "button",
+            "text": "Chế độ rạp chiếu phim phím tắt t"
+          },
+          {
+            "selector": "div.ytp-chrome-controls:nth-of-type(2) > div.ytp-right-controls:nth-of-type(2) > div.ytp-right-controls-right:nth-of-type(2) > button.ytp-fullscreen-button.ytp-button:nth-of-type(3...",
+            "tag": "button",
+            "text": "Toàn màn hình phím tắt f"
+          },
+          {
+            "selector": "yt-smartimation.style-scope.ytd-subscribe-button-renderer > div.ytSmartImationsContent > yt-button-shape.style-scope.ytd-subscribe-button-renderer > button.ytSpecButtonShapeNextHos...",
+            "tag": "button",
+            "text": "Đăng ký ウェザーニュース."
+          },
+          {
+            "selector": "like-button-view-model.ytLikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShapeNextTo...",
+            "tag": "button",
+            "text": "cùng 78 người khác thích video này"
+          },
+          {
+            "selector": "dislike-button-view-model.ytDislikeButtonViewModelHost > toggle-button-view-model > button-view-model.ytSpecButtonViewModelHost > button.ytSpecButtonShapeNextHost.ytSpecButtonShape...",
+            "tag": "button",
+            "text": "Không thích video này"
+          },
+          {
+            "selector": "div.top-level-buttons.style-scope:nth-of-type(1) > yt-button-view-model.ytd-menu-renderer > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecButtonShapeNextHo...",
+            "tag": "button",
+            "text": "Chia sẻ"
+          },
+          {
+            "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(1) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+            "tag": "button",
+            "text": "Đặt câu hỏi"
+          },
+          {
+            "selector": "div.style-scope.ytd-menu-renderer:nth-of-type(2) > yt-button-view-model.ytd-menu-renderer:nth-of-type(2) > button-view-model.ytSpecButtonViewModelHost.style-scope > button.ytSpecBu...",
+            "tag": "button",
+            "text": "Lưu vào danh sách phát"
+          },
+          {
+            "selector": "div.style-scope.ytd-watch-metadata:nth-of-type(1) > ytd-menu-renderer.style-scope.ytd-watch-metadata > yt-button-shape.style-scope.ytd-menu-renderer > button.ytSpecButtonShapeNextH...",
+            "tag": "button",
+            "text": "Thao tác khác"
+          },
+          {
+            "selector": "#expand",
+            "tag": "tp-yt-paper-button",
+            "text": "thêm"
+          },
+          {
+            "selector": "#label",
+            "tag": "tp-yt-paper-button",
+            "text": "Sắp xếp bình luận"
+          },
+          {
+            "selector": "#simplebox-placeholder",
+            "tag": "yt-formatted-string",
+            "text": "Thêm bình luận..."
+          },
+          {
+            "selector": "div.style-scope.ytd-comment-view-model:nth-of-type(3) > div.style-scope.ytd-comment-view-model:nth-of-type(2) > ytd-tri-state-button-view-model.translate-button.style-scope > tp-yt...",
+            "tag": "tp-yt-paper-button",
+            "text": "Dịch sang Tiếng Việt"
+          },
+          {
+            "selector": "div.style-scope.ytd-comment-engagement-bar:nth-of-type(1) > ytd-toggle-button-renderer.style-scope.ytd-comment-engagement-bar:nth-of-type(1) > yt-button-shape > button.ytSpecButton...",
+            "tag": "button",
+            "text": "Thích bình luận này cùng với 2 người khác"
+          },
+          {
+            "selector": "div.style-scope.ytd-comment-engagement-bar:nth-of-type(1) > ytd-toggle-button-renderer.style-scope.ytd-comment-engagement-bar:nth-of-type(2) > yt-button-shape > button.ytSpecButton...",
+            "tag": "button",
+            "text": "Không thích bình luận này"
+          }
+        ],
+        "headings": {
+          "issues": [],
+          "sequence": [
+            {
+              "level": 1,
+              "text": "【最新気象】あすは寒気流入により北海道・東北北部では雪や風に注意／気温も前日より大幅に下がる予想"
+            },
+            {
+              "level": 2,
+              "text": "2 bình luận"
+            },
+            {
+              "level": 3,
+              "text": "@hope1057"
+            },
+            {
+              "level": 3,
+              "text": "@wi_agussadgdjjjmvv"
+            },
+            {
+              "level": 3,
+              "text": "Restream hôm qua.........................."
+            },
+            {
+              "level": 2,
+              "text": "Xem và chơi Chơi trong khi xem video"
+            },
+            {
+              "level": 3,
+              "text": "Trình mô phỏng tiến hóa"
+            },
+            {
+              "level": 3,
+              "text": "Fortress Merge"
+            },
+            {
+              "level": 3,
+              "text": "Obby: +1 Sức mạnh đào bới mỗi lần nhấp chuột"
+            },
+            {
+              "level": 3,
+              "text": "Vải pha lê"
+            },
+            {
+              "level": 3,
+              "text": "Stick War: Legacy"
+            },
+            {
+              "level": 3,
+              "text": "Coloring: Mosaic by Symbols"
+            },
+            {
+              "level": 3,
+              "text": "Chiến binh Slime: Thời đại chiến tranh"
+            },
+            {
+              "level": 3,
+              "text": "Lu xem BLG vs MKOI (BO1) | Vòng Thụy Sĩ | CKTG 2026"
+            },
+            {
+              "level": 3,
+              "text": "(Goose Goose Duck #86) Chim ác là Mixi trổ tài phán đâu trúng đó và sự ra đời củ"
+            },
+            {
+              "level": 3,
+              "text": "Đi Cùng Pew - Giao máy cho Himass và Tanvuu"
+            },
+            {
+              "level": 3,
+              "text": "【LIVE】１０月２０日（火）お昼の北海道のニュースとお天気"
+            },
+            {
+              "level": 3,
+              "text": "lofi hip hop mix 📚 beats to relax/study to (Part 1)"
+            },
+            {
+              "level": 3,
+              "text": "【台風情報】台風30号 西日本接近へ…広範囲で警報級大雨に警戒を ──気象ニュースライブ（日テレNEWS LIVE）"
+            },
+            {
+              "level": 3,
+              "text": "【ライブ】最新天気ニュース・地震情報 2026年10月23日(金)23:00〜 ／台風30号が八重山諸島に最接近 今夜にかけて風雨のピーク〈ウェザーニュースLi"
+            },
+            {
+              "level": 3,
+              "text": "【気象解説】台風30号 広範囲で警報級大雨に警戒を 最新予報円や週末の天気は"
+            },
+            {
+              "level": 3,
+              "text": "一人で日本語の会話力を鍛える！「一人会話」トレーニング / How to Practice Japanese Conversation by Yourself"
+            },
+            {
+              "level": 3,
+              "text": "【大雪情報】非常に強い寒気 積雪急増のおそれ 大雪や吹雪に警戒"
+            },
+            {
+              "level": 3,
+              "text": "EM CHÈ BUILD LUX MẶT TRỜI ẤN ĐAO PHỦ DAME SIÊU LỖI ĐẤM GODLIKE"
+            },
+            {
+              "level": 3,
+              "text": "【台風30号 2026】先島諸島付近に停滞 長引く影響に要警戒／西・東日本でも大雨のおそれ"
+            },
+            {
+              "level": 3,
+              "text": "ウクライナ南部で局地停戦へ 米ホワイトハウスが発表【WBS】"
+            },
+            {
+              "level": 3,
+              "text": "【台風30号】西日本接近へ…広範囲で警報級大雨に警戒を"
+            },
+            {
+              "level": 3,
+              "text": "iPhone Duo – Điện thoại gập đầu tiên của Apple trong tay PewPew!! ❤️ -ADMIN POST"
+            },
+            {
+              "level": 3,
+              "text": "鹿児島・飲食店経営の女性殺害 発生3カ月で急展開 59歳知人の男逮捕 動機は借金か 「殺していない」などと否認（2026年10月23日）"
+            },
+            {
+              "level": 3,
+              "text": "「なぜ実名報道しないのか」佐藤優氏 道新記者拘束で苦言「同胞が20年ぶち込まれる」"
+            },
+            {
+              "level": 3,
+              "text": "【10月24日(土)25日(日)】土曜日は午前を中心に本降りの雨 午後は小康状態に 週明けにかけ大雨に十分注意【近畿の天気】#天気 #気象"
+            }
+          ]
+        },
+        "horizontalOverflow": {
+          "culprits": [],
+          "ok": true,
+          "scrollWidth": 1425,
+          "viewportWidth": 1425
+        },
+        "imagesMissingAlt": [
+          {
+            "selector": "a.yt-simple-endpoint.style-scope > ytd-yoodle-renderer.style-scope.ytd-topbar-logo-renderer > picture.style-scope.ytd-yoodle-renderer > img.style-scope.ytd-yoodle-renderer",
+            "src": "https://www.youtube.com/watch?v=66E0wpL6O9Q"
+          },
+          {
+            "selector": "a.yt-simple-endpoint.style-scope > ytd-yoodle-renderer.style-scope.ytd-topbar-logo-renderer > picture.style-scope.ytd-yoodle-renderer > img.style-scope.ytd-yoodle-renderer",
+            "src": "https://www.youtube.com/watch?v=66E0wpL6O9Q"
+          },
+          {
+            "selector": "div.ytp-button.ytp-suggested-action-badge > div:nth-of-type(2) > a > img",
+            "src": ""
+          },
+          {
+            "selector": "div:nth-of-type(2) > a > div:nth-of-type(1) > img",
+            "src": ""
+          },
+          {
+            "selector": "div.ytp-progress-bar:nth-of-type(2) > div.ytp-scrubber-container:nth-of-type(5) > div.ytp-scrubber-button.ytp-swatch-background-color > img.ytp-decorated-scrubber-button",
+            "src": ""
+          }
+        ],
+        "inputsMissingLabel": [
+          {
+            "placeholder": "Tìm kiếm",
+            "placeholderOnly": true,
+            "selector": "div > div.ytSearchboxComponentInputBox > form > input.ytSearchboxComponentInput.yt-searchbox-input",
+            "type": "text"
+          }
+        ],
+        "lowContrast": [],
+        "media": {
+          "coarsePointer": false,
+          "forcedColors": false,
+          "prefersDark": true,
+          "prefersReducedMotion": false
+        },
+        "perf": {
+          "cls": 0.077,
+          "lcpMs": 2208,
+          "ttfbMs": 431
+        },
+        "smallFonts": [
+          {
+            "fontSize": "10px",
+            "selector": "#country-code",
+            "text": "JP"
+          }
+        ],
+        "tapTargets": {
+          "below24": [],
+          "below44": []
+        },
+        "typographyWarnings": []
+      },
+      "doc": {
+        "clientWidth": 1425,
+        "scrollHeight": 3347,
+        "scrollWidth": 1425
+      },
+      "notes": {
+        "contrastSkipped": 0,
+        "iframes": {
+          "crossOrigin": 1,
+          "sameOrigin": 1
+        },
+        "scanned": 3000,
+        "shadowRoots": 0,
+        "truncated": [
+          "scan-cap"
+        ]
+      },
+      "title": "(1) 【最新気象】あすは寒気流入により北海道・東北北部では雪や風に注意／気温も前日より大幅に下がる予想 - YouTube",
+      "url": "https://www.youtube.com/watch?v=66E0wpL6O9Q",
+      "viewport": {
+        "dpr": 2,
+        "h": 900,
+        "innerH": 900,
+        "innerW": 1440,
+        "w": 1425
+      }
+    },
+    "ok": true
+  }
+}

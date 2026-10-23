@@ -1,0 +1,67 @@
+{
+  "ok": true,
+  "tab_id": 1847742706,
+  "value": {
+    "bar": {
+      "bottom": 281,
+      "clientH": 149,
+      "h": 149,
+      "scrollH": 155,
+      "w": 291,
+      "y": 132
+    },
+    "coarse": true,
+    "ctrlButtons": [
+      {
+        "h": 44,
+        "id": "lr-toggle-ap",
+        "w": 44,
+        "y": 124
+      },
+      {
+        "h": 44,
+        "id": "lr-btn-move",
+        "w": 44,
+        "y": 184
+      }
+    ],
+    "fit": "0.75",
+    "navButtons": [
+      {
+        "h": 44,
+        "w": 44,
+        "y": 98
+      },
+      {
+        "h": 44,
+        "w": 44,
+        "y": 154
+      },
+      {
+        "h": 44,
+        "w": 44,
+        "y": 210
+      }
+    ],
+    "text": {
+      "bottom": 265,
+      "font": "20.3969px",
+      "h": 116,
+      "lines": 3,
+      "withinCard": true
+    },
+    "toggle": {
+      "h": 44,
+      "w": 79,
+      "y": 240
+    },
+    "video": {
+      "bottom": 285,
+      "h": 219
+    },
+    "viewport": {
+      "h": 919,
+      "w": 424
+    }
+  }
+}
