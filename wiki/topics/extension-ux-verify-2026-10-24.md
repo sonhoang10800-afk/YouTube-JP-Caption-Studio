@@ -35,6 +35,13 @@ review: `review/star-rehydration-2026-10-24.md`.
 real tab (H ON → token dict → Escape → H OFF → H ON); 0 Unsafe console entries; dict frame at
 3 s. Completes criterion (e). Durable review: `review/ux-verify-mp4-2026-10-24.md`.
 
+**Enhancement fallback reproduced & root-caused (2026-10-24):** first video page loaded right
+after an extension reload can render a plain cue (`tok:0`) while the bridge is healthy; reloading
+the same tab restores 12 tokens. Content-side enrichment retry was ineffective and reverted; the
+fix belongs to reload-helper hardening (wait for popup verify before refreshing tabs). Durable
+review: `review/enhancement-fallback-repro-2026-10-24.md`; evidence bundle local (PASS, 39
+artifacts).
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -49,6 +56,7 @@ real tab (H ON → token dict → Escape → H OFF → H ON); 0 Unsafe console e
 - C-7 UI review: [review/ux-verify-c7-ui-2026-10-24.md](../../review/ux-verify-c7-ui-2026-10-24.md)
 - Star rehydration review: [review/star-rehydration-2026-10-24.md](../../review/star-rehydration-2026-10-24.md)
 - MP4 review: [review/ux-verify-mp4-2026-10-24.md](../../review/ux-verify-mp4-2026-10-24.md)
+- Enhancement repro review: [review/enhancement-fallback-repro-2026-10-24.md](../../review/enhancement-fallback-repro-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

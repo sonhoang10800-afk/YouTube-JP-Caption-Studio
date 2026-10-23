@@ -12,6 +12,9 @@ Star rehydration: **FIXED** in `6a70ea7` — matcher keeps ★ across cue re-key
 live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
 Post-fix MP4: **DONE** — 35 s H.264 clip of overlay + dict flow, criterion (e) satisfied
 (2026-10-24, `review/ux-verify-mp4-2026-10-24.md`).
+Enhancement fallback: **reproduced & root-caused** — first video page after extension reload can
+render plain cue (tok 0); second load restores tokens; fix belongs to reload helper (F3), content
+retry ineffective (2026-10-24, `review/enhancement-fallback-repro-2026-10-24.md`).
 
 ---
 
@@ -71,21 +74,6 @@ Post-fix MP4: **DONE** — 35 s H.264 clip of overlay + dict flow, criterion (e)
 
 ## Extension UX verify (2026-10-24) — remaining work
 
-### 1. Desktop furigana enhancement falls back to plain cue after SW sleep/reload
-
-**What:** Tái hiện + harden: có lúc cue desktop render plain text (`tok:0`, không furigana) dù
-bridge `/health` ready; mobile/tablet cùng lúc vẫn 12 token. Kiểm tra enhancement request qua
-service worker sau khi SW sleep/reload; thêm retry/wake hoặc log rõ.
-**Why:** Người dùng có thể thấy overlay mất furigana/color ở lần đầu sau khi extension reload
-hoặc tab idle lâu; matrix run trước desktop có 12 token, fix run này desktop 0 token.
-**Context:** Bridge `127.0.0.1:8765` Connected; console có `[jpcap] Sentence cache unavailable`.
-Change F1/F2 không chạm token pipeline. Repro tối thiểu: reload extension, mở 3 tab video liên
-tiếp, đo `tok` từng tab + log SW/network 8765; nếu là SW sleep thì thêm retry/wake trước khi
-render plain fallback.
-**Effort:** M
-**Priority:** P2
-**Depends on:** None
-
 ### 2. Sidepanel real-surface smoke + external capture
 
 **What:** Chạy `node scripts/bsk_sidepanel_bridge_smoke.js --out <dir>` trên sidepanel thật, đính
@@ -120,6 +108,11 @@ allowed` trên Chrome 155 (không dùng được làm fallback ổn định). He
 popup title đúng. Helper thao tác trên **front window** nên có thể chạm tab popup/agent còn
 sót và làm bsk session chết sau reload. Cần: polling verify, đóng tab verify theo URL, chọn
 đúng profile/window; đừng coi exit 3 là "chưa Load unpacked" khi extension đang chạy.
+**Bằng chứng mới (2026-10-24, enhancement repro):** video page đầu tiên load ngay sau helper
+reload render plain cue (`tok:0`) dù bridge healthy; reload lại tab đó thì 12 token trở lại;
+content-side retry (3×1.5 s) không cứu được và đã revert. Vì vậy helper phải chờ reload page
+đóng **và** popup verify OK rồi mới refresh tab YouTube; đừng refresh khi extension đang khởi
+động. Evidence: `.test-evidence/20261024-061405-enhancement-repro` (local PASS).
 **Effort:** S
 **Priority:** P2
 **Depends on:** Housekeeping (commit wrapper) + quyết định có sửa global helper hay không
@@ -183,6 +176,17 @@ sidepanel snapshot/click/close). Keep the smoke script for local verification on
 ---
 
 ## Completed
+
+### Desktop plain cue after extension reload — reproduced & root-caused
+
+**Completed:** 2026-10-24 (`review/enhancement-fallback-repro-2026-10-24.md`)
+
+Reproduced: first video page loaded right after `reload-extension.sh` renders the overlay without
+tokens (`tok:0`) while the bridge is healthy; reloading the same tab restores 12 tokens. A
+content-side enrichment retry (3×1.5 s) did not recover the page and was reverted (clean diff,
+tests pass). Root cause inferred: helper refreshes/loads tabs while the reloaded extension is
+still starting; fix moved into TODO #3 (helper must wait for popup verify, then refresh tabs).
+Evidence bundle local `.test-evidence/20261024-061405-enhancement-repro` (PASS, 39 artifacts).
 
 ### Post-fix overlay flow MP4 (criterion e)
 
