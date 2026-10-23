@@ -1603,3 +1603,8 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - `scripts/bsk_sidepanel_bridge_smoke.js` (session vxvw): real side panel visible 360 px, URL/title correct, tabs subtitles/words/saved; Words→Saved clicks switched views; close ok, post-close ping `no_response`.
 - Visual: window-only `screencapture` shim (whole screen never captured) shows panel with JA/VI cue rows; logic via dev-only bridge (no bsk panel probe).
 - Evidence bundle local PASS (18 artifacts); review `review/sidepanel-smoke-2026-10-24.md`; TODOS T5/(f) → PASS, sidepanel item → Completed; #10 now only release cleanup.
+
+## [2026-10-24] cleanup | Worktree hygiene: .ux-audit locally excluded; backlog reduced to CI/release
+
+- `.ux-audit/` added to `.git/info/exclude` (local only) — raw UX artifacts no longer show as untracked; tracked `.gitignore` entry left to the repo owner.
+- Remaining TODOS: P3 CI browser+extension regression harness; P3 docs commit (requires owner review, docs reference untracked dev bridge); P1 release task to remove the dev-only sidepanel bridge. All core UX verification items are completed.

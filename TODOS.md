@@ -104,21 +104,12 @@ load unpacked qua CLI nên phải dùng Chrome for Testing/Chromium + `--load-ex
 clone khác đọc docs sẽ thấy mô tả lệch.
 **Context:** Wrapper `scripts/reload-extension.sh` đã commit trong `812799f` (hardened order).
 `git status` còn `M AGENTS.md`, `M README.md`, `M extension/Scripts/reload-extension.md` — nội
-dung có sẵn trước phiên audit, cần chủ repo review trước khi commit.
+dung có sẵn trước phiên audit, cần chủ repo review trước khi commit. Lưu ý: AGENTS §10 mô tả
+dev-only sidepanel bridge trong khi `sp_test_bridge.js`/smoke script vẫn **untracked**; nên commit
+docs cùng bridge (dev-only) hoặc gỡ bridge trước rồi commit docs — quyết định của chủ repo.
 **Effort:** S
 **Priority:** P3
 **Depends on:** Review nội dung docs (không phải của lượt fix)
-
-### 9. `.ux-audit/` raw artifacts chưa được ignore
-
-**What:** Thêm `.ux-audit/` vào `.gitignore` hoặc xoá raw artifacts sau khi đã chép bằng chứng
-chốt sang `review/`.
-**Why:** Hiện `.ux-audit/` là untracked noise (JSON/PNG/MP4), dễ bị commit nhầm.
-**Context:** `.gitignore` đã có `.tmp-*/` nhưng không có `.ux-audit/`; ưu tiên ignore để giữ
-raw cho debug. Hỏi user trước khi thêm (ux-verify skill rule).
-**Effort:** S
-**Priority:** P3
-**Depends on:** None
 
 ### 10. Remove dev sidepanel test bridge before release
 
@@ -138,6 +129,14 @@ removal is now only a release-packaging task.
 ---
 
 ## Completed
+
+### Raw `.ux-audit` excluded locally
+
+**Completed:** 2026-10-24 (local only, not committed)
+
+Added `/.ux-audit/` to `.git/info/exclude` so raw UX artifacts stop appearing as untracked noise;
+`git status` is clean of them. A tracked `.gitignore` entry is left to the repo owner (ux-verify
+rule: ask before editing `.gitignore`), but the local exclude solves the commit-risk now.
 
 ### Real Chrome side panel smoke (dev bridge + window capture)
 
