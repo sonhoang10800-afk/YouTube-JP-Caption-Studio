@@ -24,6 +24,12 @@ bsk refuses `chrome-extension://` DOM/input and macOS System Events has no assis
 documented as LIM-1. Durable review: `review/ux-verify-c7-ui-2026-10-24.md`; evidence bundle is
 local (`.test-evidence/…`, not committed).
 
+**Star rehydration fixed (2026-10-24, `6a70ea7`):** `savedCueMatches`/`findSavedCueForCue`
+fallback matches videoId + start (±0.3 s) + normalized source text so a re-keyed cue keeps its
+`★`; `toggleStarCue` deletes the matched saved row instead of duplicating. Unit tests cover the
+matcher; live bsk run keeps a pre-existing ★ through reload (12 tokens, 0 CSP errors). Durable
+review: `review/star-rehydration-2026-10-24.md`.
+
 ## Raw artifacts
 
 - Plan: [plan/extension-ux-verify-bsk-2026-10-24.md](../../plan/extension-ux-verify-bsk-2026-10-24.md)
@@ -36,6 +42,7 @@ local (`.test-evidence/…`, not committed).
 - Fix review F1/F2: [review/ux-verify-matrix-fix-2026-10-24.md](../../review/ux-verify-matrix-fix-2026-10-24.md)
 - Evidence fix: [review/ux-verify-matrix-fix-evidence-2026-10-24/](../../review/ux-verify-matrix-fix-evidence-2026-10-24/)
 - C-7 UI review: [review/ux-verify-c7-ui-2026-10-24.md](../../review/ux-verify-c7-ui-2026-10-24.md)
+- Star rehydration review: [review/star-rehydration-2026-10-24.md](../../review/star-rehydration-2026-10-24.md)
 - Code: commit `b155a56` — `extension/content/content.js`, `extension/injected/page_capture.js`, `extension/styles/panel.css`
 
 ## What shipped

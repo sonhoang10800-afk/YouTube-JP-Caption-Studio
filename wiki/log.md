@@ -1573,3 +1573,10 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Saved Items UI "Câu đã lưu" render 2 cues; row `00:19 – 00:22` + real `videoTitle` + source; title 12px/576×18, no overflow; 2 rows total.
 - Real extension popup tab không switch được: bsk từ chối `chrome-extension://` (screenshot/evaluate/input) và System Events `-25211` (no assistive access) → LIM-1; popup render vẫn chụp được.
 - Evidence bundle local `.test-evidence/20261024-042328-c7-saved-cue-ui` (PASS WITH ISSUES, 45 artifacts, không commit); review `review/ux-verify-c7-ui-2026-10-24.md`; TODOS #2 → Completed, thêm TODO sidepanel thật (P2).
+
+## [2026-10-24] ingest | Star rehydration across cue re-keying — fixed `6a70ea7`
+
+- `savedCueMatches`/`findSavedCueForCue`: match videoId + start ±0.3 s + normalized source; direct saved id wins; toggle deletes matched row (no duplicate).
+- Unit tests in `content_test.js` (same match, wrong video/start/source, whitespace normalization, direct-id precedence); anti-fake pass.
+- Live bsk: pre-existing ★ persists through page reload, 12 tokens, 0 CSP errors; limitation: cross-path re-keying not forceable live (unit-tested), non-destructive run. Evidence bundle local PASS (39 artifacts); review `review/star-rehydration-2026-10-24.md`.
+- F3 reload TODO context updated: bsk navigate to reload.html now `Not allowed`; helper first run `verify_failed` then `ok:true`; front-window/profile caveat.

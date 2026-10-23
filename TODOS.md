@@ -8,6 +8,8 @@ Post-fix matrix: **PASS WITH ISSUES** → F1/F2 **fixed & verified** in `d3b53f7
 xem `review/ux-verify-matrix-postfix-2026-10-24.md` + `review/ux-verify-matrix-fix-2026-10-24.md`.
 C-7 UI row: **PASS WITH ISSUES** — Saved Items UI row renders `videoTitle`; real popup tab
 blocked by bsk (2026-10-24, `review/ux-verify-c7-ui-2026-10-24.md`).
+Star rehydration: **FIXED** in `6a70ea7` — matcher keeps ★ across cue re-keying; unit tests +
+live persistence evidence (2026-10-24, `review/star-rehydration-2026-10-24.md`).
 
 ---
 
@@ -108,30 +110,17 @@ extension hỏng.
 **Context:** Helper thật ở `~/.local/bin/reload-chrome-extension` (tool dùng chung, ngoài
 repo); repo wrapper `scripts/reload-extension.sh` hiện **untracked** (xem Housekeeping).
 Verify bằng 5 reload liên tiếp: `verify.ok:true` cả 5, tab count trước/sau bằng nhau, không
-tab `chrome-extension://` còn sót trong cửa sổ user. **Bằng chứng mới (fix run 2026-10-24):**
-`reload_chrome_extension` (native) trả `extension_not_loaded` dù extension đang chạy trong bsk
-Agent Window; helper AppleScript có thể mở reload page ở cửa sổ/profile khác. Workaround đã
-dùng: navigate chính tab bsk tới `chrome-extension://<id>/reload.html` (chrome.runtime.reload)
-— cùng profile, không click. Helper nên thử profile/window hiện tại trước, hoặc fallback sang
-bsk session tab; đừng coi exit 3 là "chưa Load unpacked" khi extension đang chạy.
+tab `chrome-extension://` còn sót trong cửa sổ user. **Bằng chứng mới (2026-10-24):**
+native `reload_chrome_extension` trả `extension_not_loaded` dù extension chạy trong Agent
+Window; bsk `navigate` tới `chrome-extension://<id>/reload.html` fail `cdp_failed: Not
+allowed` trên Chrome 155 (không dùng được làm fallback ổn định). Helper lần 1:
+`reload_page.verdict=closed_after_reload` nhưng `verify_failed` (transient); lần 2 `ok:true`,
+popup title đúng. Helper thao tác trên **front window** nên có thể chạm tab popup/agent còn
+sót và làm bsk session chết sau reload. Cần: polling verify, đóng tab verify theo URL, chọn
+đúng profile/window; đừng coi exit 3 là "chưa Load unpacked" khi extension đang chạy.
 **Effort:** S
 **Priority:** P2
 **Depends on:** Housekeeping (commit wrapper) + quyết định có sửa global helper hay không
-
-### 4. Star rehydration across cue segmentation / load-path changes
-
-**What:** Khi load path đổi (`ja intercept · 55 cues` ↔ `page_multi_android · 50 cues`), cue
-id/group id đổi làm star hiện `☆` dù saved cue vẫn còn trong storage; match thêm theo
-`sourceKey` + start time + source text.
-**Why:** Người dùng thấy mất dấu ★ sau reload dù câu đã lưu; Saved Items vẫn có câu nhưng
-bar không phản ánh.
-**Context:** `isCueStarred()` dùng `cue.savedCueId` (`ss:` + groupIds) hoặc `cue.id`; cue id
-sinh từ `c-<start>-<source>`. Khi nguồn cue khác (intercept vs ANDROID) thì id/group khác.
-Đề xuất matcher thuần (sourceKey + round(start,3) + source text) để có unit test trong
-`extension/content/content_test.js`; không hạ thấp assert hiện có.
-**Effort:** M
-**Priority:** P2
-**Depends on:** None
 
 ### 5. Post-fix MP4 (criterion e)
 
@@ -215,6 +204,16 @@ Saved Items UI ("Câu đã lưu") renders 2 real cues; first row `00:19 – 00:2
 Evidence bundle (local, not committed) `PASS WITH ISSUES`, 45 artifacts. Real extension popup
 tab could not be switched (bsk blocks `chrome-extension://` DOM/input; System Events no
 assistive access) — documented as LIM-1; popup render screenshot kept.
+
+### Star rehydration across cue re-keying
+
+**Completed:** 6a70ea7 (2026-10-24; `review/star-rehydration-2026-10-24.md`)
+
+`savedCueMatches`/`findSavedCueForCue` fallback (videoId + start ±0.3 s + normalized source)
+keeps `★` when segmentation re-keys a cue; `toggleStarCue` deletes the matched row instead of
+duplicating. Unit tests pass; live bsk check: pre-existing ★ persists through reload with
+12 tokens, 0 CSP errors. Evidence bundle `.test-evidence/20261024-052233-star-rehydrate`
+(PASS, local).
 
 ### Responsive overlay + coarse ctrl targets (matrix F1/F2)
 
