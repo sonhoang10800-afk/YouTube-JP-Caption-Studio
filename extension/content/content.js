@@ -88,6 +88,7 @@
   let sentenceTokens = {};
   let sentenceUndoIds = new Set();
   let sentenceUndoRevisions = {};
+  let sentenceUndoAppliedRevisions = {};
   let sentenceCandidates = {};
   let audioListeningActive = false;
   let sentenceTrackKind = "asr";
@@ -825,9 +826,10 @@
 
       const rev = sentenceCueRevision(cue);
       cue.source = cand.text;
-      cue.text_source = "asr:whisper-large-v3-turbo";
+      cue.text_source = cand.provenance || (cand.model ? `asr:${cand.model}` : "asr:whisper-large-v3-turbo");
       cue.normalization = null;
       sentenceUndoRevisions[cue.id] = rev;
+      sentenceUndoAppliedRevisions[cue.id] = sentenceCueRevision(cue);
       sentenceUndoIds.add(cue.id);
       if (cue) delete sentenceCandidates[cue.id];
       delete sentenceCandidates[msg.id];
@@ -859,6 +861,10 @@
       refreshSentenceProjection();
       const original = cues.find(c => c.id === msg.id) || resolveSourceCue(msg.id);
       if (original && sentenceUndoRevisions[original.id]) {
+        if (sentenceUndoAppliedRevisions[original.id] &&
+            sentenceUndoAppliedRevisions[original.id] !== sentenceCueRevision(original)) {
+          return { ok: false, error: "Sentence changed; refresh before undo" };
+        }
         try {
           const parsed = JSON.parse(sentenceUndoRevisions[original.id]);
           original.source = parsed[1];
@@ -866,7 +872,9 @@
           original.end_media_time = parsed[3];
           original.rawSource = parsed[4];
           original.text_source = parsed[5];
+          if (parsed.length > 8) original.normalization = parsed[8];
           delete sentenceUndoRevisions[original.id];
+          delete sentenceUndoAppliedRevisions[original.id];
           sentenceUndoIds.delete(original.id);
           delete sentenceTokens[original.id];
           delete sentenceTranslations[original.id];
@@ -989,6 +997,7 @@
           captionMode = "original";
           sentenceSourceKey = key;
           sentenceUndoRevisions = restored.enhancement.undoRevisions || {};
+          sentenceUndoAppliedRevisions = restored.enhancement.undoAppliedRevisions || {};
           sentenceTranslations = restored.enhancement.translations || {};
           sentenceTokens = restored.enhancement.tokens || {};
           sentenceRawTrack = restored.enhancement.rawTrack || null;
@@ -1132,11 +1141,14 @@
       }
       if (!opts.auto) toast("Đang bật nghe audio (Whisper trên Apple Silicon)...");
       try {
+        const video = findVideo();
         const res = await chrome.runtime.sendMessage({
           type: "AUDIO_START_CAPTURE",
           tabId,
           videoId: currentVideoId,
-          playhead: currentMediaTime,
+          playhead: Math.max(0, Number(video?.currentTime ?? currentMediaTime) || 0),
+          playbackRate: Number(video?.playbackRate) > 0 ? Number(video.playbackRate) : 1,
+          paused: video ? !!video.paused : false,
         });
         if (!res?.ok) {
           audioListeningActive = false;
@@ -1181,29 +1193,194 @@
 
   function matchCuesForSegment(cuesList, segStart, segEnd) {
     return (cuesList || []).filter((c) => {
-      const cStart = Number(c.start_media_time ?? c.start) || 0;
-      const cEnd = Number(c.end_media_time ?? c.end) || (cStart + 1);
+      const { start: cStart, end: cEnd } = asrCueBounds(c);
       return Math.max(cStart, segStart) < Math.min(cEnd, segEnd);
     });
   }
 
-  function findBestCueForSegmentByIoU(cuesList, segStart, segEnd) {
-    const matched = matchCuesForSegment(cuesList, segStart, segEnd);
-    if (!matched.length) return null;
-    let bestCue = null;
-    let bestIoU = 0;
-    for (const c of matched) {
-      const cStart = Number(c.start_media_time ?? c.start) || 0;
-      const cEnd = Number(c.end_media_time ?? c.end) || (cStart + 1);
-      const inter = Math.max(0, Math.min(cEnd, segEnd) - Math.max(cStart, segStart));
-      const union = Math.max(cEnd, segEnd) - Math.min(cStart, segStart);
-      const iou = union > 0 ? inter / union : 0;
-      if (iou > bestIoU) {
-        bestIoU = iou;
-        bestCue = c;
+  function asrCueBounds(cue) {
+    const start = Number(cue?.start_media_time ?? cue?.start) || 0;
+    const rawEnd = Number(cue?.end_media_time ?? cue?.end);
+    const end = Number.isFinite(rawEnd) && rawEnd > start ? rawEnd : start + 1;
+    return { start, end };
+  }
+
+  function asrNormalizeMatchText(text) {
+    return String(text || "")
+      .normalize("NFKC")
+      .toLowerCase()
+      .replace(/\[(?:音楽|拍手|鼻息|雑音|笑い|拍手喝采)\]/g, "")
+      .replace(/[\s!！?？.。,:：;；~～\-_—…·、。「」『』（）()\[\]【】]+/g, "");
+  }
+
+  function asrTextSimilarity(leftText, rightText) {
+    const left = asrNormalizeMatchText(leftText);
+    const right = asrNormalizeMatchText(rightText);
+    if (!left || !right) return 0;
+    if (left === right) return 1;
+    if (left.length < 2 || right.length < 2) return 0;
+
+    const grams = new Map();
+    for (let i = 0; i < left.length - 1; i++) {
+      const gram = left.slice(i, i + 2);
+      grams.set(gram, (grams.get(gram) || 0) + 1);
+    }
+    let shared = 0;
+    for (let i = 0; i < right.length - 1; i++) {
+      const gram = right.slice(i, i + 2);
+      const count = grams.get(gram) || 0;
+      if (count > 0) {
+        shared++;
+        grams.set(gram, count - 1);
       }
     }
-    return bestIoU > 0.05 ? bestCue : null;
+    return (2 * shared) / ((left.length - 1) + (right.length - 1));
+  }
+
+  function findBestCueForSegmentByIoU(cuesList, segStart, segEnd, segText = "", segWords = []) {
+    const start = Number(segStart);
+    const end = Number(segEnd);
+    const segDuration = Math.max(0, end - start);
+    if (segDuration <= 0) return null;
+    const matched = matchCuesForSegment(cuesList, start, end);
+    if (!matched.length) return null;
+
+    const words = (Array.isArray(segWords) ? segWords : [])
+      .map((word) => {
+        const wordStart = Number(word?.start);
+        const wordEnd = Number(word?.end);
+        return {
+          text: String(word?.text || word?.word || "").trim(),
+          start: wordStart,
+          end: wordEnd,
+        };
+      })
+      .filter((word) => word.text && Number.isFinite(word.start) &&
+        Number.isFinite(word.end) && word.end > word.start);
+    const wordAssignments = new Map();
+
+    for (const word of words) {
+      const overlaps = matched.map((cue) => {
+        const { start: cStart, end: cEnd } = asrCueBounds(cue);
+        return {
+          cue,
+          overlap: Math.max(0, Math.min(cEnd, word.end) - Math.max(cStart, word.start)),
+        };
+      }).sort((a, b) => b.overlap - a.overlap);
+      const best = overlaps[0];
+      const second = overlaps[1];
+      if (!best || best.overlap <= 0) {
+        continue;
+      }
+      let chosen = best;
+      if (second && Math.abs(best.overlap - second.overlap) < 1e-6) {
+        const tied = overlaps.filter((item) => Math.abs(item.overlap - best.overlap) < 1e-6)
+          .map((item) => ({
+            ...item,
+            textScore: asrTextSimilarity(word.text, item.cue.source ?? item.cue.text),
+          }))
+          .sort((a, b) => b.textScore - a.textScore);
+        if (!tied[1] || tied[0].textScore - tied[1].textScore < 0.05) continue;
+        chosen = tied[0];
+      }
+      const assigned = wordAssignments.get(chosen.cue) || { words: [], duration: 0 };
+      assigned.words.push(word.text);
+      assigned.duration += word.end - word.start;
+      wordAssignments.set(chosen.cue, assigned);
+    }
+    const assignedWordDuration = [...wordAssignments.values()]
+      .reduce((sum, assignment) => sum + assignment.duration, 0);
+
+    const scored = matched.map((cue) => {
+      const { start: cStart, end: cEnd } = asrCueBounds(cue);
+      const cueDuration = Math.max(0, cEnd - cStart);
+      const cueText = cue.source ?? cue.text;
+      if (cueDuration <= 0 || !asrNormalizeMatchText(cueText)) return null;
+      const overlap = Math.max(0, Math.min(cEnd, end) - Math.max(cStart, start));
+      if (overlap <= 0) return null;
+      const segmentCoverage = overlap / segDuration;
+      const cueCoverage = overlap / cueDuration;
+      const assignment = wordAssignments.get(cue);
+      const wordShare = assignment && assignedWordDuration > 0
+        ? assignment.duration / assignedWordDuration
+        : 0;
+      const evidenceText = assignment?.words.join("") || segText;
+      const textScore = asrTextSimilarity(evidenceText, cueText);
+      const temporalScore = Math.max(
+        0.7 * segmentCoverage + 0.3 * cueCoverage,
+        wordShare > 0 ? 0.5 * wordShare + 0.3 * segmentCoverage + 0.2 * cueCoverage : 0,
+      );
+      return {
+        cue,
+        cueCoverage,
+        segmentCoverage,
+        textScore,
+        wordShare,
+        score: 0.62 * temporalScore + 0.38 * textScore,
+      };
+    }).filter(Boolean).sort((a, b) => b.score - a.score);
+
+    if (!scored.length) return null;
+    const best = scored[0];
+    const second = scored[1];
+
+    if (scored.length === 1) {
+      if (best.segmentCoverage < 0.55 || best.cueCoverage < 0.2) return null;
+      return best.cue;
+    }
+
+    // A word belongs to exactly one cue. Any duration assigned to another
+    // overlapping cue means the transcript spans cues, even if the majority
+    // share is high (for example 85/15).
+    if (words.length && best.wordShare < 1 - 1e-6) return null;
+    if (best.textScore < 0.1) return null;
+    if (best.score - second.score < 0.12) return null;
+    if (Math.abs(best.segmentCoverage - second.segmentCoverage) < 0.1 &&
+        Math.abs(best.cueCoverage - second.cueCoverage) < 0.1 &&
+        best.textScore < 0.85) return null;
+
+    // Segment-only text cannot isolate each overlapping row. If the full text
+    // fits the union of the top two cues better than either one alone, it is a
+    // mixed transcript and must not be attached to one cue.
+    if (!words.length) {
+      const unionText = `${best.cue.source ?? best.cue.text ?? ""} ${second.cue.source ?? second.cue.text ?? ""}`;
+      if (asrTextSimilarity(segText, unionText) > best.textScore + 0.08) return null;
+    }
+
+    return best.cue;
+  }
+
+  function asrCandidateCoverage(candidate, cue) {
+    const cStart = Number(cue?.start_media_time ?? cue?.start) || 0;
+    const cEnd = Number(cue?.end_media_time ?? cue?.end) || (cStart + 1);
+    const pStart = Number(candidate?.start) || 0;
+    const pEnd = Number(candidate?.end) || pStart;
+    const duration = Math.max(0, cEnd - cStart);
+    if (duration <= 0) return 0;
+    const covered = Math.max(0, Math.min(cEnd, pEnd) - Math.max(cStart, pStart));
+    return covered / duration;
+  }
+
+  function shouldReplaceAsrCandidate(existing, incoming, cue) {
+    if (!existing) return true;
+    const existingCoverage = asrCandidateCoverage(existing, cue);
+    const incomingCoverage = asrCandidateCoverage(incoming, cue);
+    const EPSILON = 1e-6;
+    if (incomingCoverage > existingCoverage + EPSILON) return true;
+    if (incomingCoverage + EPSILON < existingCoverage) return false;
+    return String(incoming?.text || "").trim().length > String(existing?.text || "").trim().length;
+  }
+
+  function asrSegmentBounds(msg, segment) {
+    const playbackRate = Number(msg?.playbackRate) > 0 ? Number(msg.playbackRate) : 1;
+    const windowStart = Number(msg?.startSec) || 0;
+    const rawStart = Number(segment?.start) || 0;
+    const parsedEnd = Number(segment?.end);
+    const rawEnd = Number.isFinite(parsedEnd) && parsedEnd > rawStart ? parsedEnd : rawStart + 1;
+    return {
+      start: windowStart + rawStart * playbackRate,
+      end: windowStart + rawEnd * playbackRate,
+    };
   }
 
   function isValidAsrCandidateText(text) {
@@ -1226,11 +1403,16 @@
       for (const seg of segments) {
         const segText = String(seg?.text || "").trim();
         if (!isValidAsrCandidateText(segText)) continue;
-        const segStart = (Number(msg.startSec) || 0) + (Number(seg.start) || 0);
-        const segEnd = (Number(msg.startSec) || 0) + (Number(seg.end) || (Number(seg.start) || 0) + 1);
-        const cue = findBestCueForSegmentByIoU(cues, segStart, segEnd);
+        const { start: segStart, end: segEnd } = asrSegmentBounds(msg, seg);
+        const segWords = Array.isArray(seg?.words)
+          ? seg.words.map((word) => ({
+              text: word?.text,
+              ...asrSegmentBounds(msg, word),
+            }))
+          : [];
+        const cue = findBestCueForSegmentByIoU(cues, segStart, segEnd, segText, segWords);
         if (cue && canReceiveAsrCandidate(cue)) {
-          sentenceCandidates[cue.id] = {
+          const candidate = {
             text: segText,
             provenance: `asr:${provenanceModel}`,
             model: provenanceModel,
@@ -1238,7 +1420,10 @@
             end: segEnd,
             createdAt: Date.now(),
           };
-          updated = true;
+          if (shouldReplaceAsrCandidate(sentenceCandidates[cue.id], candidate, cue)) {
+            sentenceCandidates[cue.id] = candidate;
+            updated = true;
+          }
         }
       }
     } else if (msg.result.text) {
@@ -1248,7 +1433,7 @@
         const segEnd = Number(msg.endSec) || (segStart + 1);
         const cue = findBestCueForSegmentByIoU(cues, segStart, segEnd);
         if (cue && canReceiveAsrCandidate(cue)) {
-          sentenceCandidates[cue.id] = {
+          const candidate = {
             text,
             provenance: `asr:${provenanceModel}`,
             model: provenanceModel,
@@ -1256,7 +1441,10 @@
             end: segEnd,
             createdAt: Date.now(),
           };
-          updated = true;
+          if (shouldReplaceAsrCandidate(sentenceCandidates[cue.id], candidate, cue)) {
+            sentenceCandidates[cue.id] = candidate;
+            updated = true;
+          }
         }
       }
     }
@@ -1593,6 +1781,38 @@
       document.querySelector("video.html5-main-video") ||
       document.querySelector("video")
     );
+  }
+
+  function audioPlayheadMessage(event, video) {
+    if (!audioListeningActive || !video) return null;
+    return {
+      type: "AUDIO_UPDATE_PLAYHEAD",
+      event,
+      playhead: Math.max(0, Number(video.currentTime) || 0),
+      playbackRate: Number(video.playbackRate) > 0 ? Number(video.playbackRate) : 1,
+      paused: !!video.paused,
+    };
+  }
+
+  function sendAudioPlayheadAnchor(event, video = findVideo()) {
+    const msg = audioPlayheadMessage(event, video);
+    if (!msg) return;
+    try {
+      chrome.runtime.sendMessage(msg).catch(() => {});
+    } catch (_) {}
+  }
+
+  function bindAudioAnchorEvents(video) {
+    if (!video?.addEventListener) return () => {};
+    const events = ["play", "pause", "seeking", "seeked", "ratechange", "ended"];
+    const listeners = events.map((event) => {
+      const listener = () => sendAudioPlayheadAnchor(event, video);
+      video.addEventListener(event, listener, { passive: true });
+      return [event, listener];
+    });
+    return () => {
+      for (const [event, listener] of listeners) video.removeEventListener(event, listener);
+    };
   }
 
   async function seekToTime(sec) {
@@ -5193,7 +5413,8 @@
   }
   function sentenceCueRevision(cue) {
     return JSON.stringify([cue.id, cue.source, cue.start_media_time, cue.end_media_time, cue.rawSource || null,
-      cue.text_source || "", !!cue.mt_locked, ["user", "import"].includes(cue.translation_source) ? cue.translation_source : ""]);
+      cue.text_source || "", !!cue.mt_locked, ["user", "import"].includes(cue.translation_source) ? cue.translation_source : "",
+      cue.normalization || null]);
   }
   async function loadSentenceState() {
     if (!currentVideoId || currentSource !== "youtube") return;
@@ -5208,6 +5429,8 @@
         if (gen !== navigateGen || key !== sentenceStateStorageKey() || state?.version !== 1 ||
             state.sourceKey !== sentenceTrackKey()) return;
         sentenceUndoRevisions = state.undoRevisions && typeof state.undoRevisions === "object" ? state.undoRevisions : {};
+        sentenceUndoAppliedRevisions = state.undoAppliedRevisions && typeof state.undoAppliedRevisions === "object"
+          ? state.undoAppliedRevisions : {};
         sentenceTranslations = state.translations && typeof state.translations === "object" ? state.translations : {};
         sentenceTokens = state.tokens && typeof state.tokens === "object" ? state.tokens : {};
         sentenceCandidates = state.candidates && typeof state.candidates === "object" ? state.candidates : {};
@@ -5231,7 +5454,7 @@
       rawTrack: sentenceRawTrack?.sourceKey === sentenceTrackKey() ? sentenceRawTrack : null,
       sourceCues: cues.filter(c => c.rawSource && c.normalization).map(c => ({ id: c.id, source: c.source,
         start_media_time: c.start_media_time, end_media_time: c.end_media_time, rawSource: c.rawSource, normalization: c.normalization })),
-      undoRevisions: sentenceUndoRevisions, translations,
+      undoRevisions: sentenceUndoRevisions, undoAppliedRevisions: sentenceUndoAppliedRevisions, translations,
       candidates: sentenceCandidates,
       tokens: !sentenceEnhancementEnabled() ? sentenceTokens : Object.fromEntries((sentenceProjection?.groups || []).filter(g => !g.protected && sentenceTokens[g.id]?.length)
         .map(g => [g.id, sentenceTokens[g.id]])) };
@@ -5253,6 +5476,7 @@
         !meta.tombstones.every(s => typeof s === "string") || !Number.isFinite(meta.rev) || meta.rev < 0 ||
         !object(state) || state.version !== 1 || state.sourceKey !== backup.sourceKey || state.offsetUnit !== "utf16" ||
         ![state.undoRevisions, state.translations, state.tokens].every(object) ||
+        (state.undoAppliedRevisions != null && !object(state.undoAppliedRevisions)) ||
         !Array.isArray(backup.savedSentences) || !backup.savedSentences.every(c => object(c) && typeof c.id === "string" &&
           c.id.length && c.videoId === currentVideoId && typeof c.source === "string")) throw new Error("Invalid backup metadata");
     if (!Array.isArray(backup.cues) || backup.cues.length > 20000) throw new Error("Invalid backup cues");
@@ -5292,6 +5516,7 @@
       sentenceCandidates = {};
       sentenceUndoIds = new Set();
       sentenceUndoRevisions = {};
+      sentenceUndoAppliedRevisions = {};
       sentenceTranslations = {};
       sentenceTokens = {};
       sentenceProjection = null;
@@ -6028,7 +6253,10 @@
   function bindVideoEvents() {
     const v = findVideo();
     if (v && v !== boundVideoEl) {
+      boundVideoCleanup?.();
+      boundVideoCleanup = null;
       boundVideoEl = v;
+      const cleanups = [bindAudioAnchorEvents(v)];
 
       const onFrame = (now, metadata) => {
         if (!boundVideoEl || boundVideoEl !== v) return;
@@ -6044,25 +6272,29 @@
           v.requestVideoFrameCallback(onFrame);
         };
         v.addEventListener("play", onPlay, { passive: true });
-        // A new video element replaces the old one: drop the old listener so
-        // it cannot keep a frame-callback chain alive.
-        boundVideoCleanup?.();
-        boundVideoCleanup = () => v.removeEventListener("play", onPlay);
+        cleanups.push(() => v.removeEventListener("play", onPlay));
         if (!v.paused) {
           v.requestVideoFrameCallback(onFrame);
         }
       }
 
-      v.addEventListener("timeupdate", () => {
+      const onTimeUpdate = () => {
         syncCueAtMediaTime(v.currentTime);
-      }, { passive: true });
+      };
+      v.addEventListener("timeupdate", onTimeUpdate, { passive: true });
+      cleanups.push(() => v.removeEventListener("timeupdate", onTimeUpdate));
 
-      v.addEventListener("seeked", () => {
+      const onSeeked = () => {
         sentenceBenchmark?.resetPlayback(performance.now(), "seek");
         cancelSentencePrefetch();
         syncCueAtMediaTime(v.currentTime);
         void triggerGeminiTranslationIfNeeded();
-      }, { passive: true });
+      };
+      v.addEventListener("seeked", onSeeked, { passive: true });
+      cleanups.push(() => v.removeEventListener("seeked", onSeeked));
+      boundVideoCleanup = () => {
+        for (const cleanup of cleanups) cleanup();
+      };
     }
   }
 
@@ -6091,6 +6323,12 @@
     // do not teardown UI or wipe cues on redundant navigation or query changes (e.g. &t= on pause/scrub)
     if (newVideoId && newVideoId === prevVideoId && cues.length > 0 && newWatchKey === pageWatchKey) {
       return;
+    }
+    if (audioListeningActive) {
+      audioListeningActive = false;
+      try {
+        void chrome.runtime.sendMessage({ type: "AUDIO_STOP_CAPTURE" }).catch(() => {});
+      } catch (_) {}
     }
     pageWatchKey = newWatchKey;
     currentVideoId = newVideoId;
@@ -6300,6 +6538,13 @@
       pageWatchKey = "";
       void onNavigate();
     });
+    window.addEventListener("pagehide", () => {
+      if (!audioListeningActive) return;
+      audioListeningActive = false;
+      try {
+        void chrome.runtime.sendMessage({ type: "AUDIO_STOP_CAPTURE" }).catch(() => {});
+      } catch (_) {}
+    }, { once: true });
     await onNavigate();
     bridgeFetch("/bootstrap", { method: "POST" }).catch(() => {});
     startLoop();
@@ -6401,6 +6646,38 @@
       capAcceptsReply,
       resolveCueIndex,
       onNavigate,
+      bindAudioAnchorEvents,
+      sendAudioPlayheadAnchor,
+      asrSegmentBounds,
+      handleSidePanelCmdForTest: (msg) => handleSidePanelCmd(msg),
+      handleAsrCandidateReceivedForTest: (msg) => handleAsrCandidateReceived(msg),
+      seedSentenceStateForTest: ({ videoId, cues: seededCues }) => {
+        currentSource = "youtube";
+        currentVideoId = String(videoId || "");
+        cues = Array.isArray(seededCues) ? structuredClone(seededCues) : [];
+        sentenceSourceKey = sentenceTrackKey();
+        sentenceStateLoadedKey = sentenceStateStorageKey();
+        sentenceStateLoadedGen = navigateGen;
+        sentenceStateLoad = Promise.resolve();
+        sentenceUndoRevisions = {};
+        sentenceUndoAppliedRevisions = {};
+        sentenceUndoIds = new Set();
+        sentenceCandidates = {};
+        sentenceTranslations = {};
+        sentenceTokens = {};
+        listDirty = true;
+        refreshSentenceProjection(true);
+      },
+      seedSentenceCandidatesForTest: (value) => {
+        sentenceCandidates = value && typeof value === "object" ? structuredClone(value) : {};
+        refreshSentenceProjection(true);
+      },
+      getSentenceStateForTest: () => ({
+        candidates: sentenceCandidates,
+        undoRevisions: sentenceUndoRevisions,
+        undoAppliedRevisions: sentenceUndoAppliedRevisions,
+      }),
+      setAudioListeningForTest: (value) => { audioListeningActive = !!value; },
       getCues: () => cues,
       getSettings: () => settings,
       getCaptionMode: () => captionMode,

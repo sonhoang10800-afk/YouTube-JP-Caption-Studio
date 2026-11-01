@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 2,
+  "created": "2026-10-30",
+  "status": "PENDING_AGENT_REVIEW",
+  "purpose": "Fixed 20-cue official MOFA VI/EN quality rubric for live Gemini testing",
+  "provenance": {
+    "videoId": "PV0xVuhmBQI",
+    "videoTitle": "茂木敏充外務大臣会見（令和8年1月9日）",
+    "channel": "外務省 / MOFA",
+    "sourceUrlJa": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+    "sourceUrlEn": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+    "sourceKind": "official MOFA transcript and official English provisional translation",
+    "timingSource": "YouTube official MOFA caption anchors; exact cue intervals sliced from the official video audio",
+    "audioSource": "testdata/audio-gold/wavs/mofa-2026-01-09-source.wav",
+    "audioSamplingRate": 16000,
+    "audioChannels": 1,
+    "verification": "machine-verified, agent-reviewed; no human approval claimed",
+    "reviewerKind": "independent agent"
+  },
+  "scoring": {
+    "scale": "0-2 for each field",
+    "fields": [
+      "meaning",
+      "naturalness",
+      "fidelity",
+      "format"
+    ],
+    "pass": "every field for every VI and EN cue equals 2"
+  },
+  "cues": [
+    {
+      "id": "translation-01",
+      "startMs": 13360,
+      "endMs": 21360,
+      "source": "今年最初の記者会見になります。今年もどうぞよろしくお願いします。",
+      "referenceEn": "This is the first press conference of the year. I look forward to working with you all again this year.",
+      "reviewRequirement": "Keep the first-of-the-year meaning, the speaker's greeting, and the formal tone.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "1b074afe74128223eec90d90e0b20987041819998d0ebfe3f18983022f2f7802",
+      "referenceEnSha256": "d8552c3bd8572d95cbdcfb16551b244616d19922bb2c5d1a3b1c1a32e615f839",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-01",
+          "startMs": 13360,
+          "endMs": 21360,
+          "streamReference": "今年最初の記者会見になります。今年もどうぞよろしくお願いします。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-01.wav",
+          "audioSha256": "8135fe3fee4f53241c9211f21a15549429a0dfb814e0f7968310cc497b523587"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-02",
+      "startMs": 19860,
+      "endMs": 27860,
+      "source": "まず、私の海外出張について御報告します。",
+      "referenceEn": "First, I have an announcement about my overseas visit.",
+      "reviewRequirement": "Keep the announcement sequence and the first-person overseas-visit meaning.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "45519bae01aaa37b736193f36bfa5e4720e85442f11478e83c63f303f5b938b9",
+      "referenceEnSha256": "0d75990b2d9a4104cba02b189055103e6b339a3c54b2f9f43d88e41204c2bd09",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-02",
+          "startMs": 19860,
+          "endMs": 27860,
+          "streamReference": "まず、私の海外出張について御報告します。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-02.wav",
+          "audioSha256": "a2f851bfaea4b16fb212ed1f09f86de032c98adcd7a7b4370b5a75e04da4d5e4"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-03",
+      "startMs": 26360,
+      "endMs": 34360,
+      "source": "明日、1月10日から18日まで、イスラエル、パレスチナ、カタール、そして、フィリピン、インドを訪問する予定です。",
+      "referenceEn": "I will visit Israel, Palestine, Qatar, the Philippines, and India from tomorrow, January 10, to January 18.",
+      "reviewRequirement": "Preserve every destination, the January 10–18 range, and the future visit meaning.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "3676e957f414a1f002d5d262c17126915e265a2f49b1120be0c31bf624d122b2",
+      "referenceEnSha256": "b9cc3ad1c4f118e3faa9e9995aed44d8eec71190516d846ed05c95dcf17f047b",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-03",
+          "startMs": 26360,
+          "endMs": 34360,
+          "streamReference": "明日、1月10日から18日まで、イスラエル、パレスチナ、カタール、そして、フィリピン、インドを訪問する予定です。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-03.wav",
+          "audioSha256": "7e6ac13f2abbf85d04830dde70c83017f9710dc204764fae8f25710b4ab99588"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-04",
+      "startMs": 34360,
+      "endMs": 58860,
+      "source": "これまで、G7外相会合など、国際会議への出席のため、既に昨年3回、海外出張を行ってきて、その中で、各国のカウンターパートとのバイ会談等も行ってきましたが、今年最初の出張は、初の二国間訪問と、こういった形で、中東と、そしてアジア地域、これを、訪問する予定であります。",
+      "referenceEn": "Last year, I made three overseas visits to attend international meetings, including the G7 Foreign Ministers’ Meeting, and held bilateral meetings with my counterparts on the sidelines. For my first overseas trip this year, I will visit the Middle East and Asia. This will be my first bilateral visit since assuming office last year.",
+      "reviewRequirement": "Preserve three prior visits, the G7 reference, the first bilateral visit, and both regions.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "bced812556f4a93c59b2bfbfbbda59894cfb69a45728a8895c7de0f7b737591d",
+      "referenceEnSha256": "fd64950e572cbe69cc768eccf2251b72050b31961fff9fe4df997bb29c178326",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-04",
+          "startMs": 34360,
+          "endMs": 58860,
+          "streamReference": "これまで、G7外相会合など、国際会議への出席のため、既に昨年3回、海外出張を行ってきて、その中で、各国のカウンターパートとのバイ会談等も行ってきましたが、今年最初の出張は、初の二国間訪問と、こういった形で、中東と、そしてアジア地域、これを、訪問する予定であります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-04.wav",
+          "audioSha256": "480184bd851ea493668eb0087ebefa54e03360f00f769c0d825cb733e680bf39"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-05",
+      "startMs": 58860,
+      "endMs": 91360,
+      "source": "既存の国際秩序、これが大きく揺らぐ中、法の支配に基づく自由で開かれた国際秩序を維持すべく、同志国との連携、さらにはグローバル・サウスと呼ばれる国々との関係強化、かつてなく重要になってきていると考えております。",
+      "referenceEn": "At a time when the existing international order is greatly shaken, I believe working with like-minded countries and strengthening relationships with countries known as the Global South is becoming more important than ever in order to maintain a free and open international order based on the rule of law.",
+      "reviewRequirement": "Keep the rule of law, free and open order, like-minded countries, and Global South as distinct concepts.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "d78ae6eec5878e4cadbadd258f0afdc4ea7a2baa91472db72f77d33b5f6f1af9",
+      "referenceEnSha256": "278b4005e99e9bde050345933ad5e632dcff1b0ca17f167bef935934d83446cb",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-05",
+          "startMs": 58860,
+          "endMs": 91360,
+          "streamReference": "既存の国際秩序、これが大きく揺らぐ中、法の支配に基づく自由で開かれた国際秩序を維持すべく、同志国との連携、さらにはグローバル・サウスと呼ばれる国々との関係強化、かつてなく重要になってきていると考えております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-05.wav",
+          "audioSha256": "f8885b99ecb5f785530c95a31d632c0f54d9e26f0ba5e3985c9ec2be8ef18344"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-06",
+      "startMs": 91360,
+      "endMs": 105860,
+      "source": "こうした観点から、まずは、国際社会の安定にとって重要な中東地域を訪問いたします。",
+      "referenceEn": "On these grounds, I will first visit the Middle East, a key region for international stability.",
+      "reviewRequirement": "Preserve the causal transition, first visit, and international-stability rationale.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "261d28e5efa1c2c226994ddfe17ec83831afb1187b073215dd57438404ad1654",
+      "referenceEnSha256": "bb09de12d32fcf4bb2f3b09a1d9c7e9473689756956817778f5cb770f1836e0a",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-06",
+          "startMs": 91360,
+          "endMs": 105860,
+          "streamReference": "こうした観点から、まずは、国際社会の安定にとって重要な中東地域を訪問いたします。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-06.wav",
+          "audioSha256": "1c7f956fec1a7a0ca0bd15ea57606025475aeabb71af33f3f8beeefd53f47911"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-07",
+      "startMs": 110860,
+      "endMs": 143360,
+      "source": "イスラエルとパレスチナを取り巻く状況の改善のためにはまず、「包括的計画」の着実な実施が重要であり、日本としても、積極的な役割を果たす考えであります。さらに、この地域の緊張緩和と平和構築を達成していくためには、長年にわたる相互不信、この払拭というものが必要だと考えておりまして、それに向けてイスラエル、パレスチナ双方が、具体的な前向きな発言だけではなくて、行動をとっていくことが重要だと考えております。",
+      "referenceEn": "First and foremost, the robust implementation of the “Comprehensive Plan” is crucial for improving the situation surrounding Israel and Palestine, and Japan will continue to play a proactive role. Furthermore, to de-escalate tensions and build peace in this region, I believe it is necessary to overcome the longstanding mutual distrust. To this end, it is important for both Israel and Palestine to take concrete actions, rather than simply making forward-looking statements.",
+      "reviewRequirement": "Preserve the Comprehensive Plan, both sides, de-escalation, peacebuilding, and the contrast between words and actions.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "0096c74d1cbdb6e6783faaf2c1741b67629aa15a8aae7070b97f13ba15a94a66",
+      "referenceEnSha256": "f584e5fc64f8ad9f725ccd56ed29f982fe6ad07d856f1a90ede2c69047a965f7",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-07",
+          "startMs": 110860,
+          "endMs": 143360,
+          "streamReference": "イスラエルとパレスチナを取り巻く状況の改善のためにはまず、「包括的計画」の着実な実施が重要であり、日本としても、積極的な役割を果たす考えであります。さらに、この地域の緊張緩和と平和構築を達成していくためには、長年にわたる相互不信、この払拭というものが必要だと考えておりまして、それに向けてイスラエル、パレスチナ双方が、具体的な前向きな発言だけではなくて、行動をとっていくことが重要だと考えております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-07.wav",
+          "audioSha256": "4ce7edff563e560cc53c03e5a4fba922f0a42bda9594e01228e3a973fcbc6b2e"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-08",
+      "startMs": 143360,
+      "endMs": 177360,
+      "source": "日本は、イスラエル、パレスチナ双方と、良好な関係を維持してきております。今回の私の、中東訪問、この大きな目的は、こうした信頼関係を踏まえて、今後の具体的な対応について、双方に率直な考えを伝え、日本の協力についても、説明をしたいと、こんなふうに考えているところであります。",
+      "referenceEn": "Japan has maintained good relations with both Israel and Palestine. The primary purpose of my visit to the Middle East is to convey Japan’s candid views on future concrete measures to both sides, based on this foundation of trust, and to explain how Japan will cooperate.",
+      "reviewRequirement": "Keep both parties, the trust foundation, candid views, and Japan's cooperation.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "e1246e0dbe7a6515064502a323c8f4adfa217496f1082f3710df18a0ae9b26ac",
+      "referenceEnSha256": "b3a71a04874236636386b042276d33f7c8ddf485e02ff354151241429b9224b8",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-08",
+          "startMs": 143360,
+          "endMs": 177360,
+          "streamReference": "日本は、イスラエル、パレスチナ双方と、良好な関係を維持してきております。今回の私の、中東訪問、この大きな目的は、こうした信頼関係を踏まえて、今後の具体的な対応について、双方に率直な考えを伝え、日本の協力についても、説明をしたいと、こんなふうに考えているところであります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-08.wav",
+          "audioSha256": "267927642d6c2872007ec89c39e7da264a47275f0e5cbd968cace2838b9f8dfa"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-09",
+      "startMs": 175860,
+      "endMs": 214860,
+      "source": "まず、中東和平、この実現に向けて「包括的計画」、これを着実に実行していくことが重要でありますが、その次の段階を考えたときに、やはりこの相互不信というものを解消していくということがやはり地域の安定につながるという観点から、イスラエルもやるべきことがある、また、パレスチナもやるべきことがある、そのことについて、率直に日本として、考えを伝える。そして日本としても、それに向けて協力していくということを説明したいと、こんなふうに考えております。",
+      "referenceEn": "First, it is important to steadily implement the “Comprehensive Plan” to realize peace in the Middle East. In considering the next steps, resolving mutual distrust is crucial as this will lead to regional stability. In this light, there are things that Israel needs to fulfill. There are things Palestine needs to fulfill. I will convey Japan’s candid views on this matter and explain that Japan intends to cooperate toward this end.",
+      "reviewRequirement": "Preserve the obligations of both Israel and Palestine and Japan's stated intent to cooperate.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "bf22d3b103605c3e551548fe678e3575c85a3f12a300e2116aeb5e33e5957cb4",
+      "referenceEnSha256": "978e2a432ac0552f05a6fbc8172d318d0d76ec6176d3d003ff28c663cde3e9be",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-09",
+          "startMs": 175860,
+          "endMs": 214860,
+          "streamReference": "まず、中東和平、この実現に向けて「包括的計画」、これを着実に実行していくことが重要でありますが、その次の段階を考えたときに、やはりこの相互不信というものを解消していくということがやはり地域の安定につながるという観点から、イスラエルもやるべきことがある、また、パレスチナもやるべきことがある、そのことについて、率直に日本として、考えを伝える。そして日本としても、それに向けて協力していくということを説明したいと、こんなふうに考えております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-09.wav",
+          "audioSha256": "6992e689f6adfc56f8f8aa6a099277aa1c2f1f9707d8e9c5d32b273fa8a50114"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-10",
+      "startMs": 214860,
+      "endMs": 248860,
+      "source": "また、もう一つ、インド、そして、フィリピンでありますが、「自由で開かれたインド太平洋（FOIP）」の実現に向けて、重要なパートナーでありますフィリピン、インドとは、外相を始めとする要人との間で、地域情勢や国際情勢について、じっくりと議論を行い、安全保障、経済等、様々な分野で連携を強化していきたい、このように考えているところであります。",
+      "referenceEn": "I will also be visiting India and the Philippines, both of which are important partners for the realization of a “Free and Open Indo-Pacific” (FOIP). I will have in-depth discussions with their foreign ministers and other high-level officials regarding regional and international situations and strengthen cooperation in various fields, including security and the economy.",
+      "reviewRequirement": "Keep FOIP, both countries, high-level officials, regional/international situations, security, and economy.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "aa6c97b98650a51773de4933515f5b14a673efa0503865ff419ca332b965be28",
+      "referenceEnSha256": "8211e14f3f407531e9b03a1410a37e9eeb729052674e435f55eb0da3243dff88",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-10",
+          "startMs": 214860,
+          "endMs": 248860,
+          "streamReference": "また、もう一つ、インド、そして、フィリピンでありますが、「自由で開かれたインド太平洋（FOIP）」の実現に向けて、重要なパートナーでありますフィリピン、インドとは、外相を始めとする要人との間で、地域情勢や国際情勢について、じっくりと議論を行い、安全保障、経済等、様々な分野で連携を強化していきたい、このように考えているところであります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-10.wav",
+          "audioSha256": "e05fa4fe6eb14498a2f71f61419ea58a1fe3451a7092e58d3c97d2069621fe8a"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-11",
+      "startMs": 253860,
+      "endMs": 281360,
+      "source": "「自由で開かれたインド太平洋（FOIP）」の提唱から、ちょうど今年で10年を迎えるという流れで、この「自由で開かれたインド太平洋」の重要性は増していると。同時に、国際社会を取り巻く環境は変化しているわけでありまして、そういった変化に合わせて、このFOIPも、進化をさせていかなければいけない、こういった議論もできればと思っておりますし、FOIPの実現に向けて、極めて重要な国でありますインド、そして、フィリピンと、こういった点も含めて、議論を深めたいと、こんなふうに考えております。",
+      "referenceEn": "This year marks exactly ten years since Japan launched FOIP and its importance is increasing. Given that the environment surrounding the international community is changing, FOIP must evolve in response to these changes, and I hope to discuss this as well. I would like to deepen discussions on this, among others with India and the Philippines, both of which are vital countries for the realization of FOIP.",
+      "reviewRequirement": "Preserve the ten-year anniversary, FOIP's evolution, and both named partners.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "4729a768e19756c21a1dc0eea447bddd0cce4325a8c14a8f516737e32ae1ef57",
+      "referenceEnSha256": "fe9342cd4378f1928aaff17187e60497dbf92e7a6487b1a997ad02dc9e34a14b",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-11",
+          "startMs": 253860,
+          "endMs": 281360,
+          "streamReference": "「自由で開かれたインド太平洋（FOIP）」の提唱から、ちょうど今年で10年を迎えるという流れで、この「自由で開かれたインド太平洋」の重要性は増していると。同時に、国際社会を取り巻く環境は変化しているわけでありまして、そういった変化に合わせて、このFOIPも、進化をさせていかなければいけない、こういった議論もできればと思っておりますし、FOIPの実現に向けて、極めて重要な国でありますインド、そして、フィリピンと、こういった点も含めて、議論を深めたいと、こんなふうに考えております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-11.wav",
+          "audioSha256": "9530e9c6923c51091b6dad03e441cbc776892e18bb2066ec3c193c7eace9ec52"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-12",
+      "startMs": 281360,
+      "endMs": 299360,
+      "source": "私からは以上です。",
+      "referenceEn": "That concludes my opening remarks.",
+      "reviewRequirement": "Translate as a natural formal closing, not as a report about the speaker.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "fa5cdea868d53f8008fc509b7843a66eba314ffbc4d230cf280e423c19a8dda0",
+      "referenceEnSha256": "7f21bb5212dcab9406ec1191e78155c65b9045b4ec47bf7a9f9a4f03770486ae",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-12",
+          "startMs": 281360,
+          "endMs": 299360,
+          "streamReference": "私からは以上です。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-12.wav",
+          "audioSha256": "590f20afbd7590e43a6e5440c6b8132f17c0656838931a83cc310f7fdf17de2d"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-13",
+      "startMs": 299360,
+      "endMs": 325360,
+      "source": "【共同通信　恩田記者】中国の輸出規制について伺います。中国は、デュアルユースの規制に基づいて、日本への輸出規制を強化し、半導体製造の材料をダンピングの疑いで調査するとしています。経済的威圧を強めているかと思いますが、外相としての受け止めを伺います。また、デュアルユースを名目に指定したことは、日本の安保分野に対する牽制とも受け止められるかと思いますが、高市首相答弁への対抗措置として、フェーズが変化したと捉えているのか伺います。",
+      "referenceEn": "Kyodo News, ONDA: I would like to ask about China’s export control measures. China announced that it would tighten export controls on dual-use items destined for Japan in accordance with its regulations, and investigate a material used for semiconductor production from Japan on suspicion of dumping. It appears that China is ramping up economic coercion. Could you please share your thoughts on this as Foreign Minister? Additionally, the designation of dual-use items could be interpreted as a constraint on Japan’s security sector. Do you consider that China’s countermeasures to Prime Minister TAKAICHI’s response in the Diet have entered a new phase?",
+      "reviewRequirement": "Preserve the reporter attribution, dual-use controls, semiconductor material, dumping, economic coercion, and the two separate questions.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "24b3e36fa8d72662f04fd9ebf1b814160e4cc299ec5df0adf416bfffb1be8bab",
+      "referenceEnSha256": "31eb452cd01894a3dc2aee10326be233dd96ebd4fc9d1ca5ed4b3c4fd04dd0fa",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-13",
+          "startMs": 299360,
+          "endMs": 325360,
+          "streamReference": "【共同通信　恩田記者】中国の輸出規制について伺います。中国は、デュアルユースの規制に基づいて、日本への輸出規制を強化し、半導体製造の材料をダンピングの疑いで調査するとしています。経済的威圧を強めているかと思いますが、外相としての受け止めを伺います。また、デュアルユースを名目に指定したことは、日本の安保分野に対する牽制とも受け止められるかと思いますが、高市首相答弁への対抗措置として、フェーズが変化したと捉えているのか伺います。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-13.wav",
+          "audioSha256": "62acadd95323ad02bfb0421e23f649fc8c9659414f90d14437a6e17ffc4b568a"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-14",
+      "startMs": 325360,
+      "endMs": 352860,
+      "source": "まず、今回の措置でありますけれど、我が国のみをターゲットにした中国の輸出管理措置ということでありまして、これは国際的な慣行と大きく異なり、決して許容できず、極めて遺憾だと考えております。中国側に対しては、既にその旨申入れを行い、強く抗議をするとともに、措置の撤回を求めているところであります。",
+      "referenceEn": "Foreign Minister MOTEGI: First, China’s recent export control measures are targeted only at Japan. They deviate significantly from international practice and are absolutely unacceptable and deeply regrettable. We have already made a demarche to the Chinese side, strongly protested and demanded the withdrawal of these measures.",
+      "reviewRequirement": "Preserve only-Japan targeting, international practice, the strong negative judgment, demarche, protest, and demand for withdrawal.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "951209ab6ea4cab65e99d22edd5a717d7d258e30a3b8a1f5eb7e9259a7d9733b",
+      "referenceEnSha256": "708c396d87bb1535a3925815cbedbbc6b27822014af90d4e2046eb91f5e4b73f",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-14",
+          "startMs": 325360,
+          "endMs": 352860,
+          "streamReference": "まず、今回の措置でありますけれど、我が国のみをターゲットにした中国の輸出管理措置ということでありまして、これは国際的な慣行と大きく異なり、決して許容できず、極めて遺憾だと考えております。中国側に対しては、既にその旨申入れを行い、強く抗議をするとともに、措置の撤回を求めているところであります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-14.wav",
+          "audioSha256": "d94610c9cddbadc871a1b8f99b519a7d879362188fd8b4b56e81488cb9e68043"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-15",
+      "startMs": 364360,
+      "endMs": 385360,
+      "source": "また、他国政府のアンチ・ダンピング関税の調査等の一つ一つについては、コメントすることは差し控えたいと思いますが、関係省庁とも連携しながら、影響がどう出るかとか、こういった精査等、必要な対応を行っていきたいと思っております。",
+      "referenceEn": "I would like to refrain from commenting on each individual measure of another government, such as investigations into anti-dumping duties. The Ministry of Foreign Affairs (MOFA) will take necessary measures, including a thorough examination of possible impacts in coordination with relevant ministries and agencies.",
+      "reviewRequirement": "Keep the refusal to comment and the inter-ministerial impact assessment.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "020d12d38e0be4e39d735da44d5384b6f1920e335b9c3cae26fb19c8d393d16d",
+      "referenceEnSha256": "c0b98224601bb4d1e62bca869b50e5abda6b4f98268b93a8c6d66f009bab61ea",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-15",
+          "startMs": 364360,
+          "endMs": 385360,
+          "streamReference": "また、他国政府のアンチ・ダンピング関税の調査等の一つ一つについては、コメントすることは差し控えたいと思いますが、関係省庁とも連携しながら、影響がどう出るかとか、こういった精査等、必要な対応を行っていきたいと思っております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-15.wav",
+          "audioSha256": "a5112a267d7dce9d5dc8752c979c7bd27a1a0932ce71e22bed4650fdb3aec216"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-16",
+      "startMs": 377360,
+      "endMs": 403360,
+      "source": "その上で、政府として、これらの措置について、中国の意図について説明をすると、こういう立場にはないわけでありますが、米国やG7各国を始めとする関係国とも連携の上、今後も国益の観点から、毅然かつ冷静に必要な対応を行っていきたいと思っているところであります。",
+      "referenceEn": "While the Government is not in a position to explain China’s intentions regarding these measures, Japan intends to continue taking a calm, resolute, and necessary approach in view of our national interests, in close coordination with the U.S., G7 members, and other relevant countries.",
+      "reviewRequirement": "Preserve the no-position statement, U.S./G7 coordination, national interests, and calm-resolute stance.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "7ea7d6acf25544bef61a4e7bef2fbf0741b36520eb4c47e582d0263e8f549177",
+      "referenceEnSha256": "7c08895e898cd42f7619539391e6b23e9c7990f3fd896f537cbd74520006b5fb",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-16",
+          "startMs": 377360,
+          "endMs": 403360,
+          "streamReference": "その上で、政府として、これらの措置について、中国の意図について説明をすると、こういう立場にはないわけでありますが、米国やG7各国を始めとする関係国とも連携の上、今後も国益の観点から、毅然かつ冷静に必要な対応を行っていきたいと思っているところであります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-16.wav",
+          "audioSha256": "f48c14ed108ac2e3781805193bb293e70422df0d48143f2c91572a0f946441d2"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-17",
+      "startMs": 403360,
+      "endMs": 430860,
+      "source": "いずれにしても、サプライチェーンの強化、これは喫緊の課題だと思っておりまして、日本としてできることもあります。また、同盟国・同志国、また、先ほど申し上げたようなグローバル・サウスと連携しながら、サプライチェーンを強化していくということもあると考えておりまして、真の意味での、自由で開かれたこういう貿易体制、これをしっかりと、守っていきたいと、こんなふうに考えています。",
+      "referenceEn": "In any case, strengthening the resilience of supply chains is an urgent issue, and there are measures that Japan can take. Also, we can strengthen supply chains in cooperation with our ally, like-minded countries, and the Global South, which I mentioned earlier. We will firmly uphold a truly free and open trading system.",
+      "reviewRequirement": "Preserve supply-chain strengthening, the three partner categories, and the trade-system commitment; do not add resilience absent from the source.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "dbe7e17ab60f36cd1155098711b38ae66fbd9b408fa267500508b12427fa4b65",
+      "referenceEnSha256": "621273fa8ccef2d71b7ff5eb91a4b9d178552fceee5fca76768f18ab37c3ae14",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-17",
+          "startMs": 403360,
+          "endMs": 430860,
+          "streamReference": "いずれにしても、サプライチェーンの強化、これは喫緊の課題だと思っておりまして、日本としてできることもあります。また、同盟国・同志国、また、先ほど申し上げたようなグローバル・サウスと連携しながら、サプライチェーンを強化していくということもあると考えておりまして、真の意味での、自由で開かれたこういう貿易体制、これをしっかりと、守っていきたいと、こんなふうに考えています。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-17.wav",
+          "audioSha256": "917b5d0da5382f14f73c9451966421edea74f649ffdfe6149ca6e75768226eed"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-18",
+      "startMs": 461860,
+      "endMs": 494360,
+      "source": "この1月、早速、日韓、そして、日本とイタリアの首脳会談が日本で行われるということでありますが、まず、日韓については、1月13日から14日まで、李在明（イ‧ジェミョン）大統領が訪日をして、奈良における首脳会談を行うわけでありますが、本年最初の日韓間の、これまでも合意していた「シャトル外交」となると考えております。",
+      "referenceEn": "Foreign Minister MOTEGI: Japan will host summit meetings with the ROK and Italy right away this January. Regarding the former, President Lee Jae Myung will visit Japan from January 13 to January14, for a summit meeting in Nara. It will mark this year’s first “shuttle diplomacy” meeting, which has been agreed upon between the two countries.",
+      "reviewRequirement": "Preserve the January 13–14 dates, President Lee Jae Myung, Nara, and shuttle diplomacy.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "d4faee6f893ff160a910c2e302081a59297dd711a3516ec4350db6ef29988a8d",
+      "referenceEnSha256": "98cec499998bc40be97f61f416f7801ad18cf6cf5458d3585ba217d177bed3fd",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-18",
+          "startMs": 461860,
+          "endMs": 494360,
+          "streamReference": "この1月、早速、日韓、そして、日本とイタリアの首脳会談が日本で行われるということでありますが、まず、日韓については、1月13日から14日まで、李在明（イ‧ジェミョン）大統領が訪日をして、奈良における首脳会談を行うわけでありますが、本年最初の日韓間の、これまでも合意していた「シャトル外交」となると考えております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-18.wav",
+          "audioSha256": "65fd80af93a68d49fc136c0518c49a696f708c63c1fbc1cf49770bbcd42e7d77"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-19",
+      "startMs": 494360,
+      "endMs": 521860,
+      "source": "現下の戦略環境を考えたときに、日韓関係を強化していくと、また日米韓の連携を強めていくことの重要性は一層増していると考えておりまして、日本、そして、韓国両政府の間では、日韓関係を未来志向で安定的に発展させていくために、緊密な意思疎通を行っていくということで一致をしているところであります。",
+      "referenceEn": "Considering the current strategic environment, it is becoming more important to strengthen the Japan-ROK relations and Japan-U.S.-ROK cooperation. The Governments of Japan and the ROK have concurred on continuing close communication to develop the Japan-ROK relations in a future-oriented and stable manner.",
+      "reviewRequirement": "Preserve both Japan–ROK and Japan–U.S.–ROK dimensions and the future-oriented stable development meaning.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "c358b401f92674865d45b4d90597f311d2e5b4e02da47f78d5da014d62b58a7b",
+      "referenceEnSha256": "730f73142762c6f29aa719f84e8ee7afddc8cf4c54291e35f09e8dddecd6cbbb",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-19",
+          "startMs": 494360,
+          "endMs": 521860,
+          "streamReference": "現下の戦略環境を考えたときに、日韓関係を強化していくと、また日米韓の連携を強めていくことの重要性は一層増していると考えておりまして、日本、そして、韓国両政府の間では、日韓関係を未来志向で安定的に発展させていくために、緊密な意思疎通を行っていくということで一致をしているところであります。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-19.wav",
+          "audioSha256": "a505aab0dfdfab24c15d276fdb14fd3a03b6a9a12555865f0f240cfa355be2c5"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    },
+    {
+      "id": "translation-20",
+      "startMs": 520360,
+      "endMs": 541360,
+      "source": "今回、「シャトル外交」の場合、最初といいますか、昨年韓国で行われていましたが、今年の皮切りということが奈良で行われるということでありまして、今回の李在明大統領の訪日が、その重要な機会となるように、外務省としても、しっかり準備していきたいと思っております。",
+      "referenceEn": "The first “shuttle diplomacy” meeting of the year will take place in Nara, following last year’s meeting in the ROK. MOFA will undertake thorough preparations so that President Lee’s visit to Japan becomes an important opportunity for shuttle diplomacy.",
+      "reviewRequirement": "Preserve the prior-year ROK meeting, this year's first meeting in Nara, and MOFA's preparation role.",
+      "videoId": "PV0xVuhmBQI",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00200.html",
+      "referenceEnUrl": "https://www.mofa.go.jp/press/kaiken/kaikenwe_000001_00221.html",
+      "sourceTextSha256": "2f819938cbef2aeaaf1b96f44a1d70adcd8913e576a7e07b9deb10d2e8bfa3f3",
+      "referenceEnSha256": "a60f668db3b77ec794a669b0870304b7ac9764a53c146c76f9bbbe2dcd4ce747",
+      "audioWindows": [
+        {
+          "windowId": "mofa0109-translation-20",
+          "startMs": 520360,
+          "endMs": 541360,
+          "streamReference": "今回、「シャトル外交」の場合、最初といいますか、昨年韓国で行われていましたが、今年の皮切りということが奈良で行われるということでありまして、今回の李在明大統領の訪日が、その重要な機会となるように、外務省としても、しっかり準備していきたいと思っております。",
+          "alignmentCoverage": 1.0,
+          "audioFile": "testdata/audio-gold/mofa-2026-01-09/translation-wavs/translation-20.wav",
+          "audioSha256": "6f12285cea6d051c81b440483cf91e3052d2d937a463d5cbf6bd4fa99d120f70"
+        }
+      ],
+      "reviewKind": "agent-official-crosscheck",
+      "reviewedBy": "",
+      "reviewedAt": "",
+      "status": "PENDING_AGENT_REVIEW"
+    }
+  ]
+}

@@ -37,7 +37,10 @@ function loadServiceWorker({ route, cookies = [] } = {}) {
   const fetches = [];
   const sidePanelCalls = [];
   const tabUpdatedListeners = [];
+  const tabRemovedListeners = [];
   const tabMessages = [];
+  const runtimeMessages = [];
+  const offscreenState = { closeCount: 0 };
   const sessionStore = {};
   const localStore = {};
   let listener = null;
@@ -59,7 +62,7 @@ function loadServiceWorker({ route, cookies = [] } = {}) {
       onMessage: { addListener: (fn) => { listener = fn; } },
       onInstalled: { addListener: () => {} },
       onStartup: { addListener: () => {} },
-      sendMessage: async () => undefined,
+      sendMessage: async (msg) => { runtimeMessages.push(msg); return { ok: true }; },
     },
     action: { onClicked: { addListener: () => {} } },
     commands: { onCommand: { addListener: () => {} } },
@@ -99,6 +102,7 @@ function loadServiceWorker({ route, cookies = [] } = {}) {
       query: async () => [],
       create: async () => {},
       onUpdated: { addListener: (fn) => { tabUpdatedListeners.push(fn); } },
+      onRemoved: { addListener: (fn) => { tabRemovedListeners.push(fn); } },
       onActivated: { addListener: () => {} },
     },
     sidePanel: {
@@ -115,7 +119,7 @@ function loadServiceWorker({ route, cookies = [] } = {}) {
     },
     offscreen: {
       createDocument: async () => {},
-      closeDocument: async () => {},
+      closeDocument: async () => { offscreenState.closeCount += 1; },
       hasDocument: async () => false,
     },
     tabCapture: { getMediaStreamId: async () => "fixture-stream" },
@@ -165,7 +169,8 @@ function loadServiceWorker({ route, cookies = [] } = {}) {
       listener(msg, sender, resolve);
     });
 
-  return { fetches, sidePanelCalls, tabUpdatedListeners, tabMessages, send, chromeStub, sessionStore, localStore, seam,
+  return { fetches, runtimeMessages, sidePanelCalls, tabUpdatedListeners, tabMessages, offscreenState, send, chromeStub, sessionStore, localStore, seam,
+    fireTabRemoved: (tabId) => tabRemovedListeners.forEach((fn) => fn(tabId, {})),
     fireAlarm: (name) => alarmListener?.({ name }) };
 }
 
@@ -202,6 +207,67 @@ const timedtextUrl = "https://www.youtube.com/api/timedtext?v=fixture&lang=ja&fm
     assert.equal(res.error, "sp_cmd_denied");
     assert.equal(sw.tabMessages.length, 0);
     console.log("PASS: SP_CMD_PROXY refuses a non numeric tab id");
+  }
+
+  // 3b. Media events relay to the offscreen capture with the live rate/pause
+  // state. Without this, pause/seek keep collecting audio before the reset.
+  {
+    const sw = loadServiceWorker({ route: () => makeResponse({ status: 404, body: "" }) });
+    const sender = { tab: { id: 7, url: "https://www.youtube.com/watch?v=fixture" } };
+    const started = await sw.send({
+      type: "AUDIO_START_CAPTURE", tabId: 7, videoId: "fixture",
+      playhead: 12.5, playbackRate: 1.5, paused: false,
+    }, sender);
+    assert.equal(started.ok, true);
+    const startMessage = sw.runtimeMessages.find((msg) => msg?.type === "START_CAPTURE");
+    assert.equal(startMessage?.playhead, 12.5, "start must carry the initial playhead");
+    assert.equal(startMessage?.playbackRate, 1.5, "start must carry the initial playback rate");
+    assert.equal(startMessage?.paused, false, "start must carry the initial paused state");
+
+    const anchored = await Promise.race([
+      sw.send({
+        type: "AUDIO_UPDATE_PLAYHEAD", event: "seeked",
+        playhead: 33.25, playbackRate: 2, paused: false,
+      }, sender),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("AUDIO_UPDATE_PLAYHEAD did not respond")), 500)),
+    ]);
+    assert.equal(anchored.ok, true);
+    const relay = sw.runtimeMessages.find((msg) => msg?.type === "UPDATE_PLAYHEAD");
+    assert.ok(relay, "the worker must relay UPDATE_PLAYHEAD to the offscreen document");
+    assert.equal(relay.target, "offscreen");
+    assert.equal(relay.tabId, 7);
+    assert.equal(relay.event, "seeked");
+    assert.equal(relay.playhead, 33.25);
+    assert.equal(relay.playbackRate, 2);
+
+    const wrongTab = await sw.send({
+      type: "AUDIO_UPDATE_PLAYHEAD", event: "play", playhead: 1,
+      playbackRate: 1, paused: false,
+    }, { tab: { id: 8 } });
+    assert.equal(wrongTab.ok, false, "an unrelated tab must not steer the active capture");
+    console.log("PASS: the worker relays every playhead anchor and isolates it to the capture tab");
+  }
+
+  // 3c. Closing the captured tab tears down the offscreen recorder; closing an
+  // unrelated tab must not stop the active capture.
+  {
+    const sw = loadServiceWorker({ route: () => makeResponse({ status: 404, body: "" }) });
+    const sender = { tab: { id: 7, url: "https://www.youtube.com/watch?v=fixture" } };
+    assert.equal((await sw.send({
+      type: "AUDIO_START_CAPTURE", tabId: 7, videoId: "fixture",
+      playhead: 10, playbackRate: 1, paused: false,
+    }, sender)).ok, true);
+
+    sw.fireTabRemoved(8);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(sw.runtimeMessages.some((msg) => msg?.type === "STOP_CAPTURE"), false);
+    assert.equal(sw.offscreenState.closeCount, 0);
+
+    sw.fireTabRemoved(7);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(sw.runtimeMessages.filter((msg) => msg?.type === "STOP_CAPTURE").length, 1);
+    assert.equal(sw.offscreenState.closeCount, 1);
+    console.log("PASS: closing the captured tab stops only its offscreen recorder");
   }
 
   // 4. YT_FETCH reports the real throttling status instead of a fabricated 200.

@@ -1,4 +1,4 @@
-"""ASR (Automatic Speech Recognition) service using MLX Whisper on Apple Silicon Metal.
+"""ASR service using MLX Whisper on Apple Silicon Metal.
 
 Provides:
 1. Audio decoding from various containers (WebM Opus, WAV, OGG, PCM) to 16 kHz mono float32.
@@ -10,8 +10,11 @@ Provides:
 from __future__ import annotations
 
 import io
+import importlib.util
+import inspect
 import math
 import logging
+import os
 import re
 import resource
 import shutil
@@ -19,6 +22,7 @@ import subprocess
 import sys
 import threading
 import time
+from functools import lru_cache
 from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
@@ -34,19 +38,39 @@ MAX_AUDIO_DURATION_SEC = 300.0       # 5 minutes
 FFMPEG_TIMEOUT_SEC = 60
 
 MIN_AUDIO_DURATION_SEC = 0.05        # 50 ms
+# The production model invents text from silence ("日本語の字幕です。",
+# "ご視聴ありがとうございました"), and no decode parameter stops it. The gate sits
+# far below real speech (the Kantei corpus' quietest window is ~0.077 RMS).
+SILENCE_RMS_THRESHOLD = 0.002
+# Greedy decoding alone has no compression-ratio/logprob retry: a failed window
+# is returned as-is, which showed up as repeated-phrase loops. Asking for a
+# tuple keeps the first pass greedy and enables Whisper's fallback ladder.
+GREEDY_TEMPERATURE_FALLBACK = (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
 DEFAULT_MODEL_NAME = "kaiinui/kotoba-whisper-v2.0-mlx"
 DEFAULT_INITIAL_PROMPT = "こんにちは。日本語のYouTube動画の字幕です。"
 DEFAULT_AUDIO_FILTER_CHAIN = (
     "highpass=f=100,lowpass=f=8000,afftdn=nf=-25,dynaudnorm=f=150:g=15:p=0.95:b=1"
 )
 
-# The `model` request parameter reaches `path_or_hf_repo` unchecked: an
-# arbitrary value makes the bridge pull an unknown Hugging Face repo (or read
-# an arbitrary local path) on every request. Only known-good repos are served.
-ALLOWED_MODELS: tuple[str, ...] = (
-    DEFAULT_MODEL_NAME,
+# The five-model sweep found no gate winner, so production keeps the existing
+# Kotoba model and DSP baseline. The request parameter reaches model loaders
+# and must never accept an arbitrary repo.
+ALLOWED_MODELS: tuple[str, ...] = (DEFAULT_MODEL_NAME,)
+BENCHMARK_ALLOWLIST_ENV = "BRIDGE_ASR_ALLOW_BENCHMARK_MODELS"
+BENCHMARK_MODELS: tuple[str, ...] = (
     "mlx-community/whisper-large-v3-turbo",
+    "mlx-community/whisper-large-v3-mlx",
+    "mlx-community/parakeet-tdt_ctc-0.6b-ja",
+    "mlx-community/Qwen3-ASR-1.7B-8bit",
 )
+MODEL_BACKENDS: Dict[str, str] = {
+    DEFAULT_MODEL_NAME: "mlx_whisper",
+    "mlx-community/whisper-large-v3-turbo": "mlx_whisper",
+    "mlx-community/whisper-large-v3-mlx": "mlx_whisper",
+    "mlx-community/parakeet-tdt_ctc-0.6b-ja": "mlx_audio",
+    "mlx-community/Qwen3-ASR-1.7B-8bit": "mlx_audio",
+}
+MLX_AUDIO_LANGUAGE_NAMES = {"ja": "Japanese", "en": "English", "zh": "Chinese"}
 
 # One Metal model at a time: two concurrent first loads would allocate the
 # same model twice and can exhaust unified memory.
@@ -56,11 +80,19 @@ _asr_lock = threading.Lock()
 def resolve_model_name(model_name: str | None) -> str:
     """Map a requested model to an allowlisted repo id (ValueError if unknown)."""
     name = (model_name or "").strip() or DEFAULT_MODEL_NAME
-    if name not in ALLOWED_MODELS:
+    allowed = ALLOWED_MODELS
+    if os.environ.get(BENCHMARK_ALLOWLIST_ENV) == "1":
+        allowed = ALLOWED_MODELS + BENCHMARK_MODELS
+    if name not in allowed:
         raise ValueError(
-            "unsupported model; allowed: " + ", ".join(ALLOWED_MODELS)
+            "unsupported model; allowed: " + ", ".join(allowed)
         )
     return name
+
+
+def get_model_backend(model_name: str) -> str:
+    """Return the local inference backend for an allowlisted model repository."""
+    return MODEL_BACKENDS.get(model_name, "mlx_whisper")
 
 
 def is_valid_speech_text(text: str) -> bool:
@@ -71,6 +103,14 @@ def is_valid_speech_text(text: str) -> bool:
     return len(clean) > 0
 
 
+
+
+def is_probably_silence(audio: np.ndarray, threshold: float = SILENCE_RMS_THRESHOLD) -> bool:
+    """True when the window carries no signal worth decoding."""
+    samples = np.asarray(audio, dtype=np.float32).reshape(-1)
+    if samples.size == 0:
+        return True
+    return bool(np.sqrt(np.mean(np.square(samples))) < threshold)
 
 
 def build_audio_filter_chain(filter_profile: str = "enhanced") -> str:
@@ -223,12 +263,12 @@ def resample_to_16k(audio: np.ndarray, orig_sr: int) -> np.ndarray:
 
 def decode_audio_bytes(
     data: bytes,
-    preprocess: bool = True,
+    preprocess: bool = False,
     filter_profile: str = "enhanced",
 ) -> np.ndarray:
     """Decode raw audio bytes into 16 kHz mono float32 numpy array.
 
-    When preprocess=True (default), all supported inputs (WAV, WebM, OGG, etc.)
+    When preprocess=True, all supported inputs (WAV, WebM, OGG, etc.)
     are routed through FFmpeg with the speech enhancement filter chain.
     """
     if not data or len(data) == 0:
@@ -365,13 +405,13 @@ def transcribe_audio(
     no_speech_threshold: float = 0.85,
     logprob_threshold: float = -1.5,
     initial_prompt: Optional[str] = DEFAULT_INITIAL_PROMPT,
-    preprocess: bool = True,
+    preprocess: bool = False,
     fp16: bool = False,
     word_timestamps: bool = False,
     compression_ratio_threshold: Optional[float] = 2.4,
     hallucination_silence_threshold: Optional[float] = None,
 ) -> Dict[str, Any]:
-    """Transcribe audio using MLX Whisper on Apple Silicon Metal.
+    """Transcribe audio using an allowlisted MLX backend on Apple Silicon.
 
     Parameters:
     - audio_input: Raw audio bytes or 16 kHz mono float32 numpy array.
@@ -394,13 +434,15 @@ def transcribe_audio(
     # Reject an unknown repo before any audio work: the value is caller
     # controlled and ends up in `path_or_hf_repo`.
     model_name = resolve_model_name(model_name)
+    backend = get_model_backend(model_name)
 
+    # DSP stays out of the decode step so the silence gate can judge the
+    # signal the caller actually sent: dynaudnorm lifts room noise by ~10x,
+    # which put near-silence straight back over the threshold.
     if isinstance(audio_input, bytes):
-        audio = decode_audio_bytes(audio_input, preprocess=preprocess)
+        audio = decode_audio_bytes(audio_input, preprocess=False)
     elif isinstance(audio_input, np.ndarray):
         audio = to_mono_float32(audio_input)
-        if preprocess:
-            audio = apply_audio_dsp(audio)
     else:
         raise ValueError(f"Unsupported audio input type: {type(audio_input)}")
 
@@ -418,38 +460,77 @@ def transcribe_audio(
     if duration_sec > MAX_AUDIO_DURATION_SEC:
         raise ValueError(f"Audio duration exceeds {int(MAX_AUDIO_DURATION_SEC)} seconds limit ({duration_sec:.1f}s)")
 
-    import mlx_whisper
+    # Silence is not worth a model pass: decoding it produces invented
+    # captions. Returning an empty result keeps the caller's contract intact.
+    if is_probably_silence(audio):
+        return {
+            "text": "",
+            "segments": [],
+            "language": language,
+            "durationSec": round(float(duration_sec), 3),
+            "elapsedSec": 0.0,
+            "rtf": 0.0,
+            "model": model_name,
+            "backend": backend,
+            "preprocess": preprocess,
+            "fp16": fp16,
+            "timestampSource": "none",
+            "rssBytes": get_process_rss_bytes(),
+            "metalPeakBytes": None,
+            "skipped": "silence",
+        }
+
+    if preprocess:
+        audio = apply_audio_dsp(audio)
+        audio = np.ascontiguousarray(
+            np.clip(np.nan_to_num(audio, nan=0.0, posinf=0.0, neginf=0.0), -1.0, 1.0),
+            dtype=np.float32,
+        )
 
     rss_before = get_process_rss_bytes()
     start_time = time.perf_counter()
 
-    # Kotoba-Whisper (Distil-Whisper with 2-layer decoder) is highly sensitive to
-    # initial prompts on short audio slices; suppress default initial prompt for Kotoba.
-    effective_prompt = initial_prompt
-    if "kotoba" in model_name.lower() and initial_prompt == DEFAULT_INITIAL_PROMPT:
-        effective_prompt = None
+    # mlx_whisper only retries on compression-ratio/logprob failures when it
+    # receives a temperature tuple; a bare float disables the ladder.
+    decode_temperatures = (
+        GREEDY_TEMPERATURE_FALLBACK if temperature == 0.0 else (temperature,)
+    )
 
     try:
         # The Metal peak counter is process-wide: reset it so the reported
         # number covers this transcription, not the whole process lifetime.
         reset_metal_peak_memory()
         with _asr_lock:
-            raw_result = mlx_whisper.transcribe(
-                audio,
-                path_or_hf_repo=model_name,
-                language=language,
-                fp16=fp16,
-                temperature=temperature,
-                condition_on_previous_text=condition_on_previous_text,
-                no_speech_threshold=no_speech_threshold,
-                logprob_threshold=logprob_threshold,
-                initial_prompt=effective_prompt,
-                word_timestamps=word_timestamps,
-                compression_ratio_threshold=compression_ratio_threshold,
-                hallucination_silence_threshold=hallucination_silence_threshold,
-            )
+            if backend == "mlx_audio":
+                raw_result = _transcribe_with_mlx_audio(
+                    audio,
+                    model_name=model_name,
+                    language=language,
+                    temperature=temperature,
+                )
+            else:
+                import mlx_whisper
+
+                # Kotoba-Whisper is sensitive to prompts on short slices.
+                effective_prompt = initial_prompt
+                if initial_prompt == DEFAULT_INITIAL_PROMPT:
+                    effective_prompt = None
+                raw_result = mlx_whisper.transcribe(
+                    audio,
+                    path_or_hf_repo=model_name,
+                    language=language,
+                    fp16=fp16,
+                    temperature=decode_temperatures,
+                    condition_on_previous_text=condition_on_previous_text,
+                    no_speech_threshold=no_speech_threshold,
+                    logprob_threshold=logprob_threshold,
+                    initial_prompt=effective_prompt,
+                    word_timestamps=word_timestamps,
+                    compression_ratio_threshold=compression_ratio_threshold,
+                    hallucination_silence_threshold=hallucination_silence_threshold,
+                )
     except Exception as e:
-        logger.error("mlx_whisper execution failed: %s", e)
+        logger.error("%s execution failed: %s", backend, e)
         # The MLX internals stay in the log; the caller only learns that the
         # transcription failed.
         raise RuntimeError("ASR transcription failed") from e
@@ -458,13 +539,9 @@ def transcribe_audio(
     rss_after = get_process_rss_bytes()
     metal_peak = get_metal_peak_memory_bytes()
 
-    full_text = ""
-    raw_segments: List[Dict[str, Any]] = []
-    if isinstance(raw_result, dict):
-        full_text = str(raw_result.get("text", "")).strip()
-        raw_segments = raw_result.get("segments", []) or []
-    else:
-        full_text = str(raw_result).strip()
+    full_text, raw_segments, timestamp_source = _normalize_engine_result(
+        raw_result, duration_sec
+    )
 
     # Filter out single-character punctuation / token 0 collapses (e.g. '!')
     if not is_valid_speech_text(full_text):
@@ -482,6 +559,7 @@ def transcribe_audio(
             "start": round(float(seg.get("start", 0.0)), 3),
             "end": round(float(seg.get("end", 0.0)), 3),
             "text": seg_text,
+            **({"words": words} if (words := _normalize_words(seg.get("words"))) else {}),
         })
 
     if not full_text and segments:
@@ -497,25 +575,155 @@ def transcribe_audio(
         "elapsedSec": round(float(elapsed_time), 3),
         "rtf": round(float(rtf), 4),
         "model": model_name,
+        "backend": backend,
         "preprocess": preprocess,
         "fp16": fp16,
+        "timestampSource": timestamp_source,
         "rssBytes": max(rss_before, rss_after),
         "metalPeakBytes": metal_peak,
     }
 
 
+def _transcribe_with_mlx_audio(
+    audio: np.ndarray,
+    *,
+    model_name: str,
+    language: str,
+    temperature: float,
+) -> Any:
+    """Run one MLX-Audio STT model without importing it for Whisper requests."""
+    import mlx.core as mx
+
+    model = _load_mlx_audio_model(model_name)
+    generate_params = inspect.signature(model.generate).parameters
+    kwargs: Dict[str, Any] = {}
+    if "language" in generate_params:
+        kwargs["language"] = MLX_AUDIO_LANGUAGE_NAMES.get(language, language)
+    if "temperature" in generate_params:
+        kwargs["temperature"] = temperature
+    return model.generate(mx.array(audio), **kwargs)
+
+
+def _normalize_words(raw_words: Any) -> List[Dict[str, Any]]:
+    """Normalize optional engine word timestamps without inventing times."""
+    if not isinstance(raw_words, (list, tuple)):
+        return []
+    words: List[Dict[str, Any]] = []
+    for raw in raw_words:
+        if isinstance(raw, dict):
+            text = raw.get("word", raw.get("text", ""))
+            start = raw.get("start")
+            end = raw.get("end")
+        else:
+            text = getattr(raw, "word", getattr(raw, "text", ""))
+            start = getattr(raw, "start", None)
+            end = getattr(raw, "end", None)
+        text = str(text or "").strip()
+        try:
+            start_value = float(start)
+            end_value = float(end)
+        except (TypeError, ValueError):
+            continue
+        if not is_valid_speech_text(text) or not math.isfinite(start_value) or not math.isfinite(end_value):
+            continue
+        if start_value < 0 or end_value < start_value:
+            continue
+        words.append({
+            "text": text,
+            "start": round(start_value, 3),
+            "end": round(end_value, 3),
+        })
+    return words
+
+
+@lru_cache(maxsize=2)
+def _load_mlx_audio_model(model_name: str) -> Any:
+    """Load an MLX-Audio model once per server process."""
+    from mlx_audio.stt import load
+
+    return load(model_name)
+
+
+def _normalize_engine_result(
+    raw_result: Any, duration_sec: float
+) -> tuple[str, List[Dict[str, Any]], str]:
+    """Extract text and timestamped segments from an engine result."""
+    if isinstance(raw_result, dict):
+        full_text = str(raw_result.get("text", "")).strip()
+        raw_segments = raw_result.get("segments", []) or []
+    else:
+        full_text = str(getattr(raw_result, "text", raw_result)).strip()
+        raw_segments = getattr(raw_result, "segments", None)
+        if raw_segments is None:
+            raw_segments = getattr(raw_result, "sentences", None) or []
+
+    normalized: List[Dict[str, Any]] = []
+    native_timestamps = bool(raw_segments)
+    saw_timestamped_segment = False
+    for idx, seg in enumerate(raw_segments):
+        if isinstance(seg, dict):
+            text = str(seg.get("text", "")).strip()
+            start = seg.get("start")
+            end = seg.get("end")
+        else:
+            text = str(getattr(seg, "text", "")).strip()
+            start = getattr(seg, "start", None)
+            end = getattr(seg, "end", None)
+        if not is_valid_speech_text(text):
+            continue
+        if start is None or end is None:
+            native_timestamps = False
+        else:
+            saw_timestamped_segment = True
+        words = _normalize_words(
+            seg.get("words") if isinstance(seg, dict) else getattr(seg, "words", None)
+        )
+        normalized.append(
+            {
+                "id": idx,
+                "start": round(float(start or 0.0), 3),
+                "end": round(float(end if end is not None else duration_sec), 3),
+                "text": text,
+                **({"words": words} if words else {}),
+            }
+        )
+
+    # A backend without timestamps may still contribute text. Keep the API
+    # contract by treating that one result as spanning the whole slice.
+    if full_text and not normalized and is_valid_speech_text(full_text):
+        normalized = [
+            {
+                "id": 0,
+                "start": 0.0,
+                "end": round(float(duration_sec), 3),
+                "text": full_text,
+            }
+        ]
+    if not full_text and normalized:
+        full_text = " ".join(seg["text"] for seg in normalized)
+    if normalized and native_timestamps and saw_timestamped_segment:
+        timestamp_source = "native"
+    elif full_text:
+        timestamp_source = "synthesized-full-window"
+    else:
+        timestamp_source = "none"
+    return full_text, normalized, timestamp_source
+
+
 
 def get_asr_status() -> Dict[str, Any]:
     """Return runtime status of the ASR engine."""
-    mlx_available = False
-    try:
-        import mlx_whisper
-        mlx_available = True
-    except ImportError:
-        pass
+    backends = {
+        backend: importlib.util.find_spec(module) is not None
+        for backend, module in (("mlx_whisper", "mlx_whisper"), ("mlx_audio", "mlx_audio"))
+    }
+    backend_available = any(backends.values())
 
     return {
-        "available": mlx_available,
+        "available": backend_available,
+        "backend": "mlx_whisper" if backends["mlx_whisper"] else "mlx_audio",
+        "backends": backends,
+        "allowedModels": list(ALLOWED_MODELS),
         "defaultModel": DEFAULT_MODEL_NAME,
         "targetSampleRate": TARGET_SAMPLE_RATE,
         "maxDurationSec": MAX_AUDIO_DURATION_SEC,

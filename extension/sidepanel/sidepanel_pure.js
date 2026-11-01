@@ -98,7 +98,7 @@
   function captionModeDowngrade(requested, response) {
     if (!response || response.ok === false) return "";
     if (requested !== "enhanced") return "";
-    if (response.captionMode === "enhanced") return "";
+    if (response.captionMode !== "original") return "";
     return "Enhanced chưa bật (cần bật trong Cài đặt) — đang dùng Original";
   }
 

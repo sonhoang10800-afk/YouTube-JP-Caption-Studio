@@ -19,6 +19,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.main import app
+import app.services.asr as asr_service
 from app.services.asr import (
     build_audio_filter_chain,
     decode_audio_bytes,
@@ -95,7 +96,7 @@ def test_dsp_amplifies_quiet_audio():
 
 
 def test_dsp_attenuates_low_frequency_rumble():
-    """DSP highpass filter at 100Hz should attenuate 40Hz sub-bass rumble relative to speech."""
+    """DSP highpass at 100Hz should attenuate sub-bass rumble relative to speech."""
     sr = 16000
     t = np.linspace(0, 1.0, sr, endpoint=False, dtype=np.float32)
     # Composite signal: equal parts 40Hz sub-bass rumble and 1000Hz speech tone
@@ -112,9 +113,45 @@ def test_dsp_attenuates_low_frequency_rumble():
     mag_40 = float(np.max(fft_mag[np.abs(freqs - 40) < 5]))
     mag_1000 = float(np.max(fft_mag[np.abs(freqs - 1000) < 5]))
 
-    # 40Hz should have significantly less energy than 1000Hz (< 25%)
+    # Sub-bass should have significantly less energy than speech (< 25%).
     ratio = mag_40 / mag_1000
     assert ratio < 0.25, f"40Hz rumble not attenuated enough, ratio to 1000Hz was {ratio:.3f}"
+
+
+def test_dsp_preserves_length_finite_samples_and_peak_range():
+    """The real filter output must remain a valid, same-length 16 kHz waveform."""
+    sr = 16000
+    t = np.linspace(0, 1.0, sr, endpoint=False, dtype=np.float32)
+    mixed_sig = (
+        0.2 * np.sin(2 * np.pi * 20 * t)
+        + 0.2 * np.sin(2 * np.pi * 2000 * t)
+        + 0.2 * np.sin(2 * np.pi * 10000 * t)
+    )
+    buf = io.BytesIO()
+    sf.write(buf, mixed_sig, sr, format="WAV", subtype="FLOAT")
+
+    dsp_audio = decode_audio_bytes(buf.getvalue(), preprocess=True)
+
+    assert len(dsp_audio) == len(mixed_sig)
+    assert np.all(np.isfinite(dsp_audio))
+    assert float(np.max(np.abs(dsp_audio))) <= 1.0
+
+
+def test_dsp_lowpass_rejects_ultrasonic_band_noise():
+    """Energy above the 8 kHz speech band must fall relative to 2 kHz speech."""
+    sr = 32000
+    t = np.linspace(0, 1.0, sr, endpoint=False, dtype=np.float32)
+    mixed_sig = 0.3 * np.sin(2 * np.pi * 2000 * t) + 0.3 * np.sin(2 * np.pi * 12000 * t)
+    buf = io.BytesIO()
+    sf.write(buf, mixed_sig, sr, format="WAV", subtype="FLOAT")
+
+    dsp_audio = decode_audio_bytes(buf.getvalue(), preprocess=True)
+    fft_mag = np.abs(np.fft.rfft(dsp_audio))
+    freqs = np.fft.rfftfreq(len(dsp_audio), 1.0 / sr)
+    high_band = float(np.max(fft_mag[np.abs(freqs - 12000) < 50]))
+    speech_band = float(np.max(fft_mag[np.abs(freqs - 2000) < 50]))
+
+    assert high_band / speech_band < 0.25
 
 
 def test_decode_audio_bytes_preprocess_toggle():
@@ -366,16 +403,7 @@ def test_transcribe_audio_fp16_and_kotoba_prompt_handling(monkeypatch):
     assert captured_kwargs.get("initial_prompt") is None
     assert res["text"] == "テスト成功"
 
-    # 2. Whisper Turbo with default prompt -> initial_prompt preserved
-    transcribe_audio(
-        wav_bytes,
-        model_name="mlx-community/whisper-large-v3-turbo",
-        initial_prompt=DEFAULT_INITIAL_PROMPT,
-    )
-    assert captured_kwargs.get("fp16") is False
-    assert captured_kwargs.get("initial_prompt") == DEFAULT_INITIAL_PROMPT
-
-    # 3. Kotoba Whisper with explicit custom prompt -> custom prompt honored
+    # 2. Kotoba Whisper with explicit custom prompt -> custom prompt honored
     transcribe_audio(
         wav_bytes,
         model_name="kaiinui/kotoba-whisper-v2.0-mlx",
@@ -383,10 +411,10 @@ def test_transcribe_audio_fp16_and_kotoba_prompt_handling(monkeypatch):
     )
     assert captured_kwargs.get("initial_prompt") == "カスタムプロンプト"
 
-    # 4. Explicit fp16=True passed
+    # 3. Explicit fp16=True passed
     transcribe_audio(
         wav_bytes,
-        model_name="mlx-community/whisper-large-v3-turbo",
+        model_name="kaiinui/kotoba-whisper-v2.0-mlx",
         fp16=True,
     )
     assert captured_kwargs.get("fp16") is True
@@ -435,3 +463,157 @@ def test_transcribe_audio_suppresses_token0_collapse(monkeypatch):
 
     assert res["text"] == ""
     assert res["segments"] == []
+
+
+def test_transcribe_audio_passes_temperature_fallback_chain(monkeypatch):
+    """A scalar temperature disables Whisper's compression-ratio/logprob retry loop.
+
+    Measured on the official Kantei corpus (8 s slices, the extension's regime):
+    a scalar 0.0 turned one window's 38.2% CER into 92.0% (600 inserted chars of
+    repeated '日本語の字幕'); Kotoba window g03 hallucinated 71 chars the same way.
+    The retry ladder is what stops those loops, so the bridge must hand
+    mlx_whisper a tuple whenever the caller asks for greedy decoding.
+    """
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    captured = {}
+
+    def mock_transcribe(audio, **kwargs):
+        captured.update(kwargs)
+        return {"text": "テスト", "segments": []}
+
+    monkeypatch.setattr(mlx_whisper, "transcribe", mock_transcribe)
+    wav_bytes = make_sine_wav(freq=440.0, duration_sec=1.0, sr=16000)
+
+    transcribe_audio(wav_bytes, temperature=0.0)
+    assert captured["temperature"] == (0.0, 0.2, 0.4, 0.6, 0.8, 1.0)
+
+    transcribe_audio(wav_bytes, temperature=0.4)
+    assert captured["temperature"] == (0.4,)
+
+
+def test_transcribe_audio_does_not_decode_pure_silence(monkeypatch):
+    """Digital silence must not reach the model at all.
+
+    Both allowlisted models fabricate text when handed silence: turbo returned
+    '日本語の字幕です。' and 'ご視聴ありがとうございました', Kotoba returned 'B'
+    and 'ごめん'. no_speech_threshold and the prompt do not stop it, so the
+    bridge has to refuse the window before decoding.
+    """
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    calls = []
+
+    def mock_transcribe(audio, **kwargs):
+        calls.append(audio)
+        return {"text": "日本語の字幕です。", "segments": [{"id": 0, "start": 0.0, "end": 3.0, "text": "日本語の字幕です。"}]}
+
+    monkeypatch.setattr(mlx_whisper, "transcribe", mock_transcribe)
+
+    silence = np.zeros(16000 * 3, dtype=np.float32)
+    res = transcribe_audio(silence, preprocess=False)
+
+    assert calls == [], "silence was decoded instead of being skipped"
+    assert res["text"] == ""
+    assert res["segments"] == []
+    assert res["skipped"] == "silence"
+
+
+def test_transcribe_audio_still_decodes_quiet_speech(monkeypatch):
+    """The silence gate must not swallow quiet-but-real speech.
+
+    The quietest reference window peaks at 0.06 RMS; a gate tuned above that
+    would drop real captions.
+    """
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    calls = []
+
+    def mock_transcribe(audio, **kwargs):
+        calls.append(audio)
+        return {"text": "小さな声", "segments": []}
+
+    monkeypatch.setattr(mlx_whisper, "transcribe", mock_transcribe)
+
+    t = np.linspace(0, 2.0, 32000, endpoint=False, dtype=np.float32)
+    quiet = (0.06 * np.sin(2 * np.pi * 200 * t)).astype(np.float32)
+    res = transcribe_audio(quiet, preprocess=False)
+
+    assert len(calls) == 1
+    assert res["text"] == "小さな声"
+
+
+def test_silence_gate_ignores_dsp_amplification(monkeypatch):
+    """The gate must judge the input, not the normalised output.
+
+    Measured over real HTTP: 0.001 RMS room noise was skipped with
+    preprocess=false but decoded with preprocess=true, where dynaudnorm raises
+    it to ~0.011 RMS and turbo answered '日本語の字幕です。'.
+    """
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    calls = []
+
+    def mock_transcribe(audio, **kwargs):
+        calls.append(audio)
+        return {"text": "日本語の字幕です。", "segments": []}
+
+    monkeypatch.setattr(mlx_whisper, "transcribe", mock_transcribe)
+
+    rng = np.random.default_rng(7)
+    room_noise = rng.normal(0, 0.001, 16000 * 3).astype(np.float32)
+    res = transcribe_audio(room_noise, preprocess=True)
+
+    assert calls == [], "DSP amplification let near-silence reach the model"
+    assert res["text"] == ""
+    assert res["skipped"] == "silence"
+
+
+def test_text_only_result_is_marked_as_synthesized(monkeypatch):
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    monkeypatch.setattr(
+        mlx_whisper,
+        "transcribe",
+        lambda *args, **kwargs: {"text": "字幕だけ", "segments": []},
+    )
+    t = np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32)
+    audio = (0.1 * np.sin(2 * np.pi * 440 * t)).astype(np.float32)
+
+    result = transcribe_audio(audio, preprocess=False)
+
+    assert result["timestampSource"] == "synthesized-full-window"
+    assert result["segments"][0]["start"] == 0.0
+    assert result["segments"][0]["end"] == 1.0
+
+
+def test_punctuation_only_native_segment_is_marked_as_synthesized(monkeypatch):
+    mlx_whisper = fake_mlx_whisper(monkeypatch)
+    monkeypatch.setattr(
+        mlx_whisper,
+        "transcribe",
+        lambda *args, **kwargs: {
+            "text": "字幕だけ",
+            "segments": [{"start": 0.0, "end": 1.0, "text": "!"}],
+        },
+    )
+    t = np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32)
+    audio = (0.1 * np.sin(2 * np.pi * 440 * t)).astype(np.float32)
+
+    result = transcribe_audio(audio, preprocess=False)
+
+    assert result["timestampSource"] == "synthesized-full-window"
+
+
+def test_mlx_audio_model_loader_is_cached_per_server(monkeypatch):
+    """A server must load an MLX-Audio model once, not once per audio window."""
+    calls = []
+    fake_model = object()
+    fake_stt = types.SimpleNamespace(load=lambda name: calls.append(name) or fake_model)
+    fake_package = types.SimpleNamespace(stt=fake_stt)
+    monkeypatch.setitem(sys.modules, "mlx_audio", fake_package)
+    monkeypatch.setitem(sys.modules, "mlx_audio.stt", fake_stt)
+    asr_service._load_mlx_audio_model.cache_clear()
+
+    first = asr_service._load_mlx_audio_model("fake/model")
+    second = asr_service._load_mlx_audio_model("fake/model")
+
+    assert first is fake_model
+    assert second is fake_model
+    assert calls == ["fake/model"]
+    asr_service._load_mlx_audio_model.cache_clear()

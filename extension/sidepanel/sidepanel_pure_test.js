@@ -149,4 +149,22 @@ for (const section of sections) {
   );
 }
 
+// ------------------------------------------------ Enhanced downgrade response
+const DOWNGRADE = "Enhanced chưa bật (cần bật trong Cài đặt) — đang dùng Original";
+assert.strictEqual(
+  Pure.captionModeDowngrade("enhanced", { ok: true, captionMode: "enhanced" }),
+  "",
+  "an applied Enhanced mode must not show a downgrade warning"
+);
+assert.strictEqual(
+  Pure.captionModeDowngrade("enhanced", { ok: true, captionMode: "original" }),
+  DOWNGRADE,
+  "an explicit Original fallback must show the downgrade warning"
+);
+assert.strictEqual(
+  Pure.captionModeDowngrade("enhanced", { ok: true }),
+  "",
+  "a response without an applied mode is not evidence of a downgrade"
+);
+
 console.log("sidepanel_pure_test: all assertions passed");

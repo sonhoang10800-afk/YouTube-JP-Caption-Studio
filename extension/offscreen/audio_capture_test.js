@@ -1,13 +1,4 @@
-/**
- * Runtime tests for the offscreen audio capture document.
- *
- * The real module is executed inside a vm sandbox with stubbed chrome /
- * MediaRecorder globals, so the assertions below run production code paths
- * (no source-text matching):
- *  1. A getUserMedia failure must reject START_CAPTURE and report ASR_CAPTURE_ERROR.
- *  2. A slice must end on the MediaRecorder timeslice event even when no page
- *     timer ever fires (suspended/throttled offscreen document).
- */
+/** Runtime tests for the real offscreen AudioWorklet capture path. */
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -15,56 +6,53 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const SOURCE = path.join(__dirname, "audio_capture.js");
+const SAMPLE_RATE = 16000;
 
-function loadOffscreen({ getUserMedia, frozenTimers = false } = {}) {
+function loadOffscreen({ getUserMedia, responseText = "hello" } = {}) {
   const sent = [];
-  const recorders = [];
+  const fetches = [];
+  const nodes = [];
+  const closed = [];
   const state = { trackStopped: false };
   let listener = null;
 
-  class FakeRecorder {
-    static isTypeSupported() {
-      return true;
+  class FakeAudioWorkletNode {
+    constructor(context, name, options) {
+      this.context = context;
+      this.name = name;
+      this.options = options;
+      this.port = { onmessage: null };
+      this.connected = [];
+      nodes.push(this);
     }
-    constructor(stream, options) {
-      this.state = "inactive";
-      this.mimeType = (options && options.mimeType) || "audio/webm";
-      this.timeslice = null;
-      recorders.push(this);
-    }
-    start(timeslice) {
-      this.timeslice = timeslice === undefined ? null : timeslice;
-      this.state = "recording";
-    }
-    /** The browser emits this from the media pipeline — not from a page timer. */
-    emitTimeslice(size = 1024) {
-      if (this.ondataavailable) this.ondataavailable({ data: { size } });
-    }
-    stop() {
-      if (this.state === "inactive") return;
-      this.state = "inactive";
-      if (this.ondataavailable) this.ondataavailable({ data: { size: 0 } });
-      if (this.onstop) this.onstop();
-    }
+    connect(node) { this.connected.push(node); }
+    disconnect() { this.connected.length = 0; }
+  }
+
+  class FakeGain {
+    constructor() { this.gain = { value: 0 }; }
+    connect() {}
   }
 
   class FakeAudioContext {
-    constructor() {
+    constructor(options) {
+      this.sampleRate = options?.sampleRate || 48000;
       this.state = "running";
-      this.destination = {};
+      this.destination = { kind: "destination" };
+      this.audioWorklet = { addModule: async (url) => { this.workletUrl = url; } };
     }
-    async resume() {}
-    createMediaStreamSource() {
-      return { connect() {} };
-    }
-    async close() {}
+    async resume() { this.state = "running"; }
+    createMediaStreamSource() { return { connect() {} }; }
+    createGain() { return new FakeGain(); }
+    async close() { closed.push(this); }
   }
 
-  const fetches = [];
-  const cleared = [];
   const sandbox = {
     console,
     Blob,
+    ArrayBuffer,
+    DataView,
+    Float32Array,
     Math,
     Number,
     String,
@@ -73,168 +61,187 @@ function loadOffscreen({ getUserMedia, frozenTimers = false } = {}) {
     Object,
     Array,
     Set,
-    MediaRecorder: FakeRecorder,
-    // The real offscreen document has these; the ASR dispatch uses AbortSignal.timeout.
     AbortSignal,
     AbortController,
+    AudioWorkletNode: FakeAudioWorkletNode,
     fetch: async (url, options) => {
-      fetches.push({ url, options });
-      return { ok: true, json: async () => ({ text: "hello", segments: [] }) };
+      const body = Buffer.from(await options.body.arrayBuffer());
+      fetches.push({ url, options, body });
+      return { ok: true, json: async () => ({ text: responseText, segments: [] }) };
     },
     navigator: { mediaDevices: { getUserMedia } },
     window: { AudioContext: FakeAudioContext },
     chrome: {
       runtime: {
-        onMessage: {
-          addListener: (fn) => {
-            listener = fn;
-          },
-        },
-        sendMessage: async (msg) => {
-          sent.push(msg);
-          return undefined;
-        },
+        getURL: (resource) => `chrome-extension://test/${resource}`,
+        onMessage: { addListener: (fn) => { listener = fn; } },
+        sendMessage: async (msg) => { sent.push(msg); },
       },
     },
   };
-  // A frozen timer never fires — that is what a suspended offscreen document
-  // looks like to the slice timer.
-  sandbox.setTimeout = frozenTimers ? () => 0 : setTimeout;
-  sandbox.clearTimeout = (id) => {
-    cleared.push(id);
-    if (!frozenTimers) clearTimeout(id);
-  };
+  sandbox.setTimeout = setTimeout;
+  sandbox.clearTimeout = clearTimeout;
   sandbox.globalThis = sandbox;
 
   const context = vm.createContext(sandbox);
   vm.runInContext(fs.readFileSync(SOURCE, "utf8"), context, { filename: SOURCE });
 
   return {
-    cleared,
+    closed,
     fetches,
+    nodes,
     sent,
-    recorders,
     state,
-    send: (msg) =>
-      new Promise((resolve) => {
-        assert.ok(listener, "offscreen document registered no message listener");
-        listener(msg, {}, resolve);
-      }),
+    async pushPcm(seconds, fill = 0.1) {
+      const total = Math.round(seconds * SAMPLE_RATE);
+      let offset = 0;
+      while (offset < total) {
+        const count = Math.min(2048, total - offset);
+        const samples = new Float32Array(count);
+        samples.fill(fill);
+        nodes[0].port.onmessage({ data: { type: "pcm", samples } });
+        offset += count;
+        await new Promise((resolve) => setImmediate(resolve));
+      }
+    },
+    send: (msg) => new Promise((resolve) => {
+      assert.ok(listener, "offscreen document registered no message listener");
+      listener(msg, {}, resolve);
+    }),
   };
 }
 
 function fakeStream(env) {
   return {
-    getTracks: () => [
-      {
-        stop() {
-          env.state.trackStopped = true;
-        },
-      },
-    ],
+    getTracks: () => [{ stop() { env.state.trackStopped = true; } }],
   };
+}
+
+function wavInfo(buffer) {
+  assert.equal(buffer.subarray(0, 4).toString("ascii"), "RIFF");
+  assert.equal(buffer.subarray(8, 12).toString("ascii"), "WAVE");
+  assert.equal(buffer.readUInt16LE(20), 1, "PCM format");
+  assert.equal(buffer.readUInt16LE(22), 1, "mono");
+  assert.equal(buffer.readUInt32LE(24), SAMPLE_RATE);
+  assert.equal(buffer.readUInt16LE(34), 16);
+  assert.equal(buffer.readUInt32LE(40), buffer.length - 44);
+  return { samples: (buffer.length - 44) / 2, peak: buffer.readInt16LE(44) };
+}
+
+async function start(env, extra = {}) {
+  return env.send({
+    target: "offscreen",
+    type: "START_CAPTURE",
+    streamId: "stream-1",
+    tabId: 7,
+    videoId: "vid1",
+    playhead: 100,
+    playbackRate: 1,
+    paused: false,
+    ...extra,
+  });
 }
 
 (async () => {
   console.log("Running Offscreen Audio Capture Tests...");
 
-  // Test 1: getUserMedia failure must reach the caller (no silent {ok:true}).
   {
-    const env = loadOffscreen({
-      getUserMedia: async () => {
-        throw new Error("Permission denied");
-      },
-    });
-    const res = await env.send({
-      target: "offscreen",
-      type: "START_CAPTURE",
-      streamId: "stream-1",
-      tabId: 7,
-      videoId: "vid1",
-    });
-    assert.equal(res.ok, false, "capture failure must not resolve as ok");
+    const env = loadOffscreen({ getUserMedia: async () => { throw new Error("Permission denied"); } });
+    const res = await start(env);
+    assert.equal(res.ok, false);
     assert.match(res.error, /Permission denied/);
-    const err = env.sent.find((m) => m.type === "ASR_CAPTURE_ERROR");
-    assert.ok(err, "ASR_CAPTURE_ERROR must be sent to the service worker");
-    assert.equal(err.tabId, 7);
-    console.log("PASS: Test 1 capture failure rejects START_CAPTURE and reports ASR_CAPTURE_ERROR");
+    assert.ok(env.sent.some((msg) => msg.type === "ASR_CAPTURE_ERROR"));
+    console.log("PASS: capture failure rejects START_CAPTURE");
   }
 
-  // Test 2: the slice rides on the media timeslice — no page timer involved.
   {
-    const env = loadOffscreen({
-      getUserMedia: async () => fakeStream(env),
-      frozenTimers: true,
-    });
-    const res = await env.send({
-      target: "offscreen",
-      type: "START_CAPTURE",
-      streamId: "stream-1",
-      tabId: 7,
-      videoId: "vid1",
-    });
+    const env = loadOffscreen({ getUserMedia: async () => fakeStream(env) });
+    const res = await start(env);
     assert.equal(res.ok, true);
-    assert.equal(env.recorders.length, 1);
-    assert.equal(env.recorders[0].state, "recording");
-    assert.equal(env.recorders[0].timeslice, 8000, "slice length must stay 8s");
+    assert.equal(env.nodes.length, 1);
+    assert.equal(env.nodes[0].name, "pcm-capture");
+    assert.equal(env.nodes[0].options.processorOptions.chunkSize, 2048);
 
-    // The media pipeline ends the slice even though no timer ever fires.
-    env.recorders[0].emitTimeslice();
-    assert.equal(env.recorders[0].state, "inactive", "slice must stop on the timeslice event");
-    assert.equal(env.recorders.length, 2, "the next slice must start");
-    assert.equal(env.recorders[1].state, "recording");
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    assert.ok(
-      env.sent.some((m) => m.type === "ASR_CANDIDATE_RECEIVED"),
-      "the finished slice must be dispatched to the bridge"
+    await env.pushPcm(8);
+    assert.equal(env.fetches.length, 1, "a full 8-second PCM window is dispatched");
+    assert.match(
+      env.fetches[0].url,
+      /[?&]word_timestamps=true(?:&|$)/,
+      "the ASR request must opt into optional word timestamps",
     );
-    console.log("PASS: Test 2 slice boundary survives a suspended (timer-less) document");
+    assert.equal(env.fetches[0].options.headers["Content-Type"], "audio/wav");
+    const info = wavInfo(env.fetches[0].body);
+    assert.equal(info.samples, SAMPLE_RATE * 8, "the WAV must contain exactly 8 seconds");
+    assert.ok(info.peak > 3000 && info.peak < 4000, "PCM must be signed 16-bit");
+    await new Promise((resolve) => setImmediate(resolve));
+    const first = env.sent.find((msg) => msg.type === "ASR_CANDIDATE_RECEIVED");
+    assert.equal(first.startSec, 100);
+    assert.equal(first.endSec, 108);
+
+    // 1.5 s remains buffered; another 6.5 s completes the next true 8 s window.
+    await env.pushPcm(6.5);
+    assert.equal(env.fetches.length, 2);
+    await new Promise((resolve) => setImmediate(resolve));
+    const candidates = env.sent.filter((msg) => msg.type === "ASR_CANDIDATE_RECEIVED");
+    assert.equal(candidates[1].startSec, 106.5);
+    assert.equal(candidates[1].endSec, 114.5);
+    console.log("PASS: true 8-second window, 6.5-second hop and WAV 16 kHz mono");
   }
 
-  // Test 3: STOP_CAPTURE stops the recorder and releases the tab stream.
   {
-    const env = loadOffscreen({
-      getUserMedia: async () => fakeStream(env),
-    });
-    await env.send({
-      target: "offscreen",
-      type: "START_CAPTURE",
-      streamId: "stream-1",
-      tabId: 7,
-      videoId: "vid1",
-    });
+    const env = loadOffscreen({ getUserMedia: async () => fakeStream(env), responseText: "" });
+    await start(env);
+    await env.pushPcm(15, 0);
+    assert.equal(env.fetches.length, 2, "silence may still be sent to the server gate");
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(env.sent.filter((msg) => msg.type === "ASR_CANDIDATE_RECEIVED").length, 0);
+    console.log("PASS: 15 seconds of silence yields zero candidates");
+  }
+
+  {
+    const env = loadOffscreen({ getUserMedia: async () => fakeStream(env) });
+    await start(env);
+    await env.pushPcm(4);
+    await env.send({ target: "offscreen", type: "UPDATE_PLAYHEAD", event: "pause", playhead: 104, playbackRate: 1, paused: true });
+    await env.pushPcm(15);
+    assert.equal(env.fetches.length, 0, "pause must discard the partial window");
+
+    await env.send({ target: "offscreen", type: "UPDATE_PLAYHEAD", event: "play", playhead: 200, playbackRate: 1, paused: false });
+    await env.pushPcm(8);
+    await new Promise((resolve) => setImmediate(resolve));
+    const candidate = env.sent.find((msg) => msg.type === "ASR_CANDIDATE_RECEIVED");
+    assert.ok(candidate, "the resumed window must dispatch");
+    assert.deepEqual([candidate.startSec, candidate.endSec], [200, 208]);
+    console.log("PASS: pause clears a partial window and resume re-anchors the next one");
+  }
+
+  {
+    const env = loadOffscreen({ getUserMedia: async () => fakeStream(env) });
+    await start(env);
+    await env.pushPcm(3);
+    await env.send({ target: "offscreen", type: "UPDATE_PLAYHEAD", event: "seeked", playhead: 500.25, playbackRate: 1, paused: false });
+    await env.pushPcm(8);
+    await new Promise((resolve) => setImmediate(resolve));
+    const candidate = env.sent.find((msg) => msg.type === "ASR_CANDIDATE_RECEIVED");
+    assert.deepEqual([candidate.startSec, candidate.endSec], [500.25, 508.25]);
+
+    await env.send({ target: "offscreen", type: "UPDATE_PLAYHEAD", event: "ratechange", playhead: 508.25, playbackRate: 2, paused: false });
+    await env.pushPcm(8);
+    await new Promise((resolve) => setImmediate(resolve));
+    const candidates = env.sent.filter((msg) => msg.type === "ASR_CANDIDATE_RECEIVED");
+    assert.deepEqual([candidates[1].startSec, candidates[1].endSec], [508.25, 524.25]);
+    assert.equal(candidates[1].playbackRate, 2, "the candidate must carry its media-time scale");
+    console.log("PASS: seek and playback rate re-anchor without overlap drift");
+  }
+
+  {
+    const env = loadOffscreen({ getUserMedia: async () => fakeStream(env) });
+    await start(env);
     const res = await env.send({ target: "offscreen", type: "STOP_CAPTURE" });
     assert.equal(res.ok, true);
-    assert.equal(env.recorders[0].state, "inactive");
-    assert.ok(env.state.trackStopped, "tab capture tracks must be released");
-    console.log("PASS: Test 3 STOP_CAPTURE releases recorder and tab stream");
-  }
-
-  // Test 4: the ASR dispatch has a timeout, and the backstop timer is cleared
-  // once the media pipeline ends the slice (no dangling timer per slice).
-  {
-    const env = loadOffscreen({
-      getUserMedia: async () => fakeStream(env),
-    });
-    await env.send({
-      target: "offscreen",
-      type: "START_CAPTURE",
-      streamId: "stream-1",
-      tabId: 7,
-      videoId: "vid1",
-    });
-    env.recorders[0].emitTimeslice();
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const asr = env.fetches.find((f) => f.url.endsWith("/asr/transcribe"));
-    assert.ok(asr, "the slice must reach POST /asr/transcribe");
-    assert.ok(asr.options.signal, "the ASR call must carry an AbortSignal");
-    assert.equal(asr.options.signal.aborted, false, "the timeout must not fire immediately");
-    assert.ok(env.cleared.length > 0, "the slice backstop timer must be cleared");
-    // Stop capture so the next slice's backstop timer cannot keep the runner alive.
-    await env.send({ target: "offscreen", type: "STOP_CAPTURE" });
-    console.log("PASS: Test 4 ASR dispatch is bounded by a timeout and clears its backstop");
+    assert.equal(env.state.trackStopped, true);
+    assert.equal(env.closed.length, 1);
+    console.log("PASS: STOP_CAPTURE releases the worklet and tab stream");
   }
 
   console.log("ALL OFFSCREEN AUDIO CAPTURE TESTS PASSED!");

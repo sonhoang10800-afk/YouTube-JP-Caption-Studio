@@ -21,6 +21,10 @@ const path = require("path");
 const vm = require("vm");
 
 const CONTENT_JS = path.resolve(__dirname, "../content/content.js");
+const REAL_WEATHER_CUES = path.resolve(
+  __dirname,
+  "../../testdata/youtube/weathernews_FfUjmyCeK7s.ja.json",
+);
 
 /** Slice one function out of the content script source. */
 function sliceFunction(source, name) {
@@ -48,14 +52,19 @@ const production = vm.runInNewContext(
   `(() => {
     const isOwnedCue = ${sliceFunction(contentSource, "isOwnedCue")};
     const canReceiveAsrCandidate = ${sliceFunction(contentSource, "canReceiveAsrCandidate")};
+    const asrCueBounds = ${sliceFunction(contentSource, "asrCueBounds")};
     const matchCuesForSegment = ${sliceFunction(contentSource, "matchCuesForSegment")};
+    const asrNormalizeMatchText = ${sliceFunction(contentSource, "asrNormalizeMatchText")};
+    const asrTextSimilarity = ${sliceFunction(contentSource, "asrTextSimilarity")};
     const findBestCueForSegmentByIoU = ${sliceFunction(contentSource, "findBestCueForSegmentByIoU")};
+    const asrCandidateCoverage = ${sliceFunction(contentSource, "asrCandidateCoverage")};
+    const shouldReplaceAsrCandidate = ${sliceFunction(contentSource, "shouldReplaceAsrCandidate")};
     const sentenceCueRevision = ${sliceFunction(contentSource, "sentenceCueRevision")};
-    return { isOwnedCue, canReceiveAsrCandidate, matchCuesForSegment, findBestCueForSegmentByIoU, sentenceCueRevision };
+    return { isOwnedCue, canReceiveAsrCandidate, asrCueBounds, matchCuesForSegment, asrNormalizeMatchText, asrTextSimilarity, findBestCueForSegmentByIoU, asrCandidateCoverage, shouldReplaceAsrCandidate, sentenceCueRevision };
   })()`,
   { console },
 );
-const { isOwnedCue, canReceiveAsrCandidate, matchCuesForSegment, findBestCueForSegmentByIoU, sentenceCueRevision } = production;
+const { isOwnedCue, canReceiveAsrCandidate, asrCueBounds, matchCuesForSegment, asrNormalizeMatchText, asrTextSimilarity, findBestCueForSegmentByIoU, shouldReplaceAsrCandidate, sentenceCueRevision } = production;
 
 // -------------------------------------------------------------------------
 // Test 1: Invariant - Locked and User-Owned cues REJECT candidates
@@ -165,9 +174,9 @@ assert.strictEqual(sentenceCandidates[cueRevert.id], undefined, "Candidate must 
 // -------------------------------------------------------------------------
 console.log("Running Test 6: Temporal interval matching...");
 const timelineCues = [
-  { id: "c1", start_media_time: 10.0, end_media_time: 14.0 },
-  { id: "c2", start_media_time: 14.5, end_media_time: 18.0 },
-  { id: "c3", start_media_time: 20.0, end_media_time: 25.0 },
+  { id: "c1", start_media_time: 10.0, end_media_time: 14.0, source: "今日はいい天気ですね" },
+  { id: "c2", start_media_time: 14.5, end_media_time: 18.0, source: "明日は雨が降るでしょう" },
+  { id: "c3", start_media_time: 20.0, end_media_time: 25.0, source: "また来週お会いしましょう" },
 ];
 
 const matches1 = matchCuesForSegment(timelineCues, 11.0, 13.0);
@@ -179,14 +188,37 @@ assert.strictEqual(matchesSpan.length, 2, "Segment spanning across two cues shou
 assert.strictEqual(matchesSpan[0].id, "c1");
 assert.strictEqual(matchesSpan[1].id, "c2");
 
-// IoU matching on spanning segment selects best matching cue
-const bestMatch = findBestCueForSegmentByIoU(timelineCues, 13.5, 15.0);
-assert.ok(bestMatch, "Best match must not be null");
-assert.strictEqual(bestMatch.id, "c2", "c2 has greater IoU (0.5/3.5) with [13.5, 15.0] than c1 (0.5/4.5)");
+// A segment that meaningfully spans two cues must not be written into either:
+// an 8-second ASR window often straddles a cue boundary, and its text cannot
+// represent only one side.
+const bestMatch = findBestCueForSegmentByIoU(timelineCues, 13.5, 15.0, "天気ですね明日は雨");
+assert.strictEqual(bestMatch, null, "a segment spanning two cues must be rejected");
+
+const containedMatch = findBestCueForSegmentByIoU(
+  timelineCues,
+  14.5,
+  17.9,
+  "明日は雨が降るでしょう",
+);
+assert.ok(containedMatch, "a segment contained by one cue must still match");
+assert.strictEqual(containedMatch.id, "c2");
+
+const truncatedMatch = findBestCueForSegmentByIoU(timelineCues, 13.4, 14.2, "天気");
+assert.strictEqual(truncatedMatch, null, "a mostly-outside fragment must not claim a cue");
+
+const dominantTimeline = [
+  { id: "long", start_media_time: 2.0, end_media_time: 7.0, source: "長い字幕です" },
+  { id: "next", start_media_time: 7.0, end_media_time: 8.5, source: "次の字幕です" },
+];
+assert.strictEqual(
+  findBestCueForSegmentByIoU(dominantTimeline, 0.0, 8.0, "長い字幕です次の字幕です"),
+  null,
+  "mixed segment-only text must be rejected even when one cue dominates",
+);
 
 const matchesGap = matchCuesForSegment(timelineCues, 18.5, 19.5);
 assert.strictEqual(matchesGap.length, 0, "Segment in gap should match nothing");
-const bestGap = findBestCueForSegmentByIoU(timelineCues, 18.5, 19.5);
+const bestGap = findBestCueForSegmentByIoU(timelineCues, 18.5, 19.5, "間に合わない");
 assert.strictEqual(bestGap, null, "Segment in gap should yield null best cue");
 
 // -------------------------------------------------------------------------
@@ -197,12 +229,129 @@ const sentenceGroups = [
   { id: "sg:1", text: "みなさん、こんにちは。", start: 10.0, end: 14.0 },
   { id: "sg:2", text: "今日はいい天気ですね。", start: 14.5, end: 18.0 },
 ];
-const sgMatch = findBestCueForSegmentByIoU(sentenceGroups, 10.5, 13.5);
+const sgMatch = findBestCueForSegmentByIoU(sentenceGroups, 10.5, 13.5, "みなさん、こんにちは。");
 assert.ok(sgMatch, "Must match sentence group");
 assert.strictEqual(sgMatch.id, "sg:1", "Must match sg:1 correctly based on start and end properties");
 
-const sgBestSpan = findBestCueForSegmentByIoU(sentenceGroups, 13.5, 15.0);
-assert.ok(sgBestSpan, "Must match spanning segment against sentence groups");
-assert.strictEqual(sgBestSpan.id, "sg:2", "Must pick sg:2 with higher IoU");
+const sgBestSpan = findBestCueForSegmentByIoU(
+  sentenceGroups,
+  13.5,
+  15.0,
+  "こんにちは今日はいい天気ですね",
+);
+assert.strictEqual(sgBestSpan, null, "a spanning segment must not be accepted for sentence groups either");
+
+// -------------------------------------------------------------------------
+// Test 7b: Rolling cues use temporal overlap plus text evidence
+// -------------------------------------------------------------------------
+console.log("Running Test 7b: Rolling overlap and word-timestamp matching...");
+const weather = JSON.parse(fs.readFileSync(REAL_WEATHER_CUES, "utf8"));
+const rollingCues = weather.cues
+  .map((cue) => ({
+    id: cue.id,
+    start_media_time: cue.start / 1000,
+    end_media_time: (cue.start + cue.duration) / 1000,
+    source: cue.text,
+  }))
+  .filter((cue) => cue.start_media_time >= 171 && cue.start_media_time <= 205);
+
+assert.deepStrictEqual(
+  rollingCues.slice(1, 4).map((cue) => [cue.start_media_time, cue.end_media_time]),
+  [[171.64, 177.879], [174.92, 180.2], [177.879, 181.959]],
+  "the regression must use the real FfUjmyCeK7s rolling cue timings",
+);
+
+const rollingMatch = findBestCueForSegmentByIoU(
+  rollingCues,
+  177.879,
+  181.959,
+  "けども、海の中にどれだけ熱",
+);
+assert.strictEqual(rollingMatch?.id, "177879-67", "the text must disambiguate rolling overlaps");
+
+const rollingWords = [
+  { text: "ですね、", start: 174.92, end: 175.5 },
+  { text: "え、", start: 175.5, end: 176.0 },
+  { text: "海洋熱量", start: 176.0, end: 177.4 },
+  { text: "というものなんです", start: 177.4, end: 179.8 },
+];
+const wordMatch = findBestCueForSegmentByIoU(
+  rollingCues,
+  174.92,
+  180.2,
+  "ですね、え、海洋熱量というものなんです",
+  rollingWords,
+);
+assert.strictEqual(wordMatch?.id, "174920-66", "word timestamps must anchor an overlapping segment");
+
+const mixedWords = [
+  { text: "状況でした", start: 171.64, end: 173.5 },
+  { text: "最後にこちら", start: 173.5, end: 175.8 },
+  { text: "海洋熱量", start: 176.0, end: 178.5 },
+  { text: "というものなんです", start: 178.5, end: 180.2 },
+];
+assert.strictEqual(
+  findBestCueForSegmentByIoU(
+    rollingCues,
+    171.64,
+    180.2,
+    "状況でした最後にこちら海洋熱量というものなんです",
+    mixedWords,
+  ),
+  null,
+  "words split across cues must not attach mixed text to one row",
+);
+
+const equalOverlap = [
+  { id: "equal-a", start_media_time: 10.0, end_media_time: 14.0, source: "同じ字幕です" },
+  { id: "equal-b", start_media_time: 10.0, end_media_time: 14.0, source: "同じ字幕です" },
+];
+assert.strictEqual(
+  findBestCueForSegmentByIoU(equalOverlap, 11.0, 13.0, "同じ字幕です"),
+  null,
+  "equal temporal and text evidence is ambiguous",
+);
+assert.strictEqual(
+  findBestCueForSegmentByIoU(
+    [
+      { id: "empty", start_media_time: 10.0, end_media_time: 14.0, source: "" },
+    ],
+    11.0,
+    13.0,
+    "空の字幕",
+  ),
+  null,
+  "an empty cue must never receive a candidate",
+);
+
+// -------------------------------------------------------------------------
+// Test 8: Overlap windows cannot replace a fuller candidate with a fragment
+// -------------------------------------------------------------------------
+console.log("Running Test 8: Candidate completeness replacement...");
+const overlapCue = { id: "c30", start_media_time: 10.0, end_media_time: 14.0 };
+const fullCandidate = { text: "最初から最後まで", start: 10.0, end: 14.0 };
+const fragmentCandidate = { text: "最後まで", start: 12.5, end: 14.0 };
+const laterFullCandidate = { text: "最初から最後までです", start: 9.8, end: 14.1 };
+
+assert.strictEqual(
+  shouldReplaceAsrCandidate(fullCandidate, fragmentCandidate, overlapCue),
+  false,
+  "a truncated overlap candidate must not overwrite a candidate covering the cue",
+);
+assert.strictEqual(
+  shouldReplaceAsrCandidate(fragmentCandidate, fullCandidate, overlapCue),
+  true,
+  "a fuller candidate may replace a truncated one",
+);
+assert.strictEqual(
+  shouldReplaceAsrCandidate(fullCandidate, laterFullCandidate, overlapCue),
+  true,
+  "equal coverage with more text is an improvement",
+);
+assert.strictEqual(
+  shouldReplaceAsrCandidate(null, fragmentCandidate, overlapCue),
+  true,
+  "the first candidate is accepted",
+);
 
 console.log("PASS: all candidate lifecycle and data protection invariant tests passed!");

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "description": "Agent-selected Okinawa stress groups; evaluator and synthetic transforms are deterministic test augmentations, not original acoustic claims",
+  "groups": [
+    {
+      "category": "bgm",
+      "transform": "bgm",
+      "rationale": "Official speech plus deterministic synthetic musical bed; no claim that this segment originally had BGM",
+      "windowIds": [
+        "okinawa260821-base-020",
+        "okinawa260821-base-021",
+        "okinawa260821-base-022",
+        "okinawa260821-base-023",
+        "okinawa260821-base-024",
+        "okinawa260821-base-025"
+      ]
+    },
+    {
+      "category": "outro",
+      "transform": "outro",
+      "rationale": "Official closing remarks plus deterministic outro-style musical bed",
+      "windowIds": [
+        "okinawa260821-base-147",
+        "okinawa260821-base-148",
+        "okinawa260821-base-149",
+        "okinawa260821-base-150",
+        "okinawa260821-base-151",
+        "okinawa260821-base-152"
+      ]
+    },
+    {
+      "category": "noise",
+      "transform": "noise",
+      "rationale": "Official speech plus deterministic white noise at 10 dB SNR",
+      "windowIds": [
+        "okinawa260821-base-030",
+        "okinawa260821-base-031",
+        "okinawa260821-base-032",
+        "okinawa260821-base-033",
+        "okinawa260821-base-034",
+        "okinawa260821-base-035"
+      ]
+    },
+    {
+      "category": "quiet",
+      "transform": "quiet",
+      "rationale": "Official speech attenuated by about 20 dB with deterministic low room noise",
+      "windowIds": [
+        "okinawa260821-base-040",
+        "okinawa260821-base-041",
+        "okinawa260821-base-042",
+        "okinawa260821-base-043",
+        "okinawa260821-base-044",
+        "okinawa260821-base-045"
+      ]
+    },
+    {
+      "category": "dialect",
+      "transform": "none",
+      "rationale": "Official Okinawa greeting and opening speech, including ハイサイ、グスーヨー、チューウガナビラ",
+      "windowIds": [
+        "okinawa260821-base-002",
+        "okinawa260821-base-003",
+        "okinawa260821-base-004",
+        "okinawa260821-base-005",
+        "okinawa260821-base-006"
+      ]
+    },
+    {
+      "category": "homophone",
+      "transform": "none",
+      "rationale": "Official text includes kanji homophone risks: 公表/公評, 調整/調停, 報告/報告 (and kanji compounds with ambiguous readings)",
+      "windowIds": [
+        "okinawa260821-base-054",
+        "okinawa260821-base-055",
+        "okinawa260821-base-059",
+        "okinawa260821-base-069",
+        "okinawa260821-base-073",
+        "okinawa260821-base-094"
+      ]
+    },
+    {
+      "category": "multi_speaker",
+      "transform": "none",
+      "rationale": "Moderator handoff, reporter question and governor answer across consecutive official windows",
+      "windowIds": [
+        "okinawa260821-base-081",
+        "okinawa260821-base-082",
+        "okinawa260821-base-083",
+        "okinawa260821-base-084",
+        "okinawa260821-base-085",
+        "okinawa260821-base-086"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "description": "Agent-selected Okinawa stress groups; evaluator and synthetic transforms are deterministic test augmentations, not original acoustic claims (timing-fix remap by exact startMs; one missing source window omitted)",
+  "groups": [
+    {
+      "category": "bgm",
+      "transform": "bgm",
+      "rationale": "Official speech plus deterministic synthetic musical bed; no claim that this segment originally had BGM",
+      "windowIds": [
+        "okinawa260821-base-020",
+        "okinawa260821-base-021",
+        "okinawa260821-base-022",
+        "okinawa260821-base-023",
+        "okinawa260821-base-024",
+        "okinawa260821-base-025"
+      ]
+    },
+    {
+      "category": "outro",
+      "transform": "outro",
+      "rationale": "Official Q&A speech plus deterministic synthetic outro-style musical bed; no claim that this source segment was closing remarks or originally had music",
+      "windowIds": [
+        "okinawa260821-base-151",
+        "okinawa260821-base-152",
+        "okinawa260821-base-153",
+        "okinawa260821-base-154",
+        "okinawa260821-base-155",
+        "okinawa260821-base-156"
+      ]
+    },
+    {
+      "category": "noise",
+      "transform": "noise",
+      "rationale": "Official speech plus deterministic white noise at 10 dB SNR",
+      "windowIds": [
+        "okinawa260821-base-030",
+        "okinawa260821-base-031",
+        "okinawa260821-base-032",
+        "okinawa260821-base-033",
+        "okinawa260821-base-034",
+        "okinawa260821-base-035"
+      ]
+    },
+    {
+      "category": "quiet",
+      "transform": "quiet",
+      "rationale": "Official speech attenuated by about 20 dB with deterministic low room noise",
+      "windowIds": [
+        "okinawa260821-base-040",
+        "okinawa260821-base-041",
+        "okinawa260821-base-042",
+        "okinawa260821-base-043",
+        "okinawa260821-base-044",
+        "okinawa260821-base-045"
+      ]
+    },
+    {
+      "category": "dialect",
+      "transform": "none",
+      "rationale": "Official Okinawa greeting and opening speech, including ハイサイ、グスーヨー、チューウガナビラ",
+      "windowIds": [
+        "okinawa260821-base-002",
+        "okinawa260821-base-003",
+        "okinawa260821-base-004",
+        "okinawa260821-base-005",
+        "okinawa260821-base-006"
+      ]
+    },
+    {
+      "category": "homophone",
+      "transform": "none",
+      "rationale": "Official governance speech containing context-sensitive kanji compounds in the selected windows: 報告書, 公表, 可決, 統制 and 体制; this stresses kanji recognition without claiming both members of any homophone pair occur",
+      "windowIds": [
+        "okinawa260821-base-054",
+        "okinawa260821-base-055",
+        "okinawa260821-base-059",
+        "okinawa260821-base-069",
+        "okinawa260821-base-073",
+        "okinawa260821-base-094"
+      ]
+    },
+    {
+      "category": "multi_speaker",
+      "transform": "none",
+      "rationale": "Moderator handoff, reporter question and governor answer across consecutive official windows",
+      "windowIds": [
+        "okinawa260821-base-081",
+        "okinawa260821-base-082",
+        "okinawa260821-base-084",
+        "okinawa260821-base-085",
+        "okinawa260821-base-086"
+      ]
+    }
+  ]
+}

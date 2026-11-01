@@ -17,7 +17,29 @@ const CONTENT_JS = path.join(__dirname, "content.js");
 function createContext() {
   const seam = {};
   const storage = {};
+  const messages = [];
+  const windowMessageListeners = [];
   const noop = () => {};
+  const pageWindow = {
+    addEventListener(type, fn) {
+      if (type === "message") windowMessageListeners.push(fn);
+    },
+    removeEventListener(type, fn) {
+      if (type !== "message") return;
+      const index = windowMessageListeners.indexOf(fn);
+      if (index >= 0) windowMessageListeners.splice(index, 1);
+    },
+    postMessage(msg) {
+      if (msg?.source !== "hardsub-ocr-ext") return;
+      // Handler tests do not render the player bar; an absent mediaTime makes
+      // syncToPlayhead exit at its real guard before touching the DOM.
+      const result = { ok: true };
+      const event = { source: pageWindow,
+        data: { source: "hardsub-ocr-page", requestId: msg.requestId, result, cap: "fixture" } };
+      for (const listener of windowMessageListeners) listener(event);
+    },
+    location: { href: "https://www.youtube.com/watch?v=fixture" },
+  };
   const context = {
     console,
     setTimeout,
@@ -47,7 +69,7 @@ function createContext() {
         id: "fixture",
         getURL: (p) => `chrome-extension://fixture/${p}`,
         getManifest: () => ({ version: "fixture" }),
-        sendMessage: async () => ({ ok: true }),
+        sendMessage: async (msg) => { messages.push(msg); return { ok: true }; },
         onMessage: { addListener: noop },
         onInstalled: { addListener: noop },
         onStartup: { addListener: noop },
@@ -81,17 +103,17 @@ function createContext() {
       addEventListener: noop,
       removeEventListener: noop,
     },
-    window: { addEventListener: noop, removeEventListener: noop, location: { href: "https://www.youtube.com/watch?v=fixture" } },
+    window: pageWindow,
     location: { href: "https://www.youtube.com/watch?v=fixture", origin: "https://www.youtube.com" },
     navigator: { userAgent: "fixture", language: "ja" },
     fetch: async () => ({ ok: false, status: 0, json: async () => ({}) }),
   };
   context.globalThis = context;
   context.self = context;
-  return { context, seam };
+  return { context, seam, messages };
 }
 
-const { context, seam } = createContext();
+const { context, seam, messages } = createContext();
 const source = fs.readFileSync(CONTENT_JS, "utf8");
 vm.createContext(context);
 // The content script reads its shared defaults from these two, exactly like the
@@ -207,4 +229,310 @@ assert.strictEqual(content.findSavedCueForCue({ id: "new-id", source: "日本語
   "old-id", "findSavedCueForCue must return the re-keyed saved row by normalized source");
 content.setSavedCuesForTest({});
 
+// -------------------------------------------------------------------------
+// Audio anchors: every playhead-changing media event must reach the capture
+// pipeline, not only the initial start message.
+// -------------------------------------------------------------------------
+assert.strictEqual(typeof content.bindAudioAnchorEvents, "function",
+  "the content script must expose the real video-event binder");
+assert.strictEqual(typeof content.sendAudioPlayheadAnchor, "function",
+  "the content script must expose the playhead relay");
+content.setAudioListeningForTest(true);
+const listeners = new Map();
+const video = {
+  currentTime: 42.5,
+  playbackRate: 1.5,
+  paused: false,
+  addEventListener(type, fn) { listeners.set(type, fn); },
+  removeEventListener(type, fn) { if (listeners.get(type) === fn) listeners.delete(type); },
+};
+const beforeAnchors = messages.length;
+const unbindAnchors = content.bindAudioAnchorEvents(video);
+assert.deepStrictEqual([...listeners.keys()].sort(),
+  ["ended", "pause", "play", "ratechange", "seeked", "seeking"],
+  "play, pause, seek and rate changes must all be anchored");
+for (const [event, mutation] of [
+  ["play", () => { video.paused = false; video.currentTime = 43; }],
+  ["pause", () => { video.paused = true; video.currentTime = 43.5; }],
+  ["seeking", () => { video.paused = false; video.currentTime = 90; }],
+  ["seeked", () => { video.currentTime = 91; }],
+  ["ratechange", () => { video.playbackRate = 2; video.currentTime = 92; }],
+  ["ended", () => { video.paused = true; video.currentTime = 100; }],
+]) {
+  mutation();
+  listeners.get(event)?.();
+}
+const anchors = messages.slice(beforeAnchors).filter((msg) => msg?.type === "AUDIO_UPDATE_PLAYHEAD");
+assert.strictEqual(anchors.length, 6, "one anchor per real media event");
+assert.deepStrictEqual(anchors.map((msg) => msg.event), ["play", "pause", "seeking", "seeked", "ratechange", "ended"]);
+assert.deepStrictEqual(
+  anchors.map((msg) => [msg.playhead, msg.playbackRate, msg.paused]),
+  [[43, 1.5, false], [43.5, 1.5, true], [90, 1.5, false], [91, 1.5, false], [92, 2, false], [100, 2, true]],
+  "each anchor must carry the media state at that event",
+);
+unbindAnchors();
+content.setAudioListeningForTest(false);
+const afterUnbind = messages.length;
+listeners.get("play")?.();
+assert.strictEqual(messages.length, afterUnbind, "removed video listeners must not keep sending anchors");
+
+// ASR segment clocks are in captured-audio seconds. At 2x playback eight real
+// seconds cover sixteen media seconds, so segment timestamps must be scaled.
+assert.strictEqual(typeof content.asrSegmentBounds, "function",
+  "the content script must expose its ASR segment clock mapper");
+const scaledBounds = content.asrSegmentBounds(
+  { startSec: 508.25, playbackRate: 2 },
+  { start: 0.5, end: 2.0 },
+);
+assert.deepStrictEqual(
+  [scaledBounds.start, scaledBounds.end],
+  [509.25, 512.25],
+  "ASR segment offsets must scale by the capture playback rate",
+);
+const unscaledBounds = content.asrSegmentBounds(
+  { startSec: 100, playbackRate: 0 },
+  { start: 1, end: 2 },
+);
+assert.deepStrictEqual(
+  [unscaledBounds.start, unscaledBounds.end],
+  [101, 102],
+  "invalid rate metadata must fall back to real time",
+);
+
+// -------------------------------------------------------------------------
+// Apply/Skip/Undo through the real side-panel command handler.
+// -------------------------------------------------------------------------
+(async () => {
+assert.strictEqual(typeof content.handleSidePanelCmdForTest, "function",
+  "the test seam must expose the real command handler");
+assert.strictEqual(typeof content.handleAsrCandidateReceivedForTest, "function",
+  "the test seam must expose the real ASR candidate receiver");
+
+function seedHandlerCue(id = "handler-cue") {
+  const cue = {
+    id,
+    source: "元の字幕",
+    start_media_time: 10,
+    end_media_time: 12,
+    start: 10,
+    end: 12,
+    text_source: "asr",
+    rawSource: "元の生字幕",
+    normalization: { sentinel: "keep" },
+    en: "",
+    vi: "",
+  };
+  content.seedSentenceStateForTest({ videoId: "fixture", cues: [cue] });
+  return cue;
+}
+
+function seedHandlerCues(seededCues) {
+  content.seedSentenceStateForTest({ videoId: "fixture", cues: seededCues });
+}
+
+seedHandlerCue();
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 10,
+  playbackRate: 1,
+  result: { model: "fixture-asr", segments: [{ start: 0, end: 2, text: "完全な候補文" }] },
+});
+assert.strictEqual(content.getSentenceStateForTest().candidates["handler-cue"].text, "完全な候補文",
+  "a segment covering exactly one cue must produce a candidate");
+
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 9.7,
+  playbackRate: 1,
+  result: { model: "fixture-asr", segments: [{ start: 0.3, end: 2.3, text: "断片" }] },
+});
+assert.strictEqual(content.getSentenceStateForTest().candidates["handler-cue"].text, "完全な候補文",
+  "a shorter boundary fragment at equal coverage must not overwrite the candidate");
+
+const savesBeforeSilence = messages.filter((msg) => msg?.type === "SAVED_CUES_MUTATE").length;
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 30,
+  result: { model: "fixture-asr", text: "", segments: [] },
+});
+assert.strictEqual(messages.filter((msg) => msg?.type === "SAVED_CUES_MUTATE").length, savesBeforeSilence,
+  "silence without a candidate must not write sentence state");
+
+const applyResult = await content.handleSidePanelCmdForTest({ cmd: "accept_asr_candidate", id: "handler-cue" });
+assert.strictEqual(applyResult.ok, true, "Apply must succeed through the real handler");
+assert.strictEqual(content.getCues()[0].source, "完全な候補文", "Apply must replace the cue source");
+assert.strictEqual(content.getCues()[0].text_source, "asr:fixture-asr",
+  "Apply must preserve the candidate model provenance");
+assert.strictEqual(content.getSentenceStateForTest().candidates["handler-cue"], undefined,
+  "Apply must clear the applied candidate");
+assert.ok(content.getSentenceStateForTest().undoRevisions["handler-cue"],
+  "Apply must record the pre-apply revision for Undo");
+
+const undoResult = await content.handleSidePanelCmdForTest({ cmd: "undo_sentence", id: "handler-cue" });
+assert.strictEqual(undoResult.ok, true, "Undo must succeed before any later edit");
+assert.strictEqual(content.getCues()[0].source, "元の字幕", "Undo must restore the exact pre-apply source");
+assert.strictEqual(content.getCues()[0].rawSource, "元の生字幕",
+  "Undo must restore the exact raw source");
+assert.strictEqual(JSON.stringify(content.getCues()[0].normalization), JSON.stringify({ sentinel: "keep" }),
+  "Undo must restore pre-apply normalization metadata");
+assert.strictEqual(content.getCues()[0].text_source, "asr",
+  "Undo must restore the pre-apply text source");
+
+seedHandlerCue("skip-cue");
+content.seedSentenceCandidatesForTest({
+  "skip-cue": { text: "捨てる候補", provenance: "asr:fixture", model: "fixture-asr", start: 10, end: 12 },
+});
+const skipResult = await content.handleSidePanelCmdForTest({ cmd: "revert_asr_candidate", id: "skip-cue" });
+assert.strictEqual(skipResult.ok, true, "Skip must succeed through the real handler");
+assert.strictEqual(content.getSentenceStateForTest().candidates["skip-cue"], undefined,
+  "Skip must clear the candidate");
+assert.strictEqual(content.getCues()[0].source, "元の字幕", "Skip must not edit the cue");
+
+seedHandlerCue("stale-undo-cue");
+content.seedSentenceCandidatesForTest({
+  "stale-undo-cue": { text: "適用する候補", provenance: "asr:fixture", model: "fixture-asr", start: 10, end: 12 },
+});
+await content.handleSidePanelCmdForTest({ cmd: "accept_asr_candidate", id: "stale-undo-cue" });
+content.getCues()[0].source = "その後の手編集";
+const staleUndo = await content.handleSidePanelCmdForTest({ cmd: "undo_sentence", id: "stale-undo-cue" });
+assert.strictEqual(staleUndo.ok, false, "Undo must reject a cue changed after Apply");
+assert.match(staleUndo.error, /Sentence changed/, "stale Undo must explain the revision mismatch");
+assert.strictEqual(content.getCues()[0].source, "その後の手編集", "stale Undo must preserve the later edit");
+
+seedHandlerCues([
+  {
+    id: "rolling-a",
+    source: "状況でした。で、最後にこちら。こちらが",
+    start_media_time: 171.64,
+    end_media_time: 177.879,
+    start: 171.64,
+    end: 177.879,
+    text_source: "yt",
+  },
+  {
+    id: "rolling-b",
+    source: "ですね、え、海洋熱量というものなんです",
+    start_media_time: 174.92,
+    end_media_time: 180.2,
+    start: 174.92,
+    end: 180.2,
+    text_source: "yt",
+  },
+  {
+    id: "rolling-c",
+    source: "けども、海の中にどれだけ熱",
+    start_media_time: 177.879,
+    end_media_time: 181.959,
+    start: 177.879,
+    end: 181.959,
+    text_source: "yt",
+  },
+]);
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 174.92,
+  playbackRate: 1,
+  result: {
+    model: "fixture-asr",
+    segments: [{
+      start: 0,
+      end: 5.28,
+      text: "ですね、え、海洋熱量というものなんです",
+      words: [
+        { text: "ですね、", start: 0, end: 0.58 },
+        { text: "え、", start: 0.58, end: 1.08 },
+        { text: "海洋熱量", start: 1.08, end: 2.48 },
+        { text: "というものなんです", start: 2.48, end: 4.88 },
+      ],
+    }],
+  },
+});
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["rolling-b"]?.text,
+  "ですね、え、海洋熱量というものなんです",
+  "word timestamps must bind an overlapping ASR segment to its real cue",
+);
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["rolling-a"],
+  undefined,
+  "an overlapping neighbor must not receive the same candidate",
+);
+
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 171.64,
+  playbackRate: 1,
+  result: {
+    model: "fixture-asr",
+    segments: [{
+      start: 0,
+      end: 8.56,
+      text: "状況でした。で、最後にこちら。こちらが ですね、え、海洋熱量というものなんです",
+      words: [
+        { text: "状況でした。", start: 0, end: 1.86 },
+        { text: "最後にこちら。", start: 1.86, end: 4.16 },
+        { text: "海洋熱量", start: 4.36, end: 6.86 },
+        { text: "というものなんです", start: 6.86, end: 8.56 },
+      ],
+    }],
+  },
+});
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["rolling-a"]?.text,
+  undefined,
+  "a mixed ASR window must not create a candidate for either overlapping cue",
+);
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["rolling-b"]?.text,
+  "ですね、え、海洋熱量というものなんです",
+  "a mixed neighboring window must not overwrite the correct cue candidate",
+);
+
+seedHandlerCues([
+  {
+    id: "mixed-a",
+    source: "ああああああああああ",
+    start_media_time: 10,
+    end_media_time: 20,
+    start: 10,
+    end: 20,
+    text_source: "yt",
+  },
+  {
+    id: "mixed-b",
+    source: "いいいいいいいいいい",
+    start_media_time: 20,
+    end_media_time: 25,
+    start: 20,
+    end: 25,
+    text_source: "yt",
+  },
+]);
+const mixedWords = [];
+for (let t = 10; t < 18.5; t += 0.5) mixedWords.push({ text: "ああ", start: t, end: t + 0.5 });
+for (let t = 20; t < 21.5; t += 0.5) mixedWords.push({ text: "いい", start: t, end: t + 0.5 });
+await content.handleAsrCandidateReceivedForTest({
+  videoId: "fixture",
+  startSec: 0,
+  playbackRate: 1,
+  result: {
+    model: "fixture-asr",
+    segments: [{ start: 10, end: 21.5, text: mixedWords.map((word) => word.text).join(""), words: mixedWords }],
+  },
+});
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["mixed-a"],
+  undefined,
+  "an 85/15 mixed ASR window must not create a candidate for the majority cue",
+);
+assert.strictEqual(
+  content.getSentenceStateForTest().candidates["mixed-b"],
+  undefined,
+  "an 85/15 mixed ASR window must not create a candidate for the minority cue",
+);
+
 console.log("content_test: all assertions passed");
+})().catch((error) => {
+  console.error(error.stack || error.message);
+  process.exitCode = 1;
+});
