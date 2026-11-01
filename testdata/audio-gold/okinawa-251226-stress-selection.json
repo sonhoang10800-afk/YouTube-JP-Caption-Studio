@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "description": "Disjoint Okinawa stress windows; acoustic transforms are deterministic augmentations and require human listening approval",
+  "groups": [
+    {
+      "category": "bgm",
+      "transform": "bgm",
+      "rationale": "Official speech window plus deterministic musical bed",
+      "windowIds": [
+        "okinawa251226-070",
+        "okinawa251226-071",
+        "okinawa251226-072",
+        "okinawa251226-073",
+        "okinawa251226-074",
+        "okinawa251226-075"
+      ]
+    },
+    {
+      "category": "outro",
+      "transform": "outro",
+      "rationale": "Closing remarks plus deterministic outro-style musical bed",
+      "windowIds": [
+        "okinawa251226-238",
+        "okinawa251226-239",
+        "okinawa251226-240",
+        "okinawa251226-241",
+        "okinawa251226-242",
+        "okinawa251226-243"
+      ]
+    },
+    {
+      "category": "noise",
+      "transform": "noise",
+      "rationale": "Official speech window plus deterministic 10 dB SNR white noise",
+      "windowIds": [
+        "okinawa251226-050",
+        "okinawa251226-051",
+        "okinawa251226-052",
+        "okinawa251226-053",
+        "okinawa251226-054",
+        "okinawa251226-055"
+      ]
+    },
+    {
+      "category": "quiet",
+      "transform": "quiet",
+      "rationale": "Official speech window attenuated by about 20 dB with low room noise",
+      "windowIds": [
+        "okinawa251226-030",
+        "okinawa251226-031",
+        "okinawa251226-032",
+        "okinawa251226-033",
+        "okinawa251226-034",
+        "okinawa251226-035"
+      ]
+    },
+    {
+      "category": "dialect",
+      "transform": "none",
+      "rationale": "Official opening contains Uchinaaguchi greetings and closing expression",
+      "windowIds": [
+        "okinawa251226-001",
+        "okinawa251226-002",
+        "okinawa251226-003",
+        "okinawa251226-004",
+        "okinawa251226-005"
+      ]
+    },
+    {
+      "category": "homophone",
+      "transform": "none",
+      "rationale": "Windows contain official terms such as 規格 and 供用 that the timing-only captions confuse with homophones",
+      "windowIds": [
+        "okinawa251226-010",
+        "okinawa251226-011",
+        "okinawa251226-012",
+        "okinawa251226-017",
+        "okinawa251226-018",
+        "okinawa251226-019"
+      ]
+    },
+    {
+      "category": "multi_speaker",
+      "transform": "none",
+      "rationale": "Q&A windows span the moderator, a reporter question and the governor's answer",
+      "windowIds": [
+        "okinawa251226-107",
+        "okinawa251226-108",
+        "okinawa251226-109",
+        "okinawa251226-110",
+        "okinawa251226-111",
+        "okinawa251226-112"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,534 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-10-29",
+  "status": "PENDING_HUMAN_REVIEW",
+  "purpose": "Fixed 20-cue VI/EN quality rubric for live Gemini testing",
+  "sourceManifest": "testdata/audio-gold/mofa-0729-clean-8s-6.5s.manifest.json",
+  "scoring": {
+    "scale": "0-2 for each field",
+    "pass": "all eight fields per cue equal 2"
+  },
+  "reviews": [],
+  "cues": [
+    {
+      "id": "translation-01",
+      "sourceWindowId": "mofa0729-clean-001",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 33299,
+      "endMs": 41299,
+      "source": "え8月1日から外務省の機構改革が行われますもう既",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the date 8月1日 and the exact institutional reform meaning.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-02",
+      "sourceWindowId": "mofa0729-clean-007",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 72299,
+      "endMs": 80299,
+      "source": "に向けた準備を加速すべく同じく8月1日付で2027",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep 2027, the 8月1日 effective date, and the exposition office name/meaning.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-03",
+      "sourceWindowId": "mofa0729-clean-010",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 91799,
+      "endMs": 99799,
+      "source": "的に外交政策に取り組んでまいります2番目に日韓",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Preserve the transition into the second agenda item (Japan–ROK foreign ministers).",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-04",
+      "sourceWindowId": "mofa0729-clean-015",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 137299,
+      "endMs": 145299,
+      "source": "地域情勢や国際情勢日韓米の協力について趙長官",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the country pair and the minister title; do not invent a speaker.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-05",
+      "sourceWindowId": "mofa0729-clean-018",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 163299,
+      "endMs": 171299,
+      "source": "院選期間中の外国勢力からの選挙介入についてお伺いします政府内で介入に警鐘を鳴らす発言が相次ぎ内閣官房への対策組織設置などを求める声も上がっています",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep SNS, foreign interference, election period, and the warning meaning.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-06",
+      "sourceWindowId": "mofa0729-clean-020",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 195799,
+      "endMs": 203799,
+      "source": "snsを使った偽情報の拡散あるいは外国勢力からの選挙介入についてはしっかり対応することが必要だと考えております",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the negation-free policy statement and both disinformation/interference objects.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-07",
+      "sourceWindowId": "mofa0729-clean-026",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 247799,
+      "endMs": 255799,
+      "source": "我が国の外交政策に関する情報空間の動向についてはaiなども活用しながら情報収集",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep AI as described; do not translate the speaker’s policy stance as personal opinion.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-08",
+      "sourceWindowId": "mofa0729-clean-029",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 267299,
+      "endMs": 275299,
+      "source": "引き続き関係省庁とも緊密に連携しながら必要な対処を行っていきたいと思います",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Preserve continued coordination with relevant ministries and the required response.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-09",
+      "sourceWindowId": "mofa0729-clean-031",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 280299,
+      "endMs": 288299,
+      "source": "これまでもg7などの多国間の枠組みに加え米国など同志国間",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep G7, the United States, like-minded countries, and the information-sharing meaning.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-10",
+      "sourceWindowId": "mofa0729-clean-036",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 332299,
+      "endMs": 340299,
+      "source": "我が国は御承知のように二国家解決これを一貫して",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the two-state solution and the assertion that the position has not changed.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-11",
+      "sourceWindowId": "mofa0729-clean-039",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 351799,
+      "endMs": 359799,
+      "source": "これに向けたパレスチナ人の努力を我が国は支援してまいりました",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep Palestinian people, their efforts, and Japan’s support, with correct plural reference.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-12",
+      "sourceWindowId": "mofa0729-clean-046",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 397299,
+      "endMs": 405299,
+      "source": "パレスチナの国家承認につきましてはその適切な時期や態様も含めて",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Preserve the cautious “timing and modality” wording; do not state recognition has occurred.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-13",
+      "sourceWindowId": "mofa0729-clean-051",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 429799,
+      "endMs": 437799,
+      "source": "促進会合の閣僚級会合を開催いたしましたここでは人道",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the ministerial meeting and its Palestinian-development topic without adding outcomes.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-14",
+      "sourceWindowId": "mofa0729-clean-058",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 488299,
+      "endMs": 496299,
+      "source": "に危害を加えたというような理由で拘束された17人の日本人の方のうち9人の方が日本の情報",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the exact counts 17 and 9 Japanese nationals and the alleged-condition framing.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-15",
+      "sourceWindowId": "mofa0729-clean-060",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 501299,
+      "endMs": 509299,
+      "source": "認識しているという報道があったのですが事実関係について伺いますまた併せて関連してビジネス等々で中国に訪問したり滞在したり常駐したりされる方に注意喚起があればそれを伺いたいと思います",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Distinguish reports from established fact; preserve the request for caution when visiting/staying in China.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-16",
+      "sourceWindowId": "mofa0729-clean-063",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 533799,
+      "endMs": 541799,
+      "source": "ては公安調査庁にお尋ねいただきたいと思います政府としては中国における拘",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep the referral to the Public Security Intelligence Agency; do not attribute its answer to the Foreign Ministry.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-17",
+      "sourceWindowId": "mofa0729-clean-069",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 572799,
+      "endMs": 580799,
+      "source": "22日にもスポット情報という形で改めて注意喚起を促して",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep spot information, 22nd, and the renewed caution notice.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-18",
+      "sourceWindowId": "mofa0729-clean-075",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 689799,
+      "endMs": 697799,
+      "source": "ad9におきましても我が国として西サハラを招待しないという方針に変更はありません",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Preserve the negation: Japan’s policy not to invite Western Sahara has not changed.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-19",
+      "sourceWindowId": "mofa0729-clean-078",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 709299,
+      "endMs": 717299,
+      "source": "ましてはこれまでも共催者であるau委員会と協議を行ってきておりますがその詳細",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Keep TICAD, the AU Commission as co-host, and the consultation meaning.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    },
+    {
+      "id": "translation-20",
+      "sourceWindowId": "mofa0729-clean-082",
+      "videoId": "gZk6MVNz43k",
+      "startMs": 735299,
+      "endMs": 743299,
+      "source": "御指摘のあったポリサリオ戦線をテロ組織に指定しているといった事実はございません",
+      "sourceUrl": "https://www.mofa.go.jp/mofaj/press/kaiken/kaikenw_000001_00153.html",
+      "reviewRequirement": "Preserve the negation: there is no fact that a state-designated Polisario Front as a terrorist organization.",
+      "evaluations": {
+        "vi": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        },
+        "en": {
+          "meaning": null,
+          "naturalness": null,
+          "fidelity": null,
+          "format": null
+        }
+      },
+      "reviewedBy": "",
+      "reviewedAt": ""
+    }
+  ]
+}

@@ -227,7 +227,10 @@ chrome.tabs.onUpdated.addListener(async (tabId, _info, tab) => {
   await syncSidePanelForTab(tabId, tab.url);
 });
 
-chrome.tabs.onRemoved?.addListener?.((tabId) => _sidePanelApplied.delete(tabId));
+chrome.tabs.onRemoved?.addListener?.((tabId) => {
+  _sidePanelApplied.delete(tabId);
+  if (tabId === _audioCaptureTabId) void handleAudioStopCapture().catch(() => {});
+});
 
 chrome.tabs.onActivated.addListener(async ({ tabId }) => {
   try {
@@ -238,6 +241,7 @@ chrome.tabs.onActivated.addListener(async ({ tabId }) => {
 
 /** Set while the offscreen document is closing — a start must wait for it. */
 let _offscreenClosing = null;
+let _audioCaptureTabId = null;
 
 async function ensureOffscreenDocument() {
   if (!chrome.offscreen?.createDocument) return;
@@ -289,17 +293,39 @@ async function handleAudioStartCapture(msg, sender) {
     streamId,
     tabId,
     videoId: msg.videoId,
-    playhead: msg.playhead || 0,
+    playhead: Number(msg.playhead) || 0,
+    playbackRate: Number(msg.playbackRate) > 0 ? Number(msg.playbackRate) : 1,
+    paused: !!msg.paused,
   });
   // The offscreen document reports its own failures (getUserMedia denied, …):
   // a silent {ok:true} left the overlay "listening" with no recorder.
   if (!res?.ok) {
     throw new Error(res?.error || "Audio capture failed to start");
   }
+  _audioCaptureTabId = tabId;
   return { ok: true };
 }
 
+async function handleAudioUpdatePlayhead(msg, sender) {
+  const tabId = msg.tabId || sender?.tab?.id;
+  if (!Number.isInteger(tabId) || tabId !== _audioCaptureTabId) {
+    return { ok: false, error: "not_capturing" };
+  }
+  const res = await chrome.runtime.sendMessage({
+    target: "offscreen",
+    type: "UPDATE_PLAYHEAD",
+    tabId,
+    event: String(msg.event || ""),
+    playhead: Math.max(0, Number(msg.playhead) || 0),
+    playbackRate: Number(msg.playbackRate) > 0 ? Number(msg.playbackRate) : 1,
+    paused: !!msg.paused,
+  });
+  return res?.ok === false ? res : { ok: true };
+}
+
 async function handleAudioStopCapture() {
+  const captureTabId = _audioCaptureTabId;
+  _audioCaptureTabId = null;
   try {
     await chrome.runtime.sendMessage({
       target: "offscreen",
@@ -309,7 +335,7 @@ async function handleAudioStopCapture() {
   // Only after the stop is acknowledged — otherwise the recorder would keep
   // running inside a document that is about to disappear.
   await closeOffscreenDocument();
-  return { ok: true };
+  return { ok: true, tabId: captureTabId };
 }
 
 /**
@@ -395,6 +421,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     handleAudioStopCapture(msg, sender)
       .then(sendResponse)
       .catch((err) => sendResponse({ ok: false, error: String(err) }));
+    return true;
+  }
+  if (msg?.type === "AUDIO_UPDATE_PLAYHEAD") {
+    handleAudioUpdatePlayhead(msg, sender)
+      .then(sendResponse)
+      .catch((err) => sendResponse({ ok: false, error: String(err?.message || err) }));
     return true;
   }
   if (msg?.type === "ASR_CANDIDATE_RECEIVED") {

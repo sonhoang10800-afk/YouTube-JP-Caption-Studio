@@ -2,9 +2,38 @@
 
 Append-only. Each entry starts with `## [YYYY-MM-DD] kind | Title` so `rg '^## \[' wiki/log.md | tail` works.
 
+## [2026-11-01] ingest | Audio + Enhanced continuation — rolling FAIL, boundary fix
+
+- Continued `plan/audio-enhanced-pass-2026-11-01.md` in the same worktree;
+  reviewed beam search and rolling context without changing the quality gates.
+- Beam search is unavailable in installed `mlx-whisper`; the provisional option
+  was removed. Rolling Turbo reached clean CER 10.944653% and stress 32.277628%;
+  Kotoba was worse at 21.639617% / 41.711590%. No local winner exists.
+- Independent review caught A→B→A stale context. Fixed by retaining only the
+  immediately previous decoded window, resetting on video/gap, and capping the
+  tail at 200 characters; red/green regression and `116 passed, 5 skipped`.
+- Translation prompt 16 remains BLOCKED (`omniroute=missing`); no fresh 40-pair
+  review or human sign-off. No cloud ASR, audio upload, model promotion, commit
+  or evidence upload was performed.
+- Final evidence is `FAIL`: `.test-evidence/20261101-225522-audio-enhanced-continuation-2026-11-01`
+  (local only, 131 artifacts). Prior sidepanel E2E remains referenced from
+  `.test-evidence/20261101-015355-audio-enhanced-pass-2026-11-01`, not rerun.
+
 ## [2026-09-19] ingest | Open Code Review verification & comprehensive hardening
 - Fixed OCR review findings: restored timedtext_parse routing tests, hardened dictionary scalar cache against empty/None values, added non-EN/VI language guard and O(1) Map lookup to bilingual styling, added renderRubyHtml unit tests, restored sidepanel header settings modal trigger, guarded content.js keydown against modifier keys (Ctrl/Cmd/Alt), and hardened getSortedCues cache with array length validation.
 - Verification: 20/20 pytests, 6/6 live Chrome DOM tests, 6/6 native mouse/keyboard QA, wiki link lint, anti-fake test gate passed with exit code 0.
+
+## [2026-11-01] ingest | Audio + Enhanced PASS attempt — FAIL
+
+- Filed `review/audio-enhanced-pass-2026-11-01.md`; new topic
+  `wiki/topics/audio-enhanced-pass-2026-11-01.md`.
+- Audio path: word timestamps, ambiguity guard, real sidepanel
+  Apply/Skip/Undo, Enhanced/Original and native Reload passed in the worktree.
+- Gate remains **FAIL**: best clean CER 14.523512% vs ≤ 5.0%, stress CER 25.0%;
+  prompt-16 live rerun blocked by missing OmniRoute connection and human
+  sign-off is not verified. No model promotion and no cloud ASR.
+- Updated the Audio Listening Model topic and index. Evidence is local-only at
+  `.test-evidence/20261101-015355-audio-enhanced-pass-2026-11-01`.
 
 ## [2026-09-19] cleanup | Purge pre-2026-09 plans and reviews
 - Purged 32 plans and 22 reviews dated before 2026-09-01 per user request.

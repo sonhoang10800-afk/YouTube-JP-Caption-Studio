@@ -1,9 +1,9 @@
 # Audio Listening Model (Experimental ASR Spike)
 
 <!-- date: 2026-10-12 -->
-<!-- status: gated M0-M3 implemented; waiting human auditory ground truth -->
+<!-- status: M0-M3 implemented; 2026-11-01 enhanced attempt FAIL at ASR gate -->
 <!-- raw: plan/audio-listening-model-2026-10-12.md -->
-<!-- reviews: review/audio-access-feasibility-2026-10-12.md, review/asr-benchmark-2026-10-12.md -->
+<!-- reviews: review/audio-access-feasibility-2026-10-12.md, review/asr-benchmark-2026-10-12.md, review/audio-enhanced-pass-2026-11-01.md -->
 
 Đường dẫn nghe audio thử nghiệm ("listen to audio") kiểm tra văn bản phụ đề tiếng Nhật tự động của YouTube với âm thanh thực tế, đề xuất các sửa đổi dưới dạng **ứng viên (candidates)** có provenance và khả năng Hoàn tác (Undo).
 
@@ -19,6 +19,23 @@
   - Giao diện Sidepanel: Nút bật/tắt `#sp-audio-mode`, hiển thị badge ứng viên với 2 nút `Áp dụng` (`sp-candidate-accept`) và `Bỏ qua` (`sp-candidate-revert`), tạo revision Undo an toàn.
   - Runtime handlers: `handleAsrCandidateReceived`, `getContentTabId`, `matchCuesForSegment` trong `extension/content/content.js`.
 
+## Đợt Enhanced 2026-11-01
+
+Kết quả đầy đủ: [Audio + Enhanced PASS attempt](audio-enhanced-pass-2026-11-01.md).
+
+- **FAIL**: baseline clean CER tốt nhất 14.523512%; rolling Turbo cải thiện còn
+  10.944653% nhưng stress 32.277628%, vẫn xa gate ≤ 5.0% và biên +2.0 pp. Không
+  có winner và không promote model.
+- Candidate matcher, word timestamps, real sidepanel Apply/Skip/Undo và
+  Enhanced/Original/reload đã pass trong worktree.
+- Translation vẫn thiếu prompt-16 live run và human sign-off; 8/40 cặp prompt 15
+  dưới chuẩn.
+- Beam search được thử thật nhưng backend `mlx-whisper` hiện tại không hỗ trợ;
+  option đã được gỡ. Rolling context chỉ giữ cửa sổ ngay trước, reset ở
+  video/gap, cap 200 ký tự và có regression A→B→A.
+- Cloud ASR: **NOT TESTED**; cần approval riêng. Rolling DSP-off và raw timestamp
+  range vẫn chưa được chứng minh đầy đủ.
+
 ## Code anchors
 
 - [`plan/audio-listening-model-2026-10-12.md`](../../plan/audio-listening-model-2026-10-12.md): Bản kế hoạch chi tiết từng cổng (gated plan).
@@ -31,3 +48,4 @@
 - [`local-bridge/app/services/asr.py`](../../local-bridge/app/services/asr.py): Service xử lý MLX Whisper, downmixing, polyphase resample và decode audio.
 - [`extension/offscreen/audio_capture.js`](../../extension/offscreen/audio_capture.js): Offscreen capture và streaming qua WebM Opus.
 - [`extension/shared/sentence_candidates_test.js`](../../extension/shared/sentence_candidates_test.js): Bộ test unit cho toàn bộ vòng đời và invariant bảo vệ dữ liệu của ứng viên.
+- [`review/audio-enhanced-pass-2026-11-01.md`](../../review/audio-enhanced-pass-2026-11-01.md): Kết quả PASS attempt mới nhất, gồm gate matrix và blockers.

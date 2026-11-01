@@ -13,6 +13,7 @@ import sys
 import threading
 import time
 import types
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -51,6 +52,10 @@ def fake_mlx(monkeypatch):
 
     core.get_peak_memory = get_peak_memory
     core.reset_peak_memory = reset_peak_memory
+    # MLX Audio receives an mx.array; the fake keeps it as a NumPy array so
+    # dispatch tests measure our contract instead of requiring Metal.
+    core.array = lambda value, dtype=None: np.asarray(value, dtype=np.float32)
+    core.clear_cache = lambda: None
     mlx.core = core  # type: ignore[attr-defined]
 
     def transcribe(audio, **kwargs):
@@ -98,6 +103,179 @@ def test_service_accepts_the_allowlisted_models(fake_mlx):
         assert out["model"] == name
 
 
+def test_benchmark_allowlist_is_opt_in_and_never_arbitrary(monkeypatch):
+    benchmark_model = "mlx-community/parakeet-tdt_ctc-0.6b-ja"
+    monkeypatch.delenv(asr_service.BENCHMARK_ALLOWLIST_ENV, raising=False)
+    with pytest.raises(ValueError, match="unsupported model"):
+        asr_service.resolve_model_name(benchmark_model)
+
+    monkeypatch.setenv(asr_service.BENCHMARK_ALLOWLIST_ENV, "1")
+    assert asr_service.resolve_model_name(benchmark_model) == benchmark_model
+    with pytest.raises(ValueError, match="unsupported model"):
+        asr_service.resolve_model_name("attacker/arbitrary-repo")
+
+
+@pytest.mark.parametrize(
+    ("model_name", "result", "expected_language"),
+    [
+        (
+            "mlx-community/parakeet-tdt_ctc-0.6b-ja",
+            SimpleNamespace(
+                text="パラキート",
+                sentences=[SimpleNamespace(start=0.0, end=1.0, text="パラキート")],
+            ),
+            None,
+        ),
+        (
+            "mlx-community/Qwen3-ASR-1.7B-8bit",
+            SimpleNamespace(
+                text="クウェン",
+                segments=[{"start": 0.0, "end": 1.0, "text": "クウェン"}],
+            ),
+            "Japanese",
+        ),
+    ],
+)
+def test_service_routes_mlx_audio_models_without_leaking_unsupported_kwargs(
+    monkeypatch, fake_mlx, model_name, result, expected_language
+):
+    calls = []
+
+    class FakeModel:
+        def __init__(self, *, accepts_language):
+            if accepts_language:
+                self.generate = self.generate_with_language
+            else:
+                self.generate = self.generate_without_language
+
+        def generate_with_language(self, audio, *, language=None, temperature=0.0):
+            calls.append({"language": language, "temperature": temperature, "audio": audio})
+            return result
+
+        def generate_without_language(self, audio, *, chunk_duration=None):
+            calls.append({"chunk_duration": chunk_duration, "audio": audio})
+            return result
+
+    stt = types.ModuleType("mlx_audio.stt")
+    stt.load = lambda name: FakeModel(
+        accepts_language=name == "mlx-community/Qwen3-ASR-1.7B-8bit"
+    )
+    package = types.ModuleType("mlx_audio")
+    package.__path__ = []  # type: ignore[attr-defined]
+    package.stt = stt  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "mlx_audio", package)
+    monkeypatch.setitem(sys.modules, "mlx_audio.stt", stt)
+    monkeypatch.setenv(asr_service.BENCHMARK_ALLOWLIST_ENV, "1")
+
+    audio = 0.2 * np.sin(
+        2 * np.pi * 440 * np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32)
+    )
+    out = asr_service.transcribe_audio(audio, model_name=model_name, preprocess=False)
+
+    assert out["backend"] == "mlx_audio"
+    assert out["timestampSource"] == "native"
+    assert out["text"] == result.text
+    assert calls and calls[0]["language" if expected_language else "chunk_duration"] == expected_language
+
+
+def test_normalize_words_keeps_only_well_formed_speech_timestamps():
+    words = asr_service._normalize_words(
+        [
+            {"word": "今日", "start": 0, "end": 0.42},
+            {"text": "は", "start": "0.42", "end": "0.71"},
+            {"word": "!", "start": 0.71, "end": 0.8},
+            {"word": "負", "start": -0.1, "end": 0.9},
+            {"word": "逆", "start": 1.0, "end": 0.9},
+            {"word": "無限", "start": float("nan"), "end": 1.2},
+            {"word": "欠落", "start": 1.2},
+        ]
+    )
+
+    assert words == [
+        {"text": "今日", "start": 0.0, "end": 0.42},
+        {"text": "は", "start": 0.42, "end": 0.71},
+    ]
+
+
+def test_normalize_engine_result_preserves_optional_word_timestamps():
+    full_text, segments, timestamp_source = asr_service._normalize_engine_result(
+        {
+            "text": "今日は晴れ",
+            "segments": [
+                {
+                    "start": 0.0,
+                    "end": 1.0,
+                    "text": "今日は晴れ",
+                    "words": [
+                        {"word": "今日", "start": 0.0, "end": 0.3},
+                        {"word": "は", "start": 0.3, "end": 0.4},
+                        {"word": "晴れ", "start": 0.4, "end": 1.0},
+                    ],
+                }
+            ],
+        },
+        1.0,
+    )
+
+    assert full_text == "今日は晴れ"
+    assert timestamp_source == "native"
+    assert segments[0]["words"] == [
+        {"text": "今日", "start": 0.0, "end": 0.3},
+        {"text": "は", "start": 0.3, "end": 0.4},
+        {"text": "晴れ", "start": 0.4, "end": 1.0},
+    ]
+
+
+def test_service_passes_word_timestamp_flag_to_whisper(fake_mlx):
+    audio = 0.2 * np.sin(
+        2 * np.pi * 440 * np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32)
+    )
+    asr_service.transcribe_audio(audio, preprocess=False, word_timestamps=True)
+    assert fake_mlx["calls"][-1]["word_timestamps"] is True
+
+
+def test_endpoint_returns_word_timestamps_without_requiring_them(fake_mlx, monkeypatch):
+    whisper = sys.modules["mlx_whisper"]
+    calls = []
+
+    def transcribe_with_words(*args, **kwargs):
+        calls.append(kwargs)
+        return {
+            "text": "今日は晴れ",
+            "segments": [
+                {
+                    "id": 0,
+                    "start": 0.0,
+                    "end": 1.0,
+                    "text": "今日は晴れ",
+                    "words": [
+                        {"word": "今日", "start": 0.0, "end": 0.3},
+                        {"word": "は", "start": 0.3, "end": 0.4},
+                        {"word": "晴れ", "start": 0.4, "end": 1.0},
+                    ],
+                }
+            ],
+        }
+
+    monkeypatch.setattr(whisper, "transcribe", transcribe_with_words)
+
+    resp = client.post(
+        "/asr/transcribe",
+        params={"preprocess": "false", "word_timestamps": "true"},
+        content=make_wav(),
+        headers={"Content-Type": "audio/wav"},
+    )
+
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert calls[-1]["word_timestamps"] is True
+    assert body["segments"][0]["words"] == [
+        {"text": "今日", "start": 0.0, "end": 0.3},
+        {"text": "は", "start": 0.3, "end": 0.4},
+        {"text": "晴れ", "start": 0.4, "end": 1.0},
+    ]
+
+
 def test_endpoint_rejects_an_unknown_model(fake_mlx):
     resp = client.post(
         "/asr/transcribe",
@@ -113,12 +291,24 @@ def test_endpoint_rejects_an_unknown_model(fake_mlx):
 def test_endpoint_serves_an_allowlisted_model(fake_mlx):
     resp = client.post(
         "/asr/transcribe",
-        params={"model": "mlx-community/whisper-large-v3-turbo", "preprocess": "false"},
+        params={"model": asr_service.DEFAULT_MODEL_NAME, "preprocess": "false"},
         content=make_wav(),
         headers={"Content-Type": "audio/wav"},
     )
     assert resp.status_code == 200, resp.text
-    assert resp.json()["model"] == "mlx-community/whisper-large-v3-turbo"
+    assert resp.json()["model"] == asr_service.DEFAULT_MODEL_NAME
+
+
+def test_endpoint_defaults_to_dsp_on(fake_mlx):
+    """A request without an explicit preprocess flag keeps the production default."""
+    resp = client.post(
+        "/asr/transcribe",
+        params={"model": asr_service.DEFAULT_MODEL_NAME},
+        content=make_wav(),
+        headers={"Content-Type": "audio/wav"},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["preprocess"] is True
 
 
 # ---------------------------------------------------------------------------
@@ -200,7 +390,9 @@ def test_endpoint_releases_the_governor_slot(monkeypatch, fake_mlx):
 
 def test_concurrent_transcriptions_do_not_overlap(fake_mlx):
     """Two first-loads would allocate the Metal model twice."""
-    audio = np.zeros(16000, dtype=np.float32)
+    # Real signal: all-zero audio is now refused by the silence gate, which
+    # would make this lock assertion pass without ever decoding.
+    audio = 0.2 * np.sin(2 * np.pi * 440 * np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32))
     errors: list[Exception] = []
 
     def run():
@@ -224,7 +416,9 @@ def test_concurrent_transcriptions_do_not_overlap(fake_mlx):
 
 
 def test_metal_peak_is_reset_before_every_transcription(fake_mlx):
-    audio = np.zeros(16000, dtype=np.float32)
+    # Real signal: the silence gate would otherwise return before decoding and
+    # report no Metal peak at all.
+    audio = 0.2 * np.sin(2 * np.pi * 440 * np.linspace(0, 1.0, 16000, endpoint=False, dtype=np.float32))
     first = asr_service.transcribe_audio(audio, preprocess=False)
     assert first["metalPeakBytes"] == 1234
 
@@ -338,3 +532,23 @@ async def test_capped_upload_reader_returns_a_small_file(monkeypatch):
 
     payload = await asr_api._read_capped_upload(FakeUpload(b"z" * 100))
     assert payload == b"z" * 100
+
+
+def test_endpoint_rejects_benchmark_only_models(fake_mlx):
+    """The five-model sweep was temporary; production keeps the measured winner."""
+    benchmark_only = (
+        "mlx-community/whisper-large-v3-turbo",
+        "mlx-community/whisper-large-v3-mlx",
+        "mlx-community/parakeet-tdt_ctc-0.6b-ja",
+        "mlx-community/Qwen3-ASR-1.7B-8bit",
+    )
+    for name in benchmark_only:
+        resp = client.post(
+            "/asr/transcribe",
+            params={"model": name},
+            content=make_wav(),
+            headers={"Content-Type": "audio/wav"},
+        )
+        assert resp.status_code == 400, (name, resp.text)
+        assert "unsupported model" in resp.json()["detail"]
+    assert fake_mlx["calls"] == []
