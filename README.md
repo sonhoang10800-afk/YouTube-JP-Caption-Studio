@@ -100,6 +100,8 @@ changes to `web/saved-items/` and commit the regenerated `extension/popup/`.
 3. Click **Load unpacked** and select the `extension/` folder in this project.
 4. Open a YouTube video with Japanese captions and enjoy!
 
+After changing extension code, run `./scripts/reload-extension.sh` from the project root. It reloads the extension and refreshes the YouTube tab without the Reload button.
+
 ### Option B: iPad App (Native)
 1. Open `ipad-app/YouTubeJPCaptionStudio.xcodeproj` in **Xcode** (regenerate with `xcodegen` if you edit `project.yml`).
 2. Select your iPad device or simulator as the target.
@@ -178,6 +180,8 @@ curl -s http://127.0.0.1:8765/health
 3. **パッケージ化されていない拡張機能を読み込む** をクリックし、`extension/` フォルダを選択。
 4. YouTubeビデオを開いて完了！
 
+拡張機能のコードを変更した後は、プロジェクトルートで `./scripts/reload-extension.sh` を実行します（Reload ボタン不要）。
+
 ### オプション B: iPad アプリ (ネイティブ)
 1. **Xcode** で `ipad-app/YouTubeJPCaptionStudio.xcodeproj` を開く（`project.yml` 変更時は `xcodegen`）。
 2. iPad またはシミュレータを選択。
@@ -253,6 +257,8 @@ curl -s http://127.0.0.1:8765/health
 2. Bật **Developer mode**.
 3. Bấm **Load unpacked** và chọn thư mục `extension/`.
 4. Mở một video YouTube và trải nghiệm!
+
+Sau khi sửa code extension, chạy `./scripts/reload-extension.sh` từ thư mục project. Script tự reload extension và refresh tab YouTube, không cần bấm Reload.
 
 ### Lựa chọn B: Ứng dụng iPad (Native)
 1. Mở `ipad-app/YouTubeJPCaptionStudio.xcodeproj` bằng **Xcode** (đổi `project.yml` thì chạy `xcodegen`).

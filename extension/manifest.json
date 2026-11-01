@@ -96,6 +96,18 @@
       ],
       "css": ["styles/panel.css"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://abema.tv/*",
+        "https://*.abema.tv/*",
+        "https://www.netflix.com/*",
+        "https://netflix.com/*"
+      ],
+      "js": ["content/sp_test_bridge.js"],
+      "run_at": "document_start"
     }
   ],
   "web_accessible_resources": [

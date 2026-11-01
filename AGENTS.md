@@ -260,3 +260,26 @@ Review độc lập yêu cầu gốc, diff hiện tại trên disk và code liê
 - **Absolute Prohibition:** Never create, edit, suggest, recommend, or maintain any Cursor files or directories (`.cursorrules`, `.cursor/`, `.cursorignore`, etc.).
 - **Auto-Purge:** If any Cursor file or directory is detected in any workspace or repository, delete it immediately without asking.
 - **Standard Alternatives Only:** Use standard configuration files (`AGENTS.md`, `CLAUDE.md`, standard config files).
+
+## 9. Extension reload (no manual clicks)
+- Never ask the user to click **Reload** or **Load unpacked** when the extension is already installed.
+- Run `./scripts/reload-extension.sh` from the project root. It wraps `~/.local/bin/reload-chrome-extension`: opens `chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/reload.html`, waits for the extension to reload, restores the previous tab, refreshes the YouTube tab, and verifies the popup page.
+- First install is the only manual step: stock Google Chrome ignores `--load-extension`, so `chrome://extensions` -> Developer mode -> Load unpacked is done once, never repeated.
+- Do not use System Events/AX clicks on `chrome://extensions`; use the extension's own reload page.
+- If the script exits `3` (`extension_not_loaded`), report the one-time Load unpacked step; do not claim the reload succeeded.
+
+## 10. Real sidepanel test bridge (dev-only)
+
+- bsk only drives tabs. It cannot attach to `chrome-extension://` pages or Chrome's side panel
+  (`permission_denied / restricted_tab_url`); do not retry bsk DOM tools there.
+- The dev-only bridge is `extension/content/sp_test_bridge.js` +
+  `extension/sidepanel/sp_test_bridge.js`. It is enabled only for an unpacked build
+  (`getManifest().update_url` absent), a page URL with `?sp_test=1` / `#sp_test=1`, and a random
+  token in `chrome.storage.local`. It is inert in normal use and must be removed before release.
+- Run `node scripts/bsk_sidepanel_bridge_smoke.js [--out DIR]`. It starts one bsk session on a
+  YouTube watch page, opens the real side panel (one click on the injected `#sp-test-open`;
+  Chrome may still require one manual open), then snapshots/clicks the real panel via the bridge.
+- Visual evidence is external `screencapture` of the Chrome window, not bsk screenshot. The bridge
+  reports the actual panel width; it has no 320/380/520 width matrix.
+- The smoke script prints `SURFACE: real Chrome side panel via dev-only bridge`; do not present it
+  as a fixture or as installed-extension production verification.

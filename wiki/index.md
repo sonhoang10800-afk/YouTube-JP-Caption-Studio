@@ -28,6 +28,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | [topics/codebase-audit-2026-10-22.md](topics/codebase-audit-2026-10-22.md) | New full-repo audit — **8 P0 / 24 P1 open, not remediated** (2026-10-22) |
 | [topics/swift-shared-package.md](topics/swift-shared-package.md) | Gộp 4 141 LOC Swift trùng (C-1) — **plan filed, chưa refactor** |
 | [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; **sidepanel PASS**; CI gap |
+| [topics/sidepanel-test-plan-2026-10-25.md](topics/sidepanel-test-plan-2026-10-25.md) | Side-panel full test **executed**: 64 PASS / 4 FAIL / 9 NOT TESTED; `⋯` menu overflow + Escape, saved-cue bridge mirror, long-video DOM |
 | [upstream/karpathy-llm-wiki.md](upstream/karpathy-llm-wiki.md) | Karpathy LLM-wiki gist (concept) |
 
 ## Active / recent work
@@ -41,6 +42,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | done | Studio Caption Fixes, Performance & UX Optimization | [fix-overlay-resize-and-subtitles](../plan/fix-overlay-resize-and-subtitles-2026-09-19.md), [fix-sidepanel-format-and-jp-only-overlay](../plan/fix-sidepanel-format-and-jp-only-overlay-2026-09-19.md) | (filed `code-review-2026-09-19.md` was never committed — no review exists for this work) |
 | open — 8 P0 / 24 P1, not yet remediated | [Codebase audit 2026-10-22](topics/codebase-audit-2026-10-22.md) | — | [audit](../review/codebase-audit-2026-10-22.md) |
 | PASS after fix `b155a56`; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; sidepanel PASS; CI gap | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix](../review/ux-verify-matrix-postfix-2026-10-24.md), [F1/F2 fix](../review/ux-verify-matrix-fix-2026-10-24.md), [C-7 UI](../review/ux-verify-c7-ui-2026-10-24.md), [star](../review/star-rehydration-2026-10-24.md), [MP4](../review/ux-verify-mp4-2026-10-24.md), [reload](../review/reload-helper-hardening-2026-10-24.md), [sidepanel](../review/sidepanel-smoke-2026-10-24.md) |
+| executed — 64 PASS / 4 FAIL / 9 NOT TESTED (4 defects unfixed) | [Side-panel full test 2026-10-25](topics/sidepanel-test-plan-2026-10-25.md) | [plan](../plan/sidepanel-test-plan-2026-10-25.md) | [consolidated run](../review/sidepanel-test-run-2026-10-25.md), [A/B/C/E](../review/sidepanel-runs-2026-10-25/run-a-b-c-e.md), [H/I](../review/sidepanel-runs-2026-10-25/run-h-i.md), [D/F/J](../review/sidepanel-runs-2026-10-25/run-d-f-j.md), [G/K](../review/sidepanel-runs-2026-10-25/run-g-k.md), [prior smoke](../review/sidepanel-smoke-2026-10-24.md) |
 
 ## Raw catalogs (immutable)
 
@@ -96,6 +98,7 @@ Do not rewrite these from the wiki. Link only.
 - [vietnamese-caption-fixes-2026-08-21.md](../plan/vietnamese-caption-fixes-2026-08-21.md)
 - [yt-write-all-subs-2026-08-02.md](../plan/yt-write-all-subs-2026-08-02.md)
 - [extension-ux-verify-bsk-2026-10-24.md](../plan/extension-ux-verify-bsk-2026-10-24.md) — Plan v3: verify extension UX/UI in the real Chrome via bsk; executed with review + fix
+- [sidepanel-test-plan-2026-10-25.md](../plan/sidepanel-test-plan-2026-10-25.md) — side-panel full test plan: 12 groups (A–L), 4 staged runs; **executed 2026-10-25** (see [consolidated run](../review/sidepanel-test-run-2026-10-25.md))
 
 ### Reviews
 
@@ -211,6 +214,11 @@ Do not rewrite these from the wiki. Link only.
 - [enhancement-fallback-repro-2026-10-24.md](../review/enhancement-fallback-repro-2026-10-24.md) — first page after extension reload loses tokens; root cause + helper fix recommendation
 - [reload-helper-hardening-2026-10-24.md](../review/reload-helper-hardening-2026-10-24.md) — reload → verify → refresh order; new page after reload gets 12 tokens (commit 812799f)
 - [sidepanel-smoke-2026-10-24.md](../review/sidepanel-smoke-2026-10-24.md) — real sidepanel smoke PASS: 360 px, tabs/click/close, window-only visual
+- [sidepanel-test-run-2026-10-25.md](../review/sidepanel-test-run-2026-10-25.md) — **full side-panel test executed: 64 PASS / 4 FAIL / 9 NOT TESTED**; 3 parallel teams + Lead; 4 defects (menu overflow, Escape, saved-cue mirror, long-video DOM); closes the popup "Câu đã lưu" gap and first-ever ASR diff run
+- [sidepanel-runs-2026-10-25/run-a-b-c-e.md](../review/sidepanel-runs-2026-10-25/run-a-b-c-e.md) — groups A/B/C/E: 16 PASS / 2 FAIL / 3 NOT TESTED
+- [sidepanel-runs-2026-10-25/run-h-i.md](../review/sidepanel-runs-2026-10-25/run-h-i.md) — groups H/I: 18 PASS / 1 FAIL / 1 NOT TESTED (280/360/520 px, keyboard, JLPT colours, popover 194 ms)
+- [sidepanel-runs-2026-10-25/run-d-f-j.md](../review/sidepanel-runs-2026-10-25/run-d-f-j.md) — groups D/F/J + audio run: 21 PASS / 1 FAIL / 1 NOT TESTED
+- [sidepanel-runs-2026-10-25/run-g-k.md](../review/sidepanel-runs-2026-10-25/run-g-k.md) — groups G/K (Lead): 9 PASS / 4 NOT TESTED; long-video perf defect
 - [ux-verify-evidence-2026-10-24/](../review/ux-verify-evidence-2026-10-24/) + [ux-verify-fix-evidence-2026-10-24/](../review/ux-verify-fix-evidence-2026-10-24/) — screenshots, before/after JSON, test log
 
 ## Open gaps
