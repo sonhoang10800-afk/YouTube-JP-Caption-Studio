@@ -261,6 +261,12 @@ Review độc lập yêu cầu gốc, diff hiện tại trên disk và code liê
 - **Auto-Purge:** If any Cursor file or directory is detected in any workspace or repository, delete it immediately without asking.
 - **Standard Alternatives Only:** Use standard configuration files (`AGENTS.md`, `CLAUDE.md`, standard config files).
 
+## 4. Anti-Hallucination & Evidence Grounding (`reliable-agent`)
+Every agent interacting with the user or evaluating video content, captions, or codebase state must strictly adhere to the `reliable-agent` doctrine:
+- **Tri-Part Classification**: Explicitly categorize claims into `[FACT]` (verifiable with verbatim evidence), `[INFERENCE]` (logical deduction from verified facts), and `[ASSUMPTION]` (must be labeled `[Giả định / Chưa kiểm chứng]`).
+- **Verbatim Quotes & Exact Links**: Never assert code behaviors or facts without citing exact excerpts and clickable file links (`file:///...`).
+- **Abstention Protocol**: Disclose missing proof under `Unverified Gaps`. If core factual claims lack empirical proof, state complete abstention rather than guessing.
+
 ## 9. Extension reload (no manual clicks)
 - Never ask the user to click **Reload** or **Load unpacked** when the extension is already installed.
 - Run `./scripts/reload-extension.sh` from the project root. It wraps `~/.local/bin/reload-chrome-extension`: opens `chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/reload.html`, waits for the extension to reload, restores the previous tab, refreshes the YouTube tab, and verifies the popup page.
