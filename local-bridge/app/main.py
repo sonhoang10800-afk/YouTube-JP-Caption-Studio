@@ -20,6 +20,7 @@ from app.api.scripts import router as scripts_router
 from app.api.state import load_ext_state_disk
 from app.api.state import router as state_router
 from app.api.tokenize import router as tokenize_router
+from app.api.verify import router as verify_router
 from app.core.governor import governor
 from app.services.dictionary import load_dictionary
 from app.services.ime_switch import ensure_helper
@@ -104,6 +105,7 @@ app.include_router(ime_router)
 app.include_router(state_router)
 app.include_router(saved_items_router)
 app.include_router(asr_router)
+app.include_router(verify_router)
 
 
 @app.get("/")

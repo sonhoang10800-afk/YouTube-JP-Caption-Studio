@@ -240,3 +240,25 @@ class ExtensionStateResponse(BaseModel):
     savedCues: dict[str, Any] = Field(default_factory=dict)
     updatedAt: float = 0.0
     source: str = ""
+
+
+class VerifyTranscriptRequest(BaseModel):
+    """Payload to verify factual claims or summaries against a video transcript."""
+
+    video_id: str
+    query: str
+    transcript_text: str
+    force_deep: bool = True
+    provider: Literal["mock", "gemini"] = "gemini"
+
+
+class VerifyTranscriptResponse(BaseModel):
+    """Result of the anti-hallucination verification."""
+
+    ok: bool = True
+    is_reliable: bool
+    final_answer: str
+    verified_facts_count: int
+    unverified_gaps: list[str] = Field(default_factory=list)
+    token_usage: dict[str, int] = Field(default_factory=dict)
+
