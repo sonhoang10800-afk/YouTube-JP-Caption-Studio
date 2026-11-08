@@ -40,6 +40,7 @@
       youtube: true,
       netflix: true,
       abema: true,
+      animevietsub: true,
       web: true,
     },
     // Vocab highlight defaults live in vocab_style.js; pulled in here so the content

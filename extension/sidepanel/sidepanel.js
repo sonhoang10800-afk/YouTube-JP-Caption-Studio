@@ -2756,7 +2756,9 @@
         h.endsWith(".abema.tv") ||
         h === "www.netflix.com" ||
         h === "netflix.com" ||
-        h.endsWith(".netflix.com")
+        h.endsWith(".netflix.com") ||
+        h === "animevietsub.best" ||
+        h.includes("animevietsub")
       );
     } catch (_) {
       return false;

@@ -1107,6 +1107,8 @@
 /* Reveal button when hovering over the video player or moving mouse */
 .watch-video:hover .hardsub-generic-toggle,
 .NFPlayer:hover .hardsub-generic-toggle,
+#media-player-box:hover .hardsub-generic-toggle,
+#media-player:hover .hardsub-generic-toggle,
 [class*="player"]:hover .hardsub-generic-toggle,
 [class*="com-vod-"]:hover .hardsub-generic-toggle,
 #hardsub-ocr-root:hover .hardsub-generic-toggle,

@@ -550,7 +550,13 @@ const timedtextUrl = "https://www.youtube.com/api/timedtext?v=fixture&lang=ja&fm
     await listener(42, { status: "loading" }, { id: 42, url: "https://example.com/x" });
     assert.equal(sw.sidePanelCalls.length - before, 2, "a new URL must be applied");
     assert.equal(sw.sidePanelCalls[before + 1].enabled, false, "an unsupported site disables the panel");
+
+    // AnimeVietSub URL enables the side panel
+    await listener(42, { status: "loading" }, { id: 42, url: "https://animevietsub.best/phim/test-a123/xem-phim.html" });
+    assert.equal(sw.sidePanelCalls.length - before, 3, "animevietsub URL enables side panel");
+    assert.equal(sw.sidePanelCalls[before + 2].enabled, true, "animevietsub enables the panel");
     console.log("PASS: repeated tab updates do not re-apply the same side-panel state");
+    console.log("PASS: animevietsub platform enables side panel");
   }
 
   console.log("ALL SERVICE WORKER TESTS PASSED!");

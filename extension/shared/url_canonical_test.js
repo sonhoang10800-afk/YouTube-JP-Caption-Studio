@@ -43,6 +43,19 @@ assert.ok(abemaId.startsWith("abema_"));
 assert.ok(abemaId.length <= 64);
 console.log("PASS: Test 4 ABEMA ID generation");
 
+// Test 4b: AnimeVietSub ID generation
+const avsUrl1 = "https://animevietsub.best/phim/mezametara-saikyou-soubi-a6112/xem-phim.html";
+const avsId1 = UrlHash.canonicalVideoId(avsUrl1);
+assert.ok(avsId1.startsWith("avs_"));
+assert.ok(avsId1.endsWith("_ep01"));
+assert.ok(avsId1.length <= 64);
+
+const avsUrl2 = "https://animevietsub.best/phim/mezametara-saikyou-soubi-a6112/tap-02-116221.html";
+const avsId2 = UrlHash.canonicalVideoId(avsUrl2);
+assert.ok(avsId2.endsWith("_ep02"));
+assert.notEqual(avsId1, avsId2);
+console.log("PASS: Test 4b AnimeVietSub ID generation");
+
 // Test 5: Drive Folder ID Parsing from various URL formats
 const driveUrl1 = "https://drive.google.com/drive/folders/1A2b3C4d5E6f7G8h9I0j-kLmNoP";
 const driveUrl2 = "https://drive.google.com/drive/u/0/folders/1A2b3C4d5E6f7G8h9I0j-kLmNoP?usp=sharing";

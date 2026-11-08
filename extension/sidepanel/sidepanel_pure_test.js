@@ -133,7 +133,7 @@ const dialog = findByClass(tree, "lr-settings-dialog");
 assert.ok(body, "the settings body exists");
 assert.ok(dialog, "the settings dialog exists");
 const sections = body.children.filter((c) => c.classes === "lr-settings-section");
-assert.strictEqual(sections.length, 6, "all 6 sections are direct children of the settings body");
+assert.strictEqual(sections.length, 7, "all 7 sections are direct children of the settings body");
 assert.ok(
   !body.children.some((c) => c.classes.includes("lr-settings-footer")),
   "the footer must not be nested inside the settings body"

@@ -211,6 +211,7 @@ Không dùng OCR. Bản dịch có thể lấy từ track EN/VI, Import, sửa t
 7. **Auto IME (chỉ macOS Desktop)**: Tự chuyển bàn phím Nhật khi sửa JA.
 8. **App iPad / iPhone Native**: SwiftUI độc lập (`ipad-app/`, `iphone-app/`) — hardsub, dict popup, import/export — không cần server. iPhone: portrait xếp dọc / landscape chia đôi. Chưa đủ parity tuyệt đối (không Auto IME; chưa mark Known/Learning trên popup).
 9. **Đồng bộ Drive (PC ↔ iPad/iPhone)**: Cùng file `caption-studio-backup.json` trong folder Drive cố định. Extension: OAuth + bridge `/backup/snapshot`; native: Files + auto-pull khi foreground. Setup: thay `client_id` trong `manifest.json`, Connect Drive, chọn cùng folder (xem `walkthrough.md` §3.5).
+10. **Tự động inject kịch bản AnimeVietSub**: Tự động tra cứu AniList GraphQL & Jimaku.cc để tải kịch bản tiếng Nhật vào Chrome Side Panel khi xem phim trên AnimeVietSub (`animevietsub.best`, `.news`, `.tv`). Nút nổi `LR PANEL` trên video player mở nhanh Side Panel, đồng bộ 2 chiều (bắt timeupdate từ iframe player và seek khi click cue trong panel), giữ 0 overlay che video để không đè hardsub tiếng Việt. Cấu hình Jimaku API Key trong popup/modal Cài đặt.
 
 ## 🏗 Kiến trúc Hệ thống
 Dự án được xây dựng với hai kiến trúc hoàn toàn khác nhau để tối ưu cho cả Desktop và Mobile:

@@ -1,5 +1,7 @@
 importScripts("../shared/timedtext_parse.js");
 importScripts("../shared/gemini_translate.js");
+importScripts("../shared/ass_parser.js");
+importScripts("../shared/anime_resolver.js");
 
 const BRIDGE = "http://127.0.0.1:8765";
 /** Optional Native Messaging fallback only — primary IME path is bridge POST /ime/switch. */
@@ -170,6 +172,7 @@ function platformFromUrl(url) {
     if (h === "www.youtube.com" || h === "youtube.com") return "youtube";
     if (h === "abema.tv" || h.endsWith(".abema.tv")) return "abema";
     if (h === "www.netflix.com" || h === "netflix.com" || h.endsWith(".netflix.com")) return "netflix";
+    if (h === "animevietsub.best" || h.includes("animevietsub")) return "animevietsub";
     if (u.protocol === "http:" || u.protocol === "https:") return "web";
     return null;
   } catch (_) {
@@ -179,7 +182,7 @@ function platformFromUrl(url) {
 
 function isSupportedUrl(url) {
   const p = platformFromUrl(url);
-  return p === "youtube" || p === "abema" || p === "netflix";
+  return p === "youtube" || p === "abema" || p === "netflix" || p === "animevietsub";
 }
 
 async function isPlatformEnabledForUrl(url) {
@@ -191,6 +194,7 @@ async function isPlatformEnabledForUrl(url) {
       youtube: true,
       netflix: true,
       abema: true,
+      animevietsub: true,
       web: true,
     };
     return ep[plat] !== false;
@@ -388,6 +392,17 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     handleYtLoadCaptions(msg).then(sendResponse).catch((err) =>
       sendResponse({ ok: false, reason: "exception", error: String(err), cues: [] })
     );
+    return true;
+  }
+  if (msg?.type === "FETCH_ANIME_SCRIPT") {
+    handleFetchAnimeScript(msg).then(sendResponse).catch((err) =>
+      sendResponse({ ok: false, error: String(err?.message || err) })
+    );
+    return true;
+  }
+  if (msg?.type === "SET_JIMAKU_KEY") {
+    const key = String(msg.key || "").trim();
+    chrome.storage.local.set({ jimakuApiKey: key }).then(() => sendResponse({ ok: true })).catch((err) => sendResponse({ ok: false, error: String(err) }));
     return true;
   }
   if (msg?.type === "IME_SWITCH") {
@@ -997,6 +1012,53 @@ async function setTtMiss(videoId) {
     const stale = staleTtMissKeys(await storage.get(null), Date.now(), key);
     if (stale.length) await storage.remove(stale);
   } catch (_) {}
+}
+
+async function handleFetchAnimeScript(msg) {
+  const { url, domInfo } = msg || {};
+  try {
+    const keyData = await chrome.storage.local.get("jimakuApiKey");
+    const jimakuKey = keyData?.jimakuApiKey || "";
+    const resolver = globalThis.HardsubAnimeResolver;
+    const parser = globalThis.HardsubAssParser;
+    if (!resolver || !parser) {
+      return { ok: false, error: "modules_not_loaded", message: "Anime resolver/parser modules not loaded." };
+    }
+    const meta = resolver.parseAnimeMetadata(url, domInfo);
+    const anime = await resolver.resolveAniList(meta);
+    if (!anime) {
+      return { ok: false, error: "anime_not_found", message: "Không tìm thấy anime trên AniList." };
+    }
+    if (!jimakuKey) {
+      return { ok: false, error: "missing_jimaku_key", message: "Chưa cấu hình Jimaku API Key trong Cài đặt." };
+    }
+    const entries = await resolver.searchJimaku(anime.id, jimakuKey);
+    if (!entries?.length) {
+      return { ok: false, error: "no_jimaku_entries", message: "Không tìm thấy script tiếng Nhật trên Jimaku.cc." };
+    }
+    const files = await resolver.fetchJimakuFiles(entries[0].id, jimakuKey);
+    const matchedFile = resolver.findMatchingFileForEpisode(files, meta.episode);
+    if (!matchedFile) {
+      return { ok: false, error: "no_matching_episode_file", message: `Không tìm thấy file sub cho tập ${meta.episode} trên Jimaku.cc.` };
+    }
+    const subRes = await fetch(matchedFile.url, {
+      headers: { "Authorization": jimakuKey }
+    });
+    if (!subRes.ok) {
+      return { ok: false, error: "sub_download_failed", message: `Tải file sub thất bại (HTTP ${subRes.status}).` };
+    }
+    const subText = await subRes.text();
+    const cues = parser.parseAssOrSrt(subText);
+    return {
+      ok: true,
+      cues,
+      animeTitle: anime.title?.romaji || meta.romajiTitle,
+      episode: meta.episode,
+      fileName: matchedFile.name
+    };
+  } catch (err) {
+    return { ok: false, error: "fetch_script_failed", message: String(err?.message || err) };
+  }
 }
 
 async function handleYtLoadCaptions(msg) {

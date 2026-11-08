@@ -65,7 +65,7 @@
 
   const workingModels = new Map();
   const ramCache = new Map(), pending = new Map(), queue = [];
-  let activeRequests = 0, cooldownUntil = 0, cooldownModel = "", pumpTimer = null;
+  let activeRequests = 0, cooldownUntil = 0, cooldownModel = "", pumpTimer = null, keyRotationIdx = 0;
   let cacheLoad = null, cacheWrites = Promise.resolve();
   let requestSeq = 0;
   const ownerEpochs = new Map(), clientEpochs = { automatic: 0, manual: 0 };
@@ -139,12 +139,15 @@
   }
 
   async function testApiKey(apiKey) {
-    if (!String(apiKey || "").trim()) return { ok: false, error: "API key is empty" };
+    const raw = String(apiKey || "").trim();
+    if (!raw) return { ok: false, error: "API key is empty" };
+    const firstKey = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean)[0] || "";
+    if (!firstKey) return { ok: false, error: "API key is empty" };
     if (typeof document !== "undefined" && typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
-      return chrome.runtime.sendMessage({ type: "GEMINI_KEY_CHECK", apiKey: String(apiKey).trim() });
+      return chrome.runtime.sendMessage({ type: "GEMINI_KEY_CHECK", apiKey: raw });
     }
     const report = await translateGroups([{ id: "api-key-probe", revision: "1", source: "こんにちは",
-      sourceKey: "key-check", language: "vi", context: "" }], { apiKey, force: true, priority: 20 });
+      sourceKey: "key-check", language: "vi", context: "" }], { apiKey: firstKey, force: true, priority: 20 });
     const result = report.results[0];
     return result?.status === "ready" ? { ok: true, model: result.model, sample: result.text } :
       { ok: false, status: result?.httpStatus || 0, error: result?.error || "Gemini key check failed" };
@@ -276,11 +279,27 @@
           }
           const startedAt = Date.now();
           let response;
+          const rawKey = String(entries[0].apiKey || "").trim();
+          const cleanKeys = rawKey.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+          const cleanKey = cleanKeys.length > 0 ? cleanKeys[(keyRotationIdx++) % cleanKeys.length] : "";
+          const isBearer = cleanKey.startsWith("ya29.");
+          const headers = {
+            "Content-Type": "application/json",
+            ...(isBearer ? { "Authorization": `Bearer ${cleanKey}` } : { "x-goog-api-key": cleanKey }),
+          };
           try { response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-            method: "POST", headers: { "Content-Type": "application/json", "x-goog-api-key": entries[0].apiKey },
+            method: "POST", headers,
             body: JSON.stringify(payload), signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
           }); } catch (error) {
-            receipt.attempts.push({ model, status: 0, elapsedMs: Math.max(0, Date.now() - startedAt) });
+            receipt.attempts.push({
+              model,
+              status: 0,
+              elapsedMs: Math.max(0, Date.now() - startedAt),
+              error: String(error?.message || error),
+              keyType: typeof entries[0]?.apiKey,
+              keyLen: entries[0]?.apiKey ? entries[0].apiKey.length : 0,
+              keySnippet: entries[0]?.apiKey ? `${entries[0].apiKey.slice(0, 4)}...${entries[0].apiKey.slice(-4)}` : "empty"
+            });
             lastError = error;
             break;
           }
@@ -492,7 +511,14 @@
         const i = snapshots.findIndex(s => s.id === result.id), snap = snapshots[i], cue = targets[i];
         const accepted = result.status === "ready" && !!cue && !locked(cue) && cue.source === snap.source &&
           (cue._txGen || 0) === snap.generation && (!options.isCurrent || options.isCurrent());
-        if (!accepted) { options.onResult?.(result, false); return; }
+        if (!accepted) {
+          if (cue && result.status === "error") {
+            cue.translationStates = cue.translationStates || {};
+            cue.translationStates[lang] = "error";
+          }
+          options.onResult?.(result, false);
+          return;
+        }
         cue[lang] = result.text; cue.translated = true; cue.translation_source = result.cached ? "cache" : "gemini"; applied++;
         options.onResult?.(result, true);
       }, onProgress,
@@ -511,7 +537,7 @@
     const ownPage = sender.url?.startsWith(chrome.runtime.getURL(""));
     if (!ownPage && !supportedTab) throw new Error("Translation origin rejected");
     if (msg.type === "GEMINI_KEY_CHECK") {
-      if (typeof msg.apiKey !== "string" || msg.apiKey.length > 256) throw new Error("Key probe sender rejected");
+      if (typeof msg.apiKey !== "string" || msg.apiKey.length > 2048) throw new Error("Key probe sender rejected");
       return testApiKey(msg.apiKey);
     }
     const scope = msg.scope || "automatic", epoch = msg.epoch ?? 0;

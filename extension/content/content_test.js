@@ -531,6 +531,19 @@ assert.strictEqual(
   "an 85/15 mixed ASR window must not create a candidate for the minority cue",
 );
 
+// -------------------------------------------------------------------------
+// AnimeVietSub: sourceFromHost, videoIdFromUrl, sourceLabel
+// -------------------------------------------------------------------------
+context.location.hostname = "animevietsub.best";
+context.location.pathname = "/phim/mezametara-saikyou-soubi-a6112/xem-phim.html";
+context.location.href = "https://animevietsub.best/phim/mezametara-saikyou-soubi-a6112/xem-phim.html";
+
+assert.strictEqual(content.sourceFromHost(), "animevietsub", "sourceFromHost must identify animevietsub");
+const avsVid = content.videoIdFromUrl();
+assert.ok(avsVid.startsWith("avs__"), `AVS videoId must start with avs__, got ${avsVid}`);
+assert.ok(avsVid.endsWith("__ep01"), `AVS videoId default episode must end with __ep01, got ${avsVid}`);
+assert.ok(avsVid.length <= 64, "AVS videoId must be <= 64 chars");
+
 console.log("content_test: all assertions passed");
 })().catch((error) => {
   console.error(error.stack || error.message);

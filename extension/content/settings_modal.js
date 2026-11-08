@@ -37,6 +37,7 @@
       youtube: true,
       netflix: true,
       abema: true,
+      animevietsub: true,
     };
     const jlpt = s.levelColors || DEFAULT_JLPT_COLORS;
     const opacityVal = s.barBgOpacity != null ? Number(s.barBgOpacity) : 0.4;
@@ -152,6 +153,10 @@
                   <span class="lr-toggle-label">ABEMA TV (abema.tv)</span>
                   <input type="checkbox" id="lr-plat-abema" class="lr-switch" ${platforms.abema !== false ? "checked" : ""}>
                 </label>
+                <label class="lr-toggle-row">
+                  <span class="lr-toggle-label">AnimeVietSub (animevietsub)</span>
+                  <input type="checkbox" id="lr-plat-animevietsub" class="lr-switch" ${platforms.animevietsub !== false ? "checked" : ""}>
+                </label>
               </div>
             </div>
 
@@ -225,6 +230,23 @@
               <div id="lr-gemini-status" style="font-size: 11px; min-height: 16px; margin-bottom: 8px; line-height: 1.3;"></div>
               <button type="button" id="lr-btn-translate-now" style="width: 100%; background: #232733; color: #cbd5e0; border: 1px solid #3c4257; border-radius: 4px; padding: 8px 12px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s;">⚡ Dịch ngay bằng Gemini AI</button>
             </div>
+
+            <div class="lr-settings-divider"></div>
+
+            <!-- Section 7: Anime Script (Jimaku.cc API) -->
+            <div class="lr-settings-section">
+              <div class="lr-settings-section-title">
+                <span>Anime Script (Jimaku.cc API):</span>
+              </div>
+              <p style="font-size: 11px; color: #a0aec0; margin: 0 0 8px 0; line-height: 1.4;">
+                Tự động tải phụ đề tiếng Nhật gốc từ Jimaku.cc khi xem anime trên AnimeVietSub:
+              </p>
+              <div style="display: flex; gap: 8px; margin-bottom: 6px;">
+                <input type="password" id="lr-jimaku-key-input" placeholder="Dán Jimaku.cc API Key tại đây" autocomplete="off" style="flex: 1; background: #12141a; border: 1px solid #333846; color: #fff; border-radius: 4px; padding: 6px 10px; font-size: 12px; outline: none;">
+                <button type="button" id="lr-save-jimaku-key" style="background: #3182ce; color: #fff; border: none; border-radius: 4px; padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap;">Lưu Key</button>
+              </div>
+              <div id="lr-jimaku-status" style="font-size: 11px; min-height: 16px; margin-bottom: 8px; line-height: 1.3;"></div>
+            </div>
           </div>
 
           <div class="lr-settings-footer">
@@ -290,7 +312,7 @@
     });
 
     // Platform toggles
-    ["youtube", "netflix", "abema"].forEach((plat) => {
+    ["youtube", "netflix", "abema", "animevietsub"].forEach((plat) => {
       const el = host.querySelector(`#lr-plat-${plat}`);
       el?.addEventListener("change", () => {
         if (!currentSettings.enabledPlatforms) currentSettings.enabledPlatforms = {};
@@ -406,6 +428,42 @@
         if (geminiStatusEl) {
           geminiStatusEl.textContent = `Lỗi: ${err.message || String(err)}`;
           geminiStatusEl.style.color = "#f56565";
+        }
+      }
+    });
+
+    // Jimaku API Key settings
+    const jimakuKeyInput = host.querySelector("#lr-jimaku-key-input");
+    const saveJimakuKeyBtn = host.querySelector("#lr-save-jimaku-key");
+    const jimakuStatusEl = host.querySelector("#lr-jimaku-status");
+
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local && jimakuKeyInput) {
+      chrome.storage.local.get("jimakuApiKey").then((data) => {
+        if (data?.jimakuApiKey && jimakuKeyInput) jimakuKeyInput.value = data.jimakuApiKey;
+      }).catch(() => {});
+    }
+
+    saveJimakuKeyBtn?.addEventListener("click", async () => {
+      const key = jimakuKeyInput?.value.trim() || "";
+      if (!key) {
+        if (jimakuStatusEl) {
+          jimakuStatusEl.textContent = "Vui lòng nhập Jimaku API Key.";
+          jimakuStatusEl.style.color = "#f56565";
+        }
+        return;
+      }
+      try {
+        if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+          await chrome.storage.local.set({ jimakuApiKey: key });
+        }
+        if (jimakuStatusEl) {
+          jimakuStatusEl.textContent = "✓ Đã lưu Jimaku API Key thành công!";
+          jimakuStatusEl.style.color = "#48bb78";
+        }
+      } catch (err) {
+        if (jimakuStatusEl) {
+          jimakuStatusEl.textContent = `Lỗi: ${err.message || String(err)}`;
+          jimakuStatusEl.style.color = "#f56565";
         }
       }
     });

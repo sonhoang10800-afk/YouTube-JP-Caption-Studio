@@ -115,6 +115,14 @@
         const clean = lastPart.replace(/[^A-Za-z0-9_-]/g, "_");
         return `abema_${clean}`.slice(0, 64);
       }
+      if (host.includes("animevietsub")) {
+        const phimMatch = parsed.pathname.match(/\/phim\/([^\/]+)/);
+        const tapMatch = parsed.pathname.match(/tap-(\d+)/);
+        const slug = phimMatch ? phimMatch[1] : "anime";
+        const ep = tapMatch ? tapMatch[1].padStart(2, "0") : "01";
+        const cleanSlug = slug.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 48);
+        return `avs__${cleanSlug}__ep${ep}`.slice(0, 64);
+      }
 
       // Fallback
       const src = host.replace(/[^a-z0-9]/g, "").slice(0, 12) || "web";

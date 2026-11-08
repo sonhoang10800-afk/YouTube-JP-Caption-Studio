@@ -511,3 +511,18 @@ Nhật ký ngắn (không phải transcript). Runtime bridge: `local-bridge/erro
      - `extension/shared/sentence_candidates_test.js`: PASS.
      - `extension/shared/sentence_groups_test.js`: PASS.
      - `local-bridge/tests/test_asr_api.py` + `tests/`: 44/44 pytest PASS (exit code 0).
+
+### 2026-11-04 — Tự Động Inject Kịch Bản Anime Tiếng Nhật Trên AnimeVietSub (Jimaku.cc & AniList)
+
+1. **Tổng quan Tính năng**:
+   - Khi xem phim trên AnimeVietSub (`https://animevietsub.best/...`), Extension tự động phân tích tên phim (Romaji + English title từ `<h1>` / `<h2>`), tra cứu AniList GraphQL để lấy chuẩn metadata và ID AniList.
+   - Sử dụng AniList ID để tìm kiếm kịch bản tiếng Nhật trên `Jimaku.cc`, tải file `.srt` / `.ass` tương ứng với tập phim hiện tại và parse thành danh sách cue chuẩn xác (đầy đủ Furigana, từ vựng và tô màu JLPT).
+   - **Zero Video Overlay**: Không hiển thị thanh phụ đề đè lên video để không che phụ đề hardsub tiếng Việt sẵn có của website. Phụ đề tiếng Nhật được hiển thị tập trung 100% trong Chrome Side Panel.
+   - **Nút Điều Khiển Floating LR**: Nút `LR PANEL` gắn ở góc trên video player `#media-player-box`. Nhấn nút để mở nhanh Side Panel qua Chrome user gesture API.
+   - **Đồng Bộ Phát & Tua 2 Chiều (Cross-Origin Bridge)**: Tự động inject script bridge vào iframe player (`stream.googleapiscdn.com`), chuyển tiếp `timeupdate` về top frame và nhận lệnh `AVS_PLAYER_SEEK` khi người dùng click vào bất kỳ câu nào trong Side Panel.
+
+2. **Cách cấu hình & Sử dụng**:
+   - Vào popup Extension hoặc Settings Modal, chọn mục **Jimaku.cc API Key** và lưu key (lấy từ `https://jimaku.cc/account`).
+   - Mở bất kỳ tập phim nào trên `animevietsub.best` (ví dụ: `Mezametara Saikyou Soubi...`).
+   - Mở Side Panel (bằng cách click nút `LR PANEL` trên video player hoặc icon Extension).
+   - Phụ đề tiếng Nhật sẽ hiển thị với đầy đủ tính năng tra từ Mazii, đổi màu JLPT, tua khi click cue.

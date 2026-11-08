@@ -99,6 +99,7 @@
   let sentenceRestorePending = false;
   const sentenceTokenPending = new Set(), sentenceTokenRetryAt = new Map();
   let currentMediaTime = 0;
+  let iframePlayerTime = null;
   let currentVideoId = "";
   /** Video the page last reported a timedtext capture for (empty = none yet). */
   let pageCaptureVideoId = "";
@@ -1489,6 +1490,7 @@
       }
       if (h === "abema.tv" || h.endsWith(".abema.tv")) return "abema";
       if (h === "netflix.com" || h.endsWith(".netflix.com")) return "netflix";
+      if (h === "animevietsub.best" || h.includes("animevietsub")) return "animevietsub";
       return "web";
     } catch {
       return "web";
@@ -1528,6 +1530,16 @@
         if (m && m[1]) return `netflix__${m[1]}`;
       } catch (_) {}
     }
+    if (source === "animevietsub") {
+      try {
+        const phimMatch = location.pathname.match(/\/phim\/([^\/]+)/);
+        const tapMatch = location.pathname.match(/tap-(\d+)/);
+        const slug = phimMatch ? phimMatch[1] : "anime";
+        const ep = tapMatch ? tapMatch[1].padStart(2, "0") : "01";
+        const cleanSlug = slug.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 48);
+        return `avs__${cleanSlug}__ep${ep}`.slice(0, 64);
+      } catch (_) {}
+    }
     const rawPath = String(location.pathname || "").replace(/\/+$/, "");
     const pathId = rawPath.split("/").filter(Boolean).pop() || "";
     const fallback = source === "abema" ? "top" : "page";
@@ -1563,6 +1575,7 @@
   function sourceLabel() {
     if (currentSource === "abema") return "ABEMA";
     if (currentSource === "netflix") return "Netflix";
+    if (currentSource === "animevietsub") return "AVS";
     if (currentSource === "youtube") return "YT";
     if (currentSource === "web") return "Web";
     return String(currentSource || "YT").toUpperCase();
@@ -1822,6 +1835,14 @@
       v.currentTime = t;
       const p = v.play();
       if (p && typeof p.catch === "function") p.catch(() => {});
+    }
+    if (currentSource === "animevietsub") {
+      const iframes = document.querySelectorAll("iframe");
+      for (const frame of iframes) {
+        try {
+          frame.contentWindow?.postMessage({ type: "AVS_PLAYER_SEEK", time: t }, "*");
+        } catch (_) {}
+      }
     }
     await pageCall("PLAY_AT", { mediaTime: t });
   }
@@ -2112,20 +2133,46 @@
           onProgress: p => { if (force && isCurrent()) toast(`Dịch câu: ${p.done}/${p.total} bản dịch · lỗi ${p.failed}`); },
         });
       } else {
-        report = await translator.translateCues(input.filter(inWindow), apiKey, p => {
-          if (!isCurrent()) return;
-          scheduleTranslationPaint(gen);
-          if (force) toast(`Dịch: ${p.done}/${p.total} · lỗi ${p.failed}`);
-        }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic", sourceKey: `${currentSource}:${vid}:ja`, isCurrent,
-          onQueued: jobs => trace?.translationsQueued?.(jobs, force, mode, performance.now()),
-          onResult: (result, accepted) => {
-            trace?.request(result.request, performance.now());
-            trace?.translationResult?.(result, accepted, mode, performance.now());
-          } });
+        const languages = [
+          (settings.barShowVi !== false || settings.sidepanelShowVi !== false) ? "vi" : "",
+          (settings.barShowEn !== false || settings.sidepanelShowEn === true) ? "en" : "",
+        ].filter(Boolean);
+        if (!languages.length) languages.push("vi");
+
+        let targetCues = input.filter(inWindow);
+        if (!force && targetCues.length < 25) {
+          const bgCandidates = input.filter(c => !inWindow(c) && (!c.vi || (languages.includes("en") && !c.en)));
+          targetCues = targetCues.concat(bgCandidates.slice(0, 25 - targetCues.length));
+        }
+
+        const reports = await Promise.all(
+          languages.map(language =>
+            translator.translateCues(targetCues, apiKey, p => {
+              if (!isCurrent()) return;
+              scheduleTranslationPaint(gen);
+              if (force) toast(`Dịch (${language.toUpperCase()}): ${p.done}/${p.total} · lỗi ${p.failed}`);
+            }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic", sourceKey: `${currentSource}:${vid}:ja`, language, isCurrent,
+              onQueued: jobs => trace?.translationsQueued?.(jobs, force, mode, performance.now()),
+              onResult: (result, accepted) => {
+                trace?.request(result.request, performance.now());
+                trace?.translationResult?.(result, accepted, mode, performance.now());
+              } })
+          )
+        );
+        report = {
+          completed: reports.reduce((acc, r) => acc + (r?.completed || 0), 0),
+          failed: reports.reduce((acc, r) => acc + (r?.failed || 0), 0),
+          total: reports.reduce((acc, r) => acc + (r?.total || 0), 0),
+          applied: reports.reduce((acc, r) => acc + (r?.applied || 0), 0),
+          results: reports.flatMap(r => r?.results || [])
+        };
         if (isCurrent() && report.applied) scheduleSaveTranscript();
       }
       for (const result of report.results || []) trace?.request(result.request, performance.now());
       if (force && isCurrent()) toast(`Đã nhận ${report.completed}/${report.total} bản dịch hợp lệ · lỗi ${report.failed}`);
+      if (report.failed > 0 && report.results?.some(r => r.httpStatus === 401)) {
+        toast("Gemini API Key không hợp lệ hoặc đã hết hạn (HTTP 401). Nhập Google AI Studio API Key trong Cài đặt.");
+      }
     } catch (err) {
       if (isCurrent() && force) toast(`Lỗi dịch: ${err.message || "Không nhận được bản dịch hợp lệ"}`);
     } finally {
@@ -2500,6 +2547,49 @@
     captionsInfo = pc?.reason || "no_cues";
   }
 
+  /** AnimeVietSub: fetch Japanese script from Jimaku.cc via Service Worker. */
+  async function loadAnimeVietsubCues(force = false) {
+    captionsStatus = "loading";
+    captionsInfo = "Đang tìm script tiếng Nhật...";
+    updateCaptionStatusLine();
+
+    try {
+      const epEl = document.querySelector(".btn-episode.active, .episode-link.active, a.active[href*='tap-']");
+      const domInfo = {
+        title: document.title || "",
+        h1: document.querySelector("h1")?.innerText || "",
+        h2: document.querySelector("h2")?.innerText || "",
+        activeEpisode: epEl?.innerText || "",
+        activeEpisodeUrl: epEl?.href || ""
+      };
+
+      const res = await chrome.runtime.sendMessage({
+        type: "FETCH_ANIME_SCRIPT",
+        url: location.href,
+        domInfo
+      });
+
+      if (!res?.ok || !Array.isArray(res.cues) || !res.cues.length) {
+        captionsStatus = "none";
+        captionsInfo = res?.message || res?.error || "Không tìm thấy phụ đề";
+        updateCaptionStatusLine();
+        publishSidePanelState({ forceList: true, cues: [] });
+        return;
+      }
+
+      await applyLoadedCues(
+        res.cues,
+        `${res.animeTitle || "AVS"} · Tập ${res.episode || 1} · ${res.cues.length} câu`,
+        { skipCache: !!force }
+      );
+    } catch (err) {
+      captionsStatus = "none";
+      captionsInfo = `Lỗi: ${err?.message || String(err)}`;
+      updateCaptionStatusLine();
+      publishSidePanelState({ forceList: true, cues: [] });
+    }
+  }
+
   async function saveTranscriptToDisk(payload) {
     if (!currentVideoId) return;
     // Empty payload is an intentional wipe only when the script is owned (delete-all).
@@ -2830,6 +2920,10 @@
       document.querySelector("#player-container"),
       document.querySelector("ytd-player"),
     ];
+    if (currentSource === "animevietsub") {
+      const p = document.querySelector("#media-player iframe, #media-player, #media-player-box");
+      if (p) candidates.unshift(p);
+    }
     if (currentSource !== "youtube") {
       // Generic players (ABEMA / hls.js / shaka): the <video> itself is the anchor.
       const v = document.querySelector("video");
@@ -4141,11 +4235,11 @@
   function applyBarVisibility() {
     ensureUI();
     const bar = document.getElementById("hardsub-ocr-bar");
-    const on = !!settings.showOnVideo;
+    const on = !!settings.showOnVideo && currentSource !== "animevietsub";
     document.body.classList.toggle("lr-hide-native-subs", on);
     const navLeft = document.getElementById("lr-nav-left");
     const ctrlRight = document.getElementById("lr-ctrl-right");
-    const showCtrl = on && settings.showSubControls !== false;
+    const showCtrl = on && settings.showSubControls !== false && currentSource !== "animevietsub";
     if (navLeft) {
       navLeft.hidden = !showCtrl;
       navLeft.style.display = showCtrl ? "" : "none";
@@ -4172,6 +4266,7 @@
   }
 
   function playerToggleLabel() {
+    if (currentSource === "animevietsub") return "PANEL";
     return settings.showOnVideo ? "ON" : "OFF";
   }
 
@@ -4295,6 +4390,10 @@
         openSettingsModal();
         return;
       }
+      if (currentSource === "animevietsub") {
+        await openSidePanel();
+        return;
+      }
       await toggleShowOnVideo();
     });
     btn.addEventListener("mousedown", stopBubble);
@@ -4336,17 +4435,19 @@
       return true;
     }
 
-    // 2. Non-YouTube: Netflix / ABEMA / generic HTML5 video (Language Reactor style floating left toggle)
+    // 2. Non-YouTube: Netflix / ABEMA / AnimeVietSub / generic HTML5 video (Language Reactor style floating left toggle)
     const video =
       document.querySelector("video.html5-main-video") || document.querySelector("video");
-    if (!video) return false;
+    const isAvs = currentSource === "animevietsub";
+    if (!video && !isAvs) return false;
 
     const container =
+      (isAvs && (document.querySelector("#media-player-box") || document.querySelector("#media-player") || document.querySelector(".media-player") || document.querySelector(".player-wrapper") || document.querySelector("iframe[src*='stream.googleapiscdn.com']")?.parentElement)) ||
       document.querySelector(".watch-video") ||
       document.querySelector(".NFPlayer") ||
       document.querySelector("[class*='player-container']") ||
       document.querySelector("[class*='com-vod-']") ||
-      video.parentElement ||
+      video?.parentElement ||
       document.body;
 
     if (!container) return false;
@@ -4403,15 +4504,18 @@
       document.querySelector("ytd-player") ||
       document.querySelector(".watch-video") ||
       document.querySelector(".NFPlayer") ||
+      document.querySelector("#media-player-box") ||
+      document.querySelector("#media-player") ||
       document.body;
     if (playerToggleObserver) playerToggleObserver.disconnect();
     playerToggleObserver = new MutationObserver(() => {
       const btn = document.getElementById(PLAYER_TOGGLE_ID);
       const ytLeft = document.querySelector(".ytp-left-controls");
       const video = document.querySelector("video");
+      const isAvs = currentSource === "animevietsub";
       if (
         (ytLeft && (!btn || !ytLeft.contains(btn))) ||
-        (!ytLeft && video && (!btn || !btn.classList.contains("hardsub-generic-toggle")))
+        (!ytLeft && (video || isAvs) && (!btn || !btn.classList.contains("hardsub-generic-toggle")))
       ) {
         scheduleEnsurePlayerToggle();
       }
@@ -4544,6 +4648,18 @@
       captionsStatus === "ok" &&
       cues.length > 0
     ) {
+      updateCaptionStatusLine();
+      return;
+    }
+    // AnimeVietSub: fetch script from Jimaku.cc via Service Worker.
+    if (currentSource === "animevietsub") {
+      captionsStatus = "loading";
+      captionsInfo = "Đang tải script tiếng Nhật...";
+      updateCaptionStatusLine();
+      await loadAnimeVietsubCues(!!force);
+      if (stale()) return;
+      if (cues.length) await syncToPlayhead();
+      else updateBar(null);
       updateCaptionStatusLine();
       return;
     }
@@ -6240,7 +6356,10 @@
     bindVideoEvents();
 
     const v = findVideo();
-    const mediaTime = v ? v.currentTime : Number((await pageCall("GET_MEDIA_TIME", {}, 300))?.mediaTime);
+    let mediaTime = v ? v.currentTime : Number((await pageCall("GET_MEDIA_TIME", {}, 300))?.mediaTime);
+    if (!Number.isFinite(mediaTime) && currentSource === "animevietsub" && Number.isFinite(iframePlayerTime)) {
+      mediaTime = iframePlayerTime;
+    }
     if (Number.isFinite(mediaTime)) {
       syncCueAtMediaTime(mediaTime);
     }
@@ -6402,6 +6521,16 @@
       return;
     }
 
+    if (currentSource === "animevietsub") {
+      await loadAnimeVietsubCues(true);
+      if (gen !== navigateGen) return;
+      if (cues.length) await syncToPlayhead();
+      else updateBar(null);
+      renderList(true);
+      publishSidePanelState({ forceList: true });
+      syncHealth();
+      return;
+    }
     if (currentSource !== "youtube") {
       await loadPageCues(true);
       if (gen !== navigateGen) return;
@@ -6441,6 +6570,8 @@
   }
 
   async function init() {
+    currentSource = sourceFromHost();
+    currentVideoId = videoIdFromUrl();
     await loadSettings();
     // Get tab ID for tab-scoped storage (fix cross-tab overwrites)
     await ensureContentTabId();
@@ -6460,7 +6591,9 @@
       }).catch(() => {});
     } catch (_) {}
     ensureUI();
-    injectPageScript();
+    if (currentSource !== "animevietsub") {
+      injectPageScript();
+    }
     applyDim();
     applyBarVisibility();
     applyBarPosition();
@@ -6469,6 +6602,85 @@
     bindGestureOpenSidePanel();
     window.addEventListener("mousemove", pingToggleActivity, { passive: true });
     window.addEventListener("message", (e) => {
+      if (e.data?.type === "AVS_DEBUG_PING") {
+        const btn = document.getElementById(PLAYER_TOGGLE_ID);
+        const activeCue = findActiveCue(iframePlayerTime || 0);
+        globalThis.HardsubGeminiTranslate?.getStoredApiKey?.().then(gKey => {
+          const lines = String(gKey || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+          const lineStats = lines.map(l => ({ len: l.length, startsAIza: l.startsWith("AIza"), snippet: `${l.slice(0, 6)}...${l.slice(-4)}` }));
+          window.postMessage({
+            type: "AVS_DEBUG_PONG",
+            currentSource,
+            currentVideoId,
+            captionsStatus,
+            captionsInfo,
+            cuesCount: cues.length,
+            hasBtn: !!btn,
+            btnParentTag: btn?.parentElement?.tagName,
+            btnParentId: btn?.parentElement?.id,
+            btnParentClass: btn?.parentElement?.className,
+            hasOcrRoot: !!document.getElementById("hardsub-ocr-root"),
+            iframePlayerTime,
+            hasGeminiKey: !!gKey,
+            geminiKeyLen: gKey ? gKey.length : 0,
+            linesCount: lines.length,
+            lineStats,
+            activeCue: activeCue ? { start: activeCue.start_media_time, end: activeCue.end_media_time, text: activeCue.text } : null,
+            firstCue: cues[0] ? { start: cues[0].start_media_time, end: cues[0].end_media_time, text: cues[0].text, vi: cues[0].vi, en: cues[0].en } : null,
+            tenthCue: cues[9] ? { start: cues[9].start_media_time, end: cues[9].end_media_time, text: cues[9].text, vi: cues[9].vi, en: cues[9].en } : null
+          }, "*");
+        }).catch(() => {});
+        return;
+      }
+      if (e.data?.type === "AVS_TEST_TRANSLATE") {
+        (async () => {
+          try {
+            const translator = globalThis.HardsubGeminiTranslate;
+            const apiKey = await translator?.getStoredApiKey?.();
+            const targetCues = cues.slice(0, 3);
+            const repVi = await translator?.translateCues(targetCues, apiKey, null, { force: true, language: "vi" });
+            const repEn = await translator?.translateCues(targetCues, apiKey, null, { force: true, language: "en" });
+            publishSidePanelState({ forceList: true });
+            window.postMessage({
+              type: "AVS_TRANSLATE_PONG",
+              ok: true,
+              repVi,
+              repEn,
+              firstCueVi: cues[0]?.vi,
+              firstCueEn: cues[0]?.en
+            }, "*");
+          } catch (err) {
+            window.postMessage({
+              type: "AVS_TRANSLATE_PONG",
+              ok: false,
+              error: String(err?.message || err)
+            }, "*");
+          }
+        })();
+        return;
+      }
+      if (e.data?.type === "AVS_SET_JIMAKU_KEY" && typeof e.data.key === "string") {
+        const key = e.data.key.trim();
+        chrome.storage.local.set({ jimakuApiKey: key });
+        return;
+      }
+      if (e.data?.type === "AVS_SET_GEMINI_KEY" && typeof e.data.key === "string") {
+        const key = e.data.key.trim();
+        globalThis.HardsubGeminiTranslate?.saveApiKey(key).then(() => {
+          window.postMessage({ type: "AVS_SET_GEMINI_KEY_DONE", ok: true }, "*");
+        });
+        return;
+      }
+      if (e.data?.type === "AVS_PLAYER_TIMEUPDATE") {
+        const t = Number(e.data.currentTime);
+        if (Number.isFinite(t)) {
+          iframePlayerTime = t;
+          if (!findVideo()) {
+            syncCueAtMediaTime(t);
+          }
+        }
+        return;
+      }
       // Same capability gate as the pageCall reply path — no unverified
       // MAIN-world message may trigger caption reloads.
       if (e.source !== window) return;
@@ -6633,6 +6845,9 @@
    */
   if (globalThis.__JP_CAP_CONTENT_TEST__) {
     globalThis.__JP_CAP_CONTENT_TEST__.content = {
+      sourceFromHost,
+      videoIdFromUrl,
+      sourceLabel,
       normalizeSettings,
       normalizeCueText,
       pageTitle,
@@ -6679,6 +6894,9 @@
       }),
       setAudioListeningForTest: (value) => { audioListeningActive = !!value; },
       getCues: () => cues,
+      setCuesForTest: (newCues) => { cues = newCues; },
+      setCurrentSourceForTest: (src) => { currentSource = src; },
+      triggerGeminiTranslationIfNeededForTest: (force) => triggerGeminiTranslationIfNeeded(force),
       getSettings: () => settings,
       getCaptionMode: () => captionMode,
     };
