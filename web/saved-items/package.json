@@ -1,8 +1,8 @@
 {
-  "name": "yt-caption-saved-items",
+  "name": "language-caption-saved-items",
   "version": "0.3.2",
   "private": true,
-  "description": "YT Caption Saved Items — Language Reactor–style vocab UI for YouTube JP Caption Studio",
+  "description": "Language Caption Saved Items — vocab UI for the Language Caption extension",
   "license": "MIT",
   "engines": {
     "node": ">=24"

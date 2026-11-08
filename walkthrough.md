@@ -1,6 +1,6 @@
 # Kiến trúc & Phân tích chuyên sâu (Technical Walkthrough)
 
-Dự án **YouTube JP Caption Studio** là một hệ thống hỗ trợ học tiếng Nhật qua YouTube. Hệ thống hỗ trợ đa nền tảng với hai hướng tiếp cận kiến trúc chính:
+Dự án **Language Caption** (trước đây YouTube JP Caption Studio) hỗ trợ học ngôn ngữ qua phụ đề trên YouTube và mọi trang http(s). Hệ thống hỗ trợ đa nền tảng với hai hướng tiếp cận kiến trúc chính:
 1. **Desktop**: Kiến trúc **Decoupled (Phân tách) / Client-Server** kết hợp giữa Chrome Extension (Front-end), FastAPI (Local Backend), và Next.js (Popup UI). 
 2. **iPad**: Kiến trúc **Native Standalone** sử dụng SwiftUI, WKWebView và các framework gốc của Apple.
 

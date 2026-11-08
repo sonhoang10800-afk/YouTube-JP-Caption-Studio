@@ -1489,21 +1489,30 @@ async function getDriveFolderId(interactive = false) {
     _cachedDriveFolderId = stored.driveFolderId;
     return _cachedDriveFolderId;
   }
-  const q = encodeURIComponent("name = 'YouTube JP Caption Studio' and mimeType = 'application/vnd.google-apps.folder' and trashed = false");
-  const listRes = await driveRequest(`/files?q=${q}&fields=files(id,name)&spaces=drive&supportsAllDrives=true`, {}, interactive).catch(() => null);
-  if (listRes && listRes.ok) {
-    const list = await listRes.json().catch(() => null);
-    if (list?.files && list.files.length > 0) {
-      _cachedDriveFolderId = list.files[0].id;
-      await chrome.storage.local.set({ driveFolderId: _cachedDriveFolderId });
-      return _cachedDriveFolderId;
+  // Prefer new brand folder; fall back to legacy "YouTube JP Caption Studio".
+  for (const folderName of ["Language Caption", "YouTube JP Caption Studio"]) {
+    const q = encodeURIComponent(
+      `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+    );
+    const listRes = await driveRequest(
+      `/files?q=${q}&fields=files(id,name)&spaces=drive&supportsAllDrives=true`,
+      {},
+      interactive,
+    ).catch(() => null);
+    if (listRes && listRes.ok) {
+      const list = await listRes.json().catch(() => null);
+      if (list?.files && list.files.length > 0) {
+        _cachedDriveFolderId = list.files[0].id;
+        await chrome.storage.local.set({ driveFolderId: _cachedDriveFolderId });
+        return _cachedDriveFolderId;
+      }
     }
   }
   const createRes = await driveRequest("/files?supportsAllDrives=true", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: "YouTube JP Caption Studio",
+      name: "Language Caption",
       mimeType: DRIVE_FOLDER_MIME,
     }),
   }, interactive).catch(() => null);
@@ -1515,7 +1524,7 @@ async function getDriveFolderId(interactive = false) {
       return _cachedDriveFolderId;
     }
   }
-  throw new Error("Không thể tìm hoặc tạo thư mục 'YouTube JP Caption Studio' trên Google Drive.");
+  throw new Error("Không thể tìm hoặc tạo thư mục 'Language Caption' trên Google Drive.");
 }
 
 async function setDriveFolderId(folderIdOrUrl) {

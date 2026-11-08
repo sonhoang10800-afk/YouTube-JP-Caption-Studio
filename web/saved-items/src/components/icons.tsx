@@ -15,7 +15,7 @@ export function LogoMark(props: IconProps) {
         fontFamily="Varela Round, sans-serif"
         fontWeight="700"
       >
-        YT
+        LC
       </text>
     </svg>
   );

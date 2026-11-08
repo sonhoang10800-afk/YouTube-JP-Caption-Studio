@@ -309,7 +309,7 @@ export function SettingsPanel() {
     <div className="w-full px-1 pb-24">
       <header className="mb-5">
         <h1 className="font-[family-name:var(--font-brand)] text-[22px] font-normal tracking-wide text-white">
-          YT Caption
+          Language Caption
         </h1>
         <p
           className={cn(

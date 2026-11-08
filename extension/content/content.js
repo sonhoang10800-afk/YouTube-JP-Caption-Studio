@@ -4312,11 +4312,11 @@
     btn.classList.toggle("hardsub-ytp-toggle--off", !on);
     btn.setAttribute("aria-pressed", on ? "true" : "false");
     btn.title = on
-      ? "Language Reactor: BẬT (Bấm để tắt, ⚙ cài đặt)"
-      : "Language Reactor: TẮT (Bấm để bật, ⚙ cài đặt)";
+      ? "Language Caption: BẬT (Bấm để tắt, ⚙ cài đặt)"
+      : "Language Caption: TẮT (Bấm để bật, ⚙ cài đặt)";
     btn.setAttribute(
       "aria-label",
-      on ? "Language Reactor ON" : "Language Reactor OFF"
+      on ? "Language Caption ON" : "Language Caption OFF"
     );
     const label = btn.querySelector(".hardsub-ytp-toggle__label");
     if (label) label.textContent = playerToggleLabel();
@@ -4410,10 +4410,10 @@
     btn.className = isFloating
       ? "hardsub-generic-toggle hardsub-ytp-toggle"
       : "ytp-button hardsub-ytp-toggle";
-    btn.setAttribute("aria-label", "Language Reactor");
+    btn.setAttribute("aria-label", "Language Caption");
     btn.innerHTML =
       '<span class="hardsub-ytp-toggle__pill" aria-hidden="true">' +
-      '<span class="hardsub-ytp-toggle__badge">LR</span>' +
+      '<span class="hardsub-ytp-toggle__badge">LC</span>' +
       '<span class="hardsub-ytp-toggle__label">' + playerToggleLabel() + '</span>' +
       '<span class="hardsub-ytp-toggle__gear" title="Cài đặt">⚙</span></span>';
     const stopBubble = (e) => e.stopPropagation();

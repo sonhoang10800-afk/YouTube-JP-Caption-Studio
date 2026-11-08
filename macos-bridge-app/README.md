@@ -1,4 +1,4 @@
-# Caption Studio Bridge (macOS)
+# Language Caption Bridge (macOS)
 
 Menu-bar app: double-click → chạy `local-bridge` (port **8765**), không cần Terminal.
 
@@ -7,14 +7,14 @@ Menu-bar app: double-click → chạy `local-bridge` (port **8765**), không c�
 ```bash
 cd macos-bridge-app
 ./build.sh
-open "dist/Caption Studio Bridge.app"
+open "dist/Language Caption Bridge.app"
 ```
 
 Cài vào Applications:
 
 ```bash
 INSTALL=1 ./build.sh
-open -a "Caption Studio Bridge"
+open -a "Language Caption Bridge"
 ```
 
 ## Menu

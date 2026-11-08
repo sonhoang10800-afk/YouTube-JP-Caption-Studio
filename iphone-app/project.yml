@@ -79,7 +79,7 @@ targets:
     info:
       path: Info.plist
       properties:
-        CFBundleDisplayName: JP Caption Studio
+        CFBundleDisplayName: Language Caption
         LSSupportsOpeningDocumentsInPlace: true
         UILaunchScreen: {}
         UIApplicationSceneManifest:

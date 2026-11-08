@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "YouTube JP Caption Studio",
-  "version": "0.11.3",
-  "description": "Load captions (YouTube, ABEMA, Netflix, and other video sites), manual JA→EN/VI translate, Language Reactor-style dual captions locally.",
+  "name": "Language Caption",
+  "version": "0.12.0",
+  "description": "Language Caption — dual captions on any site (YouTube, ABEMA, Netflix, AnimeVietSub, and the open web) with JA/EN/VI modes and local NLP.",
   "minimum_chrome_version": "116",
   "permissions": ["storage", "cookies", "sidePanel", "tabs", "nativeMessaging", "alarms", "identity", "tabCapture", "offscreen", "scripting"],
   "host_permissions": [
@@ -27,7 +27,7 @@
     "service_worker": "background/service_worker.js"
   },
   "action": {
-    "default_title": "Caption Studio — Settings & Saved Items"
+    "default_title": "Language Caption — Settings & Saved Items"
   },
   "commands": {
     "_execute_action": {

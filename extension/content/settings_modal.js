@@ -1,5 +1,5 @@
 /**
- * In-page Settings Modal for YouTube JP Caption Studio.
+ * In-page Settings Modal for Language Caption.
  * Dark-mode minimalist design:
  * 1. Word colors toggles & preview
  * 2. Display & Overlay (Opacity slider with live preview, dictionary, autopause, etc.)
@@ -48,7 +48,7 @@
       <div class="lr-settings-backdrop" id="lr-settings-backdrop">
         <div class="lr-settings-dialog" role="dialog" aria-modal="true">
           <div class="lr-settings-header">
-            <h2>Caption Studio — Cài đặt</h2>
+            <h2>Language Caption — Cài đặt</h2>
             <button type="button" class="lr-settings-close" id="lr-settings-close-x" aria-label="Close">✕</button>
           </div>
           <div class="lr-settings-body">

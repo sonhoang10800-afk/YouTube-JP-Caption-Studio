@@ -365,7 +365,7 @@ struct ContentView: View {
     private var topBar: some View {
         HStack(spacing: 10) {
             VStack(alignment: .leading, spacing: 2) {
-                Text("JP Caption Studio")
+                Text("Language Caption")
                     .font(.headline.weight(.semibold))
                 Text("Học phụ đề YouTube")
                     .font(.caption)
@@ -406,7 +406,7 @@ struct ContentView: View {
                     .keyboardType(.URL)
                     .focused($urlFocused)
                     .onSubmit(loadAndRefresh)
-                    .accessibilityLabel("JP Caption Studio URL")
+                    .accessibilityLabel("Language Caption URL")
                 if !urlField.isEmpty {
                     Button {
                         urlField = ""

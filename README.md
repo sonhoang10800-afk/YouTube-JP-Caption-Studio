@@ -1,11 +1,11 @@
-# YouTube JP Caption Studio
+# Language Caption
 
 <p align="center">
   <img src="https://img.shields.io/badge/Chrome-Extension-4285F4?logo=googlechrome&logoColor=white" alt="Chrome Extension">
   <img src="https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/Next.js-Popup-000000?logo=next.js&logoColor=white" alt="Next.js">
   <img src="https://img.shields.io/badge/SwiftUI-iPad_iPhone-007AFF?logo=swift&logoColor=white" alt="SwiftUI iPad/iPhone App">
-  <img src="https://img.shields.io/badge/Language-Reactor_Style-FF4B4B" alt="Language Reactor Style">
+  <img src="https://img.shields.io/badge/Language_Caption-7B5CFF" alt="Language Caption">
 </p>
 
 [English](#english) | [日本語](#日本語) | [Tiếng Việt](#tiếng-việt)
@@ -26,9 +26,9 @@ trips — the trace is sampled state, not a release gate. See the
 <a id="english"></a>
 # 🇬🇧 English
 
-**YouTube JP Caption Studio** is a Language Reactor-style tool tailored for learning Japanese via YouTube, ABEMA, and Netflix. It is available as a **Chrome Extension** (Desktop) and **Native iPad / iPhone Apps**. It features Japanese timedtext interception, video overlays, a dedicated side panel for editing, furigana generation (via Sudachi on Desktop or Apple NaturalLanguage on iOS), JMdict dictionary integration (EN + VI glosses), JLPT-colored tokens, and manual EN–VI subtitle import/editing.
+**Language Caption** is a dual-caption learning tool for YouTube, ABEMA, Netflix, AnimeVietSub, and any http(s) page. It ships as a **Chrome Extension** (Desktop) and **Native iPad / iPhone Apps**. Source language is selectable (`auto` / `ja` / `en` / `vi`); Japanese primary still gets furigana (Sudachi / Apple NLP), JMdict, and JLPT colors. EN/VI targets use YouTube tracks, import, or Gemini.
 
-**Language Reactor 5.1.8 Parity**: Dual-card overlay, accurate authentic cue timelines (no artificial guessing/stretching), fast Vietnamese translation via Google AI Studio Gemini 3.8 Flash, on-screen controls (replay `▶`, star `☆`/`★`, prev/next `<`/`>`, AP auto-pause `AP`, vertical position `↕`), and 3-tab sidepanel (`Subtitles`, `Words` grouped by frequency rank, `Saved`).
+**Overlay parity**: Dual-line overlay, authentic cue timelines, Gemini EN/VI translation, on-screen controls (replay `▶`, star `☆`/`★`, prev/next `<`/`>`, AP auto-pause `AP`, vertical position `↕`), and 3-tab sidepanel (`Subtitles`, `Words` grouped by frequency rank, `Saved`).
 
 ## 🌟 Key Features
 1. **Smart Captions & Exact Timelines**: Intercepts Japanese timedtext directly from YouTube/Netflix/ABEMA, keeping authentic start and end times without artificial stretching across silence gaps.
@@ -36,12 +36,12 @@ trips — the trace is sampled state, not a release gate. See the
 3. **Language Reactor 5.1.8 Overlay**: One Japanese card (`.lr-card-ja`) with a purple replay button `(▶)`, Romaji above colored tokens by rank and a 1-click star button `☆`/`★`; the Vietnamese and English translations are rendered as `.bar-vi` / `.bar-en` rows inside that same card. The legacy `.lr-card-vi` / `.lr-card-en` wrapper cards still exist in CSS but are `display: none !important` and are no longer rendered.
 4. **On-Screen Navigation & Auto-Pause**: Left vertical navigation bar (`>`, `↻` with "Repeat ['S' key]" tooltip, `<`), hotkeys (S, A, D), right auto-pause switch (`AP`), and vertical shift button `↕`.
 5. **3-Tab Side Panel**: `Subtitles` (timeline with playhead sync and star), `Words` (video vocabulary grouped by frequency rank brackets e.g. Rank 1-500, 501-1000), and `Saved` (all saved words and starred cues with context toggle).
-6. **Player Bar Pill Toggle**: the controls pill `.hardsub-ytp-toggle` — an `LR` badge, an `ON`/`OFF` label and a `⚙` gear. ON hides native YouTube captions (`body.lr-hide-native-subs`) and shows the LR overlay; OFF restores native captions. Clicking the gear opens the in-page Settings modal. Clicking the extension toolbar icon opens the dedicated full-page options in a tab.
+6. **Player Bar Pill Toggle**: the controls pill `.hardsub-ytp-toggle` — an `LC` badge, an `ON`/`OFF` label and a `⚙` gear. ON hides native YouTube captions (`body.lr-hide-native-subs`) and shows the Language Caption overlay; OFF restores native captions. Clicking the gear opens the in-page Settings modal. Clicking the extension toolbar icon opens the dedicated full-page options in a tab.
 7. **Furigana & Modern Mazii Dictionary**: Real-time 240k+ Mazii offline dictionary + JMdict. Desktop: Sudachi + local bridge `/dict` backed by Mazii offline DB (241k words, 116k examples, 12k kanji). Tap/hover a word → modern Mazii card with core Vietnamese meaning banner ("Nghĩa tiếng Việt cốt lõi" or accurate English fallback), Han Viet, JLPT level badge, real bilingual examples, formatted Vietnamese POS badges, and quick vocab learning status toolbar. Features **200ms Hover Transit Lock** and **Click-to-Pin** to eliminate annoying popup jumping when sweeping the mouse across intermediate tokens, alongside intelligent sense deduplication.
 8. **JLPT / Frequency Coloring**: Tokens colored by difficulty band (N5→N1 / unknown) from the shared `freq_ja.json` rank map.
 9. **Personal Vocabulary Tracker**: Mark Known / Learning / Ignore / Special, save words and starred sentences into `savedCues`.
 10. **Native iPad / iPhone**: Standalone SwiftUI apps (`ipad-app/`, sibling `iphone-app/`) — hardsub, side panel, tokenize, dict popup, import/export.
-11. **Drive Sync (PC ↔ iPad/iPhone)**: Shared `caption-studio-backup.json` in a fixed Google Drive folder; iPad-only vocab lands in `caption-studio-vocab.json` and is merged additively into the extension's `userVocab` (local statuses never overwritten).
+11. **Drive Sync (PC ↔ iPad/iPhone)**: Shared `language-caption-backup.json` (dual-reads legacy `caption-studio-backup.json`) in the Drive folder `Language Caption`; vocab/settings files follow the same rename with dual-read.
 12. **Bilingual Hover Sync & JLPT Coloring**: Hovering mapped words highlights their counterparts (`.tok-hover-sync`). The sentence MVP requires levels from corresponding Japanese tokens; unmapped words stay neutral. Group-level NLP/color verification is pending.
 13. **Instant Overlay Dict & Cue Popover**: Hovering overlay tokens immediately opens dictionary definitions. Hovering any Play button `▶` reveals a sentence breakdown popover (JA with furigana, VI, EN).
 
