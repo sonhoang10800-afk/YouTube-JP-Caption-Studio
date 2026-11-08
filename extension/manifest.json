@@ -6,12 +6,8 @@
   "minimum_chrome_version": "116",
   "permissions": ["storage", "cookies", "sidePanel", "tabs", "nativeMessaging", "alarms", "identity", "tabCapture", "offscreen", "scripting"],
   "host_permissions": [
-    "https://www.youtube.com/*",
-    "https://youtube.com/*",
-    "https://abema.tv/*",
-    "https://*.abema.tv/*",
-    "https://www.netflix.com/*",
-    "https://netflix.com/*",
+    "http://*/*",
+    "https://*/*",
     "http://127.0.0.1:8765/*",
     "http://localhost:8765/*",
     "http://127.0.0.1:3000/*",
@@ -19,12 +15,6 @@
     "https://www.googleapis.com/*",
     "https://accounts.google.com/o/oauth2/revoke",
     "https://generativelanguage.googleapis.com/*",
-    "https://*.animevietsub.best/*",
-    "https://animevietsub.best/*",
-    "https://*.animevietsub.news/*",
-    "https://animevietsub.news/*",
-    "https://*.animevietsub.tv/*",
-    "https://animevietsub.tv/*",
     "https://stream.googleapiscdn.com/*",
     "https://graphql.anilist.co/*",
     "https://jimaku.cc/*"
@@ -67,12 +57,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": ["shared/timedtext_parse.js", "injected/page_capture.js"],
       "run_at": "document_start",
@@ -80,18 +66,8 @@
     },
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*",
-        "https://animevietsub.best/*",
-        "https://*.animevietsub.best/*",
-        "https://animevietsub.news/*",
-        "https://*.animevietsub.news/*",
-        "https://animevietsub.tv/*",
-        "https://*.animevietsub.tv/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "shared/vocab_style.js",
@@ -116,18 +92,8 @@
     },
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*",
-        "https://*.animevietsub.best/*",
-        "https://animevietsub.best/*",
-        "https://*.animevietsub.news/*",
-        "https://animevietsub.news/*",
-        "https://*.animevietsub.tv/*",
-        "https://animevietsub.tv/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": ["content/sp_test_bridge.js"],
       "run_at": "document_start"
@@ -145,12 +111,8 @@
     {
       "resources": ["shared/timedtext_parse.js", "injected/page_capture.js"],
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*"
+        "http://*/*",
+        "https://*/*"
       ]
     }
   ]

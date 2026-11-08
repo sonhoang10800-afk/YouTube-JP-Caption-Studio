@@ -546,17 +546,23 @@ const timedtextUrl = "https://www.youtube.com/api/timedtext?v=fixture&lang=ja&fm
     assert.equal(first.tabId, 42);
     assert.equal(first.enabled, true);
 
-    // A real navigation must still update the panel.
+    // Generic http(s) sites now enable the panel (Language Caption any-site).
     await listener(42, { status: "loading" }, { id: 42, url: "https://example.com/x" });
     assert.equal(sw.sidePanelCalls.length - before, 2, "a new URL must be applied");
-    assert.equal(sw.sidePanelCalls[before + 1].enabled, false, "an unsupported site disables the panel");
+    assert.equal(sw.sidePanelCalls[before + 1].enabled, true, "any http(s) site enables the panel");
 
     // AnimeVietSub URL enables the side panel
     await listener(42, { status: "loading" }, { id: 42, url: "https://animevietsub.best/phim/test-a123/xem-phim.html" });
     assert.equal(sw.sidePanelCalls.length - before, 3, "animevietsub URL enables side panel");
     assert.equal(sw.sidePanelCalls[before + 2].enabled, true, "animevietsub enables the panel");
+
+    // chrome:// stays unsupported
+    await listener(42, { status: "loading" }, { id: 42, url: "chrome://extensions/" });
+    assert.equal(sw.sidePanelCalls.length - before, 4, "chrome URL must be applied");
+    assert.equal(sw.sidePanelCalls[before + 3].enabled, false, "chrome:// pages disable the panel");
     console.log("PASS: repeated tab updates do not re-apply the same side-panel state");
     console.log("PASS: animevietsub platform enables side panel");
+    console.log("PASS: generic http(s) enables side panel; chrome:// disables");
   }
 
   console.log("ALL SERVICE WORKER TESTS PASSED!");

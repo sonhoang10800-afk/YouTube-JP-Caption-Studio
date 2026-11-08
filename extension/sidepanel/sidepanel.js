@@ -417,7 +417,7 @@
         state.videoId = "";
         listDirty = true;
         renderList(true);
-        setStatus("Side panel chỉ hoạt động trên YouTube, Netflix hoặc ABEMA.");
+        setStatus("Side panel hoạt động trên mọi trang http(s). Mở một tab web rồi thử lại.");
       }
     } catch (_) {}
   }
@@ -2654,7 +2654,7 @@
           state.videoId = "";
           listDirty = true;
           renderList(true);
-          setStatus("Side panel chỉ hoạt động trên YouTube, Netflix hoặc ABEMA.");
+          setStatus("Side panel hoạt động trên mọi trang http(s). Mở một tab web rồi thử lại.");
         }
       } catch (_) {}
     }
@@ -2742,25 +2742,7 @@
     if (!url || typeof url !== "string") return false;
     try {
       const u = new URL(url);
-      if (u.protocol !== "http:" && u.protocol !== "https:") return false;
-      const h = u.hostname.toLowerCase();
-      return (
-        h === "www.youtube.com" ||
-        h === "youtube.com" ||
-        h === "m.youtube.com" ||
-        h === "music.youtube.com" ||
-        h === "youtu.be" ||
-        h.endsWith(".youtu.be") ||
-        h === "youtube-nocookie.com" ||
-        h.endsWith(".youtube-nocookie.com") ||
-        h === "abema.tv" ||
-        h.endsWith(".abema.tv") ||
-        h === "www.netflix.com" ||
-        h === "netflix.com" ||
-        h.endsWith(".netflix.com") ||
-        h === "animevietsub.best" ||
-        h.includes("animevietsub")
-      );
+      return u.protocol === "http:" || u.protocol === "https:";
     } catch (_) {
       return false;
     }

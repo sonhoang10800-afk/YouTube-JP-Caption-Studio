@@ -181,8 +181,8 @@ function platformFromUrl(url) {
 }
 
 function isSupportedUrl(url) {
-  const p = platformFromUrl(url);
-  return p === "youtube" || p === "abema" || p === "netflix" || p === "animevietsub";
+  // Any http(s) page can open the panel; chrome:// and extension pages stay out.
+  return platformFromUrl(url) != null;
 }
 
 async function isPlatformEnabledForUrl(url) {

@@ -38,6 +38,7 @@
       netflix: true,
       abema: true,
       animevietsub: true,
+      web: true,
     };
     const jlpt = s.levelColors || DEFAULT_JLPT_COLORS;
     const opacityVal = s.barBgOpacity != null ? Number(s.barBgOpacity) : 0.4;
@@ -156,6 +157,10 @@
                 <label class="lr-toggle-row">
                   <span class="lr-toggle-label">AnimeVietSub (animevietsub)</span>
                   <input type="checkbox" id="lr-plat-animevietsub" class="lr-switch" ${platforms.animevietsub !== false ? "checked" : ""}>
+                </label>
+                <label class="lr-toggle-row">
+                  <span class="lr-toggle-label">Mọi trang web khác (web)</span>
+                  <input type="checkbox" id="lr-plat-web" class="lr-switch" ${platforms.web !== false ? "checked" : ""}>
                 </label>
               </div>
             </div>
@@ -312,7 +317,7 @@
     });
 
     // Platform toggles
-    ["youtube", "netflix", "abema", "animevietsub"].forEach((plat) => {
+    ["youtube", "netflix", "abema", "animevietsub", "web"].forEach((plat) => {
       const el = host.querySelector(`#lr-plat-${plat}`);
       el?.addEventListener("change", () => {
         if (!currentSettings.enabledPlatforms) currentSettings.enabledPlatforms = {};
