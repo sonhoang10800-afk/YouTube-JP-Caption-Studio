@@ -544,6 +544,34 @@ assert.ok(avsVid.startsWith("avs__"), `AVS videoId must start with avs__, got ${
 assert.ok(avsVid.endsWith("__ep01"), `AVS videoId default episode must end with __ep01, got ${avsVid}`);
 assert.ok(avsVid.length <= 64, "AVS videoId must be <= 64 chars");
 
+// -------------------------------------------------------------------------
+// AnimeVietSub: dual-language translation routing (VI & EN)
+// -------------------------------------------------------------------------
+content.setCurrentSourceForTest("animevietsub");
+const testCues = [
+  { id: "c1", start_media_time: 1.0, end_media_time: 3.0, source: "こんにちは", text: "こんにちは", vi: "", en: "" },
+  { id: "c2", start_media_time: 4.0, end_media_time: 6.0, source: "ありがとう", text: "ありがとう", vi: "", en: "" },
+];
+content.setCuesForTest(testCues);
+const requestedLanguages = [];
+context.HardsubGeminiTranslate = {
+  getStoredApiKey: async () => "fake-test-key",
+  translateCues: async (cuesToTranslate, apiKey, onProgress, options) => {
+    requestedLanguages.push(options?.language);
+    for (const c of cuesToTranslate) {
+      if (options?.language === "vi") c.vi = "Xin chào";
+      if (options?.language === "en") c.en = "Hello";
+    }
+    return { completed: cuesToTranslate.length, failed: 0, total: cuesToTranslate.length, applied: cuesToTranslate.length };
+  },
+};
+
+await content.triggerGeminiTranslationIfNeededForTest(true);
+assert.ok(requestedLanguages.includes("vi"), "Must request VI translation");
+assert.ok(requestedLanguages.includes("en"), "Must request EN translation");
+assert.strictEqual(testCues[0].vi, "Xin chào", "Cue VI translation must be applied");
+assert.strictEqual(testCues[0].en, "Hello", "Cue EN translation must be applied");
+
 console.log("content_test: all assertions passed");
 })().catch((error) => {
   console.error(error.stack || error.message);

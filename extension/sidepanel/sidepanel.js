@@ -1463,9 +1463,10 @@
 
   function translationPlaceholder(cue, lang) {
     const label = lang.toUpperCase();
-    if (!cue.enhanced || cue[lang]) return label;
+    if (cue[lang]) return label;
     if (cue.translationStates?.[lang] === "error") return `${label} · Dịch lỗi, sẽ thử lại`;
     if (cue.translationStates?.[lang] === "protected") return `${label} · Bản gốc đã khóa`;
+    if (!cue.enhanced) return label;
     return `${label} · chờ dịch câu`;
   }
 

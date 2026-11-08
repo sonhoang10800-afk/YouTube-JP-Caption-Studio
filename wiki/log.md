@@ -1654,3 +1654,9 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - **Closures:** popup "Câu đã lưu" tab finally measured (2 cues + real `videoTitle`) — `ux-verify-c7-ui-2026-10-24` had it blocked; **first-ever ASR diff run** (candidates 19→29→43→52, green `ins`/red strikethrough `del`, accept applies heard text, revert keeps original, undo restores exactly) after headless teams were refused `tabCapture`; mode colours measured (`#10b981`/`#1e1e2d`/`#0284c7`, toggles `#7b5cff`); `TC_UI-010` confirmed stale (`#sp-dict` hidden, dict paints on the video page).
 - **Still open:** true Chrome side-panel surface + its real minimum width (tab surface only); overlay/PiP; 30 real Tab presses; `jlpt-unknown` colour; browser restart; two-way `/saved/sync` (no such call); Gemini 429/silent slice; Drive+account switch; port-3000 app; ASR content accuracy. `TEST_PLAN_MATRIX.md` Flow 4 documents a `POST /saved/sync` path the extension never calls.
 - No product code changed (read-only run). Wiki lint exit 0. Topic: `wiki/topics/sidepanel-test-plan-2026-10-25.md`.
+
+## [2026-11-09] ingest | AnimeVietSub docs cherry-pick (no branch merge)
+
+- Cherry-picked from `origin/anime_auto_inject_script_panel` without wholesale merge: plan/review/wiki topic, `scripts/animevietsub_translate_smoke.js`, dual-lang content_test asserts, sidepanel `translationPlaceholder` reorder.
+- Core AVS feature already on `master` (`cda2666`). Orphan `extension/content/frame_relay.js` stays unwired.
+- Remote branches `whisper_turbo_audio_evaluation` (merged ancestor) and `anime_auto_inject_script_panel` left for owner archive — not deleted.
