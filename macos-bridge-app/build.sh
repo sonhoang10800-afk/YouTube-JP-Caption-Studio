@@ -69,7 +69,7 @@ echo "  sdk:    $SDK"
   -o "$BIN"
 
 chmod +x "$BIN"
-codesign --force --deep --sign - --identifier com.example.YouTubeJPCaptionStudio.Bridge "$APP" 2>/dev/null \
+codesign --force --deep --sign - --identifier com.example.LanguageCaption.Bridge "$APP" 2>/dev/null \
   || codesign --force --sign - "$BIN" 2>/dev/null \
   || true
 

@@ -67,8 +67,8 @@ Native iOS apps (`ipad-app/`, sibling `iphone-app/`) providing core Desktop flow
 
 **1. Clone the repository**
 ```bash
-git clone https://github.com/kaewari/YouTube-JP-Caption-Studio.git
-cd YouTube-JP-Caption-Studio
+git clone https://github.com/sonhoang10800-afk/language-caption.git
+cd language-caption
 ```
 
 **2. Start the Local Bridge**
@@ -103,13 +103,13 @@ changes to `web/saved-items/` and commit the regenerated `extension/popup/`.
 After changing extension code, run `./scripts/reload-extension.sh` from the project root. It reloads the extension and refreshes the YouTube tab without the Reload button.
 
 ### Option B: iPad App (Native)
-1. Open `ipad-app/YouTubeJPCaptionStudio.xcodeproj` in **Xcode** (regenerate with `xcodegen` if you edit `project.yml`).
+1. Open `ipad-app/LanguageCaption.xcodeproj` in **Xcode** (regenerate with `xcodegen` if you edit `project.yml`).
 2. Select your iPad device or simulator as the target.
 3. Build and Run (Cmd + R). Ensure `Resources/dict.sqlite` and `Resources/freq_ja.json` are in the app bundle.
 4. Paste a YouTube URL → enable **Overlay** / **Side panel** → tap a colored word for the dict popup (VI+EN + sentence).
 
 ### Option C: iPhone App (Native)
-1. Open `iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj` in **Xcode** (`cd iphone-app && xcodegen` if missing). Bundle ID: `com.example.YouTubeJPCaptionStudio.iPhone`.
+1. Open `iphone-app/LanguageCaptioniPhone.xcodeproj` in **Xcode** (`cd iphone-app && xcodegen` if missing). Bundle ID: `com.example.LanguageCaption.iPhone`.
 2. Select an iPhone simulator or device → Build and Run (Cmd + R).
 3. Rotate: portrait = stacked player/panel; landscape = side-by-side. Deploy scripts: `iphone-app/Scripts/COMMANDS.md`.
 
@@ -156,8 +156,8 @@ OCR **不使用**。機械翻訳 **不使用**。翻訳は YouTube の EN/VI ト
 
 **1. リポジトリのクローン**
 ```bash
-git clone https://github.com/kaewari/YouTube-JP-Caption-Studio.git
-cd YouTube-JP-Caption-Studio
+git clone https://github.com/sonhoang10800-afk/language-caption.git
+cd language-caption
 ```
 
 **2. ローカルブリッジの起動**
@@ -183,13 +183,13 @@ curl -s http://127.0.0.1:8765/health
 拡張機能のコードを変更した後は、プロジェクトルートで `./scripts/reload-extension.sh` を実行します（Reload ボタン不要）。
 
 ### オプション B: iPad アプリ (ネイティブ)
-1. **Xcode** で `ipad-app/YouTubeJPCaptionStudio.xcodeproj` を開く（`project.yml` 変更時は `xcodegen`）。
+1. **Xcode** で `ipad-app/LanguageCaption.xcodeproj` を開く（`project.yml` 変更時は `xcodegen`）。
 2. iPad またはシミュレータを選択。
 3. ビルド実行 (Cmd + R)。`Resources/dict.sqlite` と `freq_ja.json` がバンドルに含まれること。
 4. YouTube URL を貼付 → Overlay / Side panel をON → 色付き単語をタップして辞書ポップアップ（VI+EN）。
 
 ### オプション C: iPhone アプリ (ネイティブ)
-1. **Xcode** で `iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj` を開く（なければ `cd iphone-app && xcodegen`）。
+1. **Xcode** で `iphone-app/LanguageCaptioniPhone.xcodeproj` を開く（なければ `cd iphone-app && xcodegen`）。
 2. iPhone シミュレータまたは実機 → ビルド実行。縦=積み / 横=分割。詳細: `iphone-app/Scripts/COMMANDS.md`。
 
 ---
@@ -233,8 +233,8 @@ Dự án được xây dựng với hai kiến trúc hoàn toàn khác nhau đ�
 
 **1. Clone Source Code**
 ```bash
-git clone https://github.com/kaewari/YouTube-JP-Caption-Studio.git
-cd YouTube-JP-Caption-Studio
+git clone https://github.com/sonhoang10800-afk/language-caption.git
+cd language-caption
 ```
 
 **2. Khởi chạy Local Bridge**
@@ -262,12 +262,12 @@ curl -s http://127.0.0.1:8765/health
 Sau khi sửa code extension, chạy `./scripts/reload-extension.sh` từ thư mục project. Script tự reload extension và refresh tab YouTube, không cần bấm Reload.
 
 ### Lựa chọn B: Ứng dụng iPad (Native)
-1. Mở `ipad-app/YouTubeJPCaptionStudio.xcodeproj` bằng **Xcode** (đổi `project.yml` thì chạy `xcodegen`).
+1. Mở `ipad-app/LanguageCaption.xcodeproj` bằng **Xcode** (đổi `project.yml` thì chạy `xcodegen`).
 2. Chọn iPad hoặc Simulator.
 3. Build and Run (Cmd + R). Bundle phải có `Resources/dict.sqlite` và `freq_ja.json`.
 4. Dán URL YouTube → bật **Overlay** / **Side panel** → chạm từ màu để mở popup từ điển (VI+EN + dịch câu).
 
 ### Lựa chọn C: Ứng dụng iPhone (Native)
-1. Mở `iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj` bằng **Xcode** (`cd iphone-app && xcodegen` nếu thiếu). Bundle ID: `com.example.YouTubeJPCaptionStudio.iPhone`.
+1. Mở `iphone-app/LanguageCaptioniPhone.xcodeproj` bằng **Xcode** (`cd iphone-app && xcodegen` nếu thiếu). Bundle ID: `com.example.LanguageCaption.iPhone`.
 2. Chọn iPhone Simulator hoặc máy thật → Build and Run.
 3. Xoay: portrait xếp dọc / landscape chia đôi. Deploy: `iphone-app/Scripts/COMMANDS.md`.

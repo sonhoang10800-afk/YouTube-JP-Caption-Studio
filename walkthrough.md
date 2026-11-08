@@ -166,7 +166,7 @@ Mỗi video = folder `<videoId>/` trên Drive (và `data/subtitles/{videoId}/` t
 3. Side panel → **Connect Drive** → **Upload Drive** để đẩy mirror ngay.
 
 **iPad (bắt buộc client riêng):**
-1. GCP (cùng project) → OAuth client kiểu **iOS**, bundle `com.example.YouTubeJPCaptionStudio`.
+1. GCP (cùng project) → OAuth client kiểu **iOS**, bundle `com.example.LanguageCaption`.
 2. Paste `….apps.googleusercontent.com` vào `ipad-app/Services/DriveOAuthConfig.swift` (`clientId`) — **không** dùng client Chrome (→ Error 400 `invalid_request`).
 3. URL scheme / `project.yml`: `com.googleusercontent.apps.<prefix>` (reverse-client-id); redirect `…:/oauth2redirect`.
 4. App → **Thư mục** → Connect Drive.

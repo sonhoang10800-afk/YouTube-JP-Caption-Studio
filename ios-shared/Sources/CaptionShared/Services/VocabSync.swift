@@ -7,7 +7,8 @@ import SwiftData
 @MainActor
 public final class VocabSync {
     public static let shared = VocabSync()
-    static let fileName = "caption-studio-vocab.json"
+    static let fileName = "language-caption-vocab.json"
+    static let legacyFileName = "caption-studio-vocab.json"
     private static let fileIdKey = "vocabDriveFileId"
     private static let lastAppliedKey = "vocabDriveLastAppliedUpdatedAt"
     private static let debounceNs: UInt64 = 1_500_000_000
@@ -171,7 +172,7 @@ public final class VocabSync {
             return cached
         }
         let kids = try await DriveAPIClient.children(folderId: DriveOAuthConfig.folderId)
-        if let id = kids[Self.fileName] {
+        if let id = kids[Self.fileName] ?? kids[Self.legacyFileName] {
             UserDefaults.standard.set(id, forKey: Self.fileIdKey)
             return id
         }

@@ -1,4 +1,4 @@
-name: YouTubeJPCaptionStudioiPhone
+name: LanguageCaptioniPhone
 options:
   bundleIdPrefix: com.example
   developmentLanguage: en
@@ -6,20 +6,20 @@ packages:
   CaptionShared:
     path: ../ios-shared
 schemes:
-  YouTubeJPCaptionStudioiPhone:
+  LanguageCaptioniPhone:
     build:
       targets:
-        YouTubeJPCaptionStudioiPhone: [run]
-  YouTubeJPCaptionStudioiPhoneUITests:
+        LanguageCaptioniPhone: [run]
+  LanguageCaptioniPhoneUITests:
     build:
       targets:
-        YouTubeJPCaptionStudioiPhone: [run]
-        YouTubeJPCaptionStudioiPhoneUITests: [test]
+        LanguageCaptioniPhone: [run]
+        LanguageCaptioniPhoneUITests: [test]
     test:
       targets:
-        - name: YouTubeJPCaptionStudioiPhoneUITests
+        - name: LanguageCaptioniPhoneUITests
 targets:
-  YouTubeJPCaptionStudioiPhoneUITests:
+  LanguageCaptioniPhoneUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "17.0"
@@ -29,8 +29,8 @@ targets:
     sources:
       - path: ../uitests-shared
     dependencies:
-      - target: YouTubeJPCaptionStudioiPhone
-  YouTubeJPCaptionStudioiPhone:
+      - target: LanguageCaptioniPhone
+  LanguageCaptioniPhone:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -70,7 +70,7 @@ targets:
         product: CaptionShared
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.example.YouTubeJPCaptionStudio.iPhone
+        PRODUCT_BUNDLE_IDENTIFIER: com.example.LanguageCaption.iPhone
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: 44T7Y77WAJ
@@ -91,7 +91,7 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         CFBundleURLTypes:
-          - CFBundleURLName: com.example.YouTubeJPCaptionStudio.drive-oauth
+          - CFBundleURLName: com.example.LanguageCaption.drive-oauth
             CFBundleURLSchemes:
               - com.googleusercontent.apps.886146342458-ik5d09sgushl9itr8csk6mj1ordv8ii2
         # Drive OAuth config lives in the bundle, not in Swift source.

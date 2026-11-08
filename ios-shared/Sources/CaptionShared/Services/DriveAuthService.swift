@@ -8,7 +8,7 @@ import UIKit
 // MIRRORED FILE — an identical copy lives in the sibling app (ipad-app/ ⇄ iphone-app/).
 // No shared Swift package yet: apply every change to BOTH copies and keep them byte-identical.
 
-private let driveLog = Logger(subsystem: "com.example.YouTubeJPCaptionStudio", category: "DriveAuth")
+private let driveLog = Logger(subsystem: "com.example.LanguageCaption", category: "DriveAuth")
 
 /// Google OAuth via `ASWebAuthenticationSession` + PKCE + Keychain. No GoogleSignIn SPM.
 @MainActor
@@ -18,10 +18,10 @@ public final class DriveAuthService: NSObject {
     /// Keychain service per app (real bundle id) — the old placeholder was
     /// shared by the iPad and the iPhone app.
     private var keychainService: String {
-        (Bundle.main.bundleIdentifier ?? "com.example.YouTubeJPCaptionStudio") + ".drive"
+        (Bundle.main.bundleIdentifier ?? "com.example.LanguageCaption") + ".drive"
     }
     /// Pre-2026-10 placeholder service (both apps wrote to it) — read once, then dropped.
-    private static let legacyKeychainService = "com.example.YouTubeJPCaptionStudio.drive"
+    private static let legacyKeychainService = "com.example.LanguageCaption.drive"
     private let keychainAccount = "oauth"
     private var session: ASWebAuthenticationSession?
     /// One refresh at a time: concurrent callers await the same POST instead of

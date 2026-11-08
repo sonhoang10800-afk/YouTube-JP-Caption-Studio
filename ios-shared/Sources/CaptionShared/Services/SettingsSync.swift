@@ -4,7 +4,8 @@ import Foundation
 @MainActor
 public final class SettingsSync {
     public static let shared = SettingsSync()
-    static let fileName = "caption-studio-settings.json"
+    static let fileName = "language-caption-settings.json"
+    static let legacyFileName = "caption-studio-settings.json"
     private static let fileIdKey = "settingsDriveFileId"
     private static let lastAppliedKey = "settingsLastAppliedUpdatedAt"
     private static let debounceNs: UInt64 = 1_500_000_000
@@ -37,12 +38,13 @@ public final class SettingsSync {
     }
 
     /// AppStorage / UserDefaults ↔ wire keys (geometry omitted).
+    /// Keys use `languageCaption*` prefix; `migrateLegacyDefaults()` copies old `hardsub*` once.
     private static let map: [(ud: String, wire: WritableKeyPath<Snapshot, Bool?>, def: Bool)] = [
-        ("hardsubShowFurigana", \.showFurigana, true),
-        ("hardsubShowJA", \.barShowJa, true),
-        ("hardsubShowEN.v2", \.barShowEn, true),
-        ("hardsubShowVI.v2", \.barShowVi, true),
-        ("hardsubDimHardsub", \.dimHardsub, false),
+        ("languageCaptionShowFurigana", \.showFurigana, true),
+        ("languageCaptionShowJA", \.barShowJa, true),
+        ("languageCaptionShowEN.v2", \.barShowEn, true),
+        ("languageCaptionShowVI.v2", \.barShowVi, true),
+        ("languageCaptionDimHardsub", \.dimHardsub, false),
         ("dictShowSentence", \.dictShowSentence, true),
         ("levelHighlightEnabled", \.levelHighlightEnabled, true),
         ("followTimeline", \.followTimeline, true),
@@ -50,16 +52,46 @@ public final class SettingsSync {
     ]
 
     private static let doubles: [(ud: String, wire: WritableKeyPath<Snapshot, Double?>, def: Double)] = [
-        ("hardsubBarScale", \.barScale, 1),
-        ("hardsubBarBgOpacity", \.barBgOpacity, 0.82),
-        ("hardsubBarTextOpacity", \.barTextOpacity, 1),
+        ("languageCaptionBarScale", \.barScale, 1),
+        ("languageCaptionBarBgOpacity", \.barBgOpacity, 0.82),
+        ("languageCaptionBarTextOpacity", \.barTextOpacity, 1),
         ("sidePanelFontScale", \.sidePanelFontScale, 1),
     ]
+
+    private static let legacyKeyPairs: [(legacy: String, modern: String)] = [
+        ("hardsubShowFurigana", "languageCaptionShowFurigana"),
+        ("hardsubShowJA", "languageCaptionShowJA"),
+        ("hardsubShowEN.v2", "languageCaptionShowEN.v2"),
+        ("hardsubShowVI.v2", "languageCaptionShowVI.v2"),
+        ("hardsubDimHardsub", "languageCaptionDimHardsub"),
+        ("hardsubBarScale", "languageCaptionBarScale"),
+        ("hardsubBarBgOpacity", "languageCaptionBarBgOpacity"),
+        ("hardsubBarTextOpacity", "languageCaptionBarTextOpacity"),
+        ("hardsubOverlayOn", "languageCaptionOverlayOn"),
+        ("hardsubBarNx", "languageCaptionBarNx"),
+        ("hardsubBarNy", "languageCaptionBarNy"),
+        ("hardsubBarScaleW", "languageCaptionBarScaleW"),
+        ("hardsubBarScaleH", "languageCaptionBarScaleH"),
+    ]
+
+    /// One-shot UserDefaults migrate from hardsub* → languageCaption*.
+    public static func migrateLegacyDefaults() {
+        let flag = "languageCaptionDefaultsMigratedV1"
+        let ud = UserDefaults.standard
+        guard !ud.bool(forKey: flag) else { return }
+        for pair in legacyKeyPairs {
+            if ud.object(forKey: pair.modern) == nil, let val = ud.object(forKey: pair.legacy) {
+                ud.set(val, forKey: pair.modern)
+            }
+        }
+        ud.set(true, forKey: flag)
+    }
 
     // MARK: - Public
 
     /// Start observing settings edits → debounce push when Drive connected.
     public func startObserving() {
+        Self.migrateLegacyDefaults()
         guard !observing else { return }
         observing = true
         NotificationCenter.default.addObserver(
@@ -199,7 +231,7 @@ public final class SettingsSync {
             return cached
         }
         let kids = try await DriveAPIClient.children(folderId: DriveOAuthConfig.folderId)
-        if let id = kids[Self.fileName] {
+        if let id = kids[Self.fileName] ?? kids[Self.legacyFileName] {
             UserDefaults.standard.set(id, forKey: Self.fileIdKey)
             return id
         }

@@ -71,6 +71,7 @@
       ],
       "js": [
         "shared/vocab_style.js",
+        "shared/settings_keys.js",
         "shared/hardsub_defaults.js",
         "shared/dfxp_parser.js",
         "shared/timedtext_parse.js",

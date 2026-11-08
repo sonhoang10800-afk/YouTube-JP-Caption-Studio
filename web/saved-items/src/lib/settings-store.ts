@@ -16,10 +16,12 @@ import { readEnvelope, writeEnvelope } from "@/lib/storage-version";
 
 export { BRIDGE_BASE };
 
-/** localStorage mirror (localhost / fallback). Extension uses chrome.storage key `hardsubSettings`. */
-export const SETTINGS_STORAGE_KEY = "ytcaption.hardsubSettings.v1";
+/** localStorage mirror (localhost / fallback). */
+export const SETTINGS_STORAGE_KEY = "languageCaption.settings.v1";
 
-export const CHROME_SETTINGS_KEY = "hardsubSettings";
+/** chrome.storage.local key (new). Legacy dual-read: hardsubSettings. */
+export const CHROME_SETTINGS_KEY = "languageCaptionSettings";
+export const CHROME_SETTINGS_LEGACY_KEY = "hardsubSettings";
 
 /** The mirror was written by a newer build: it is neither read nor overwritten. */
 function hasUnsupportedSettings(): boolean {
@@ -212,19 +214,26 @@ export async function loadSettingsAsync(): Promise<SettingsLoadResult> {
   if (hasChromeStorage()) {
     try {
       const store = getChromeStorage()!;
-      const data = await store.get(CHROME_SETTINGS_KEY);
-      const raw = data[CHROME_SETTINGS_KEY];
+      const data = await store.get([CHROME_SETTINGS_KEY, CHROME_SETTINGS_LEGACY_KEY]);
+      let raw = data[CHROME_SETTINGS_KEY];
+      if (raw == null && data[CHROME_SETTINGS_LEGACY_KEY] != null) {
+        raw = data[CHROME_SETTINGS_LEGACY_KEY];
+        await store.set({
+          [CHROME_SETTINGS_KEY]: raw,
+          [CHROME_SETTINGS_LEGACY_KEY]: raw,
+        });
+      }
       if (raw != null) {
         return {
           settings: normalizeSettings(raw),
           source: "chrome.storage",
-          note: "chrome.storage.local · hardsubSettings (live sync)",
+          note: "chrome.storage.local · languageCaptionSettings (live sync)",
         };
       }
       return {
         settings: normalizeSettings(null),
         source: "defaults",
-        note: "Chưa có hardsubSettings — dùng mặc định; Lưu sẽ ghi chrome.storage.",
+        note: "Chưa có languageCaptionSettings — dùng mặc định; Lưu sẽ ghi chrome.storage.",
       };
     } catch {
       /* fall through */
@@ -291,7 +300,10 @@ export async function persistSettingsAsync(
 
   if (hasChromeStorage()) {
     try {
-      await getChromeStorage()!.set({ [CHROME_SETTINGS_KEY]: next });
+      await getChromeStorage()!.set({
+        [CHROME_SETTINGS_KEY]: next,
+        [CHROME_SETTINGS_LEGACY_KEY]: next,
+      });
       writeLocalSettings(next);
       void pushSettingsToBridge(next);
       return "chrome.storage";
@@ -377,11 +389,16 @@ export function subscribeSettings(
       changes: Record<string, ChromeStorageChange>,
       area: string,
     ) => {
-      if (area !== "local" || !changes[CHROME_SETTINGS_KEY]) return;
-      onChange(
-        normalizeSettings(changes[CHROME_SETTINGS_KEY].newValue),
-        "chrome.storage",
-      );
+      if (
+        area !== "local" ||
+        (!changes[CHROME_SETTINGS_KEY] && !changes[CHROME_SETTINGS_LEGACY_KEY])
+      ) {
+        return;
+      }
+      const raw =
+        changes[CHROME_SETTINGS_KEY]?.newValue ??
+        changes[CHROME_SETTINGS_LEGACY_KEY]?.newValue;
+      onChange(normalizeSettings(raw), "chrome.storage");
     };
     onChanged.addListener(listener);
     return () => onChanged.removeListener(listener);

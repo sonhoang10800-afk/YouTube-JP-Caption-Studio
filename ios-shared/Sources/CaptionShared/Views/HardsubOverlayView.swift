@@ -21,13 +21,13 @@ public struct HardsubOverlayView: View {
     }
 
     /// Normalized top-left inside video; -1 = default (center × 70%).
-    @AppStorage("hardsubBarNx") private var barNx = -1.0
-    @AppStorage("hardsubBarNy") private var barNy = -1.0
-    @AppStorage("hardsubBarScaleW") private var scaleW = 1.0
-    @AppStorage("hardsubBarScaleH") private var scaleH = 1.0
+    @AppStorage("languageCaptionBarNx") private var barNx = -1.0
+    @AppStorage("languageCaptionBarNy") private var barNy = -1.0
+    @AppStorage("languageCaptionBarScaleW") private var scaleW = 1.0
+    @AppStorage("languageCaptionBarScaleH") private var scaleH = 1.0
     /// User multiplier on overlay caption font (desktop `barScale`).
-    @AppStorage("hardsubBarScale") private var barScale = 1.0
-    @AppStorage("hardsubBarBgOpacity") private var barBgOpacity = 0.82
+    @AppStorage("languageCaptionBarScale") private var barScale = 1.0
+    @AppStorage("languageCaptionBarBgOpacity") private var barBgOpacity = 0.82
 
     @State private var dragOrigin: CGPoint?
     @State private var resizeStart: (scaleW: Double, scaleH: Double, origin: CGPoint, box: CGSize)?

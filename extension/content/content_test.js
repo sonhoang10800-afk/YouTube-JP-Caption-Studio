@@ -118,7 +118,7 @@ const source = fs.readFileSync(CONTENT_JS, "utf8");
 vm.createContext(context);
 // The content script reads its shared defaults from these two, exactly like the
 // manifest does; loading them keeps the sandbox a faithful page.
-for (const shared of ["shared/vocab_style.js", "shared/hardsub_defaults.js"]) {
+for (const shared of ["shared/vocab_style.js", "shared/settings_keys.js", "shared/hardsub_defaults.js"]) {
   const file = path.join(__dirname, "..", shared);
   vm.runInContext(fs.readFileSync(file, "utf8"), context, { filename: shared });
 }

@@ -11,23 +11,23 @@
 #   DEVICE_UDID=xxxxxxxx-…          # iPad UDID
 #   TEAM=XXXXXXXXXX                 # Apple Development Team ID (or DEVELOPMENT_TEAM)
 # Optional:
-#   APP_PATH=/path/to/YouTubeJPCaptionStudio.app
+#   APP_PATH=/path/to/LanguageCaption.app
 #   PROJECT / SCHEME / BUNDLE_ID
 #
 # LaunchAgent (copy plist → ~/Library/LaunchAgents/, then):
-#   launchctl load ~/Library/LaunchAgents/com.youtubejpcaptionstudio.renew.plist
-#   launchctl start com.youtubejpcaptionstudio.renew
+#   launchctl load ~/Library/LaunchAgents/com.languagecaption.renew.plist
+#   launchctl start com.languagecaption.renew
 #
 # Paid Developer Program skips the ~7-day free cycle; this script is for free/renew flow.
 
 set -euo pipefail
 
-LOG="${HOME}/Library/Logs/YouTubeJPCaptionStudio-renew.log"
-BUNDLE_ID="${BUNDLE_ID:-com.example.YouTubeJPCaptionStudio}"
-SCHEME="${SCHEME:-YouTubeJPCaptionStudio}"
+LOG="${HOME}/Library/Logs/LanguageCaption-renew.log"
+BUNDLE_ID="${BUNDLE_ID:-com.example.LanguageCaption}"
+SCHEME="${SCHEME:-LanguageCaption}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PROJECT="${PROJECT:-${ROOT}/YouTubeJPCaptionStudio.xcodeproj}"
+PROJECT="${PROJECT:-${ROOT}/LanguageCaption.xcodeproj}"
 TEAM="${TEAM:-${DEVELOPMENT_TEAM:-}}"
 DEVICE_UDID="${DEVICE_UDID:-}"
 THRESHOLD_SECS=$((48 * 3600))

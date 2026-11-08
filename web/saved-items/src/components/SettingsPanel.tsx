@@ -203,7 +203,7 @@ export function SettingsPanel() {
       setSource(src);
       setNote(
         src === "chrome.storage"
-          ? "Live · chrome.storage hardsubSettings"
+          ? "Live · chrome.storage languageCaptionSettings"
           : src === "bridge"
             ? "Live · bridge /extension_state"
             : "Đã cập nhật",
@@ -273,7 +273,7 @@ export function SettingsPanel() {
       setSource(src);
       setNote(
         src === "chrome.storage"
-          ? "Đã lưu chrome.storage · hardsubSettings"
+          ? "Đã lưu chrome.storage · languageCaptionSettings"
           : "Đã lưu localStorage + bridge",
       );
     });

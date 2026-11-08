@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 /// JSON snapshot of scripts + vocab → user-picked folder (Google Drive via Files).
 ///
 /// First-run (physical iPad — you must do this yourself):
-/// 1. Open `YouTubeJPCaptionStudio.xcodeproj`, select your iPad, Automatic Signing + Team.
+/// 1. Open `LanguageCaption.xcodeproj`, select your iPad, Automatic Signing + Team.
 /// 2. ⌘R once; on iPad: Settings → General → VPN & Device Management → Trust.
 /// 3. In app: Thư mục → Files → Google Drive → vào folder sync / `<videoId>/`
 ///    → mở `cues.json` (hoặc meta/script); app bookmarks parent sync root.
@@ -17,7 +17,8 @@ import UniformTypeIdentifiers
 @MainActor
 public final class BackupService: ObservableObject {
     public static let shared = BackupService()
-    static let fileName = "caption-studio-backup.json"
+    static let fileName = "language-caption-backup.json"
+    static let legacyFileName = "caption-studio-backup.json"
     private static let bookmarkKey = "backupFolderBookmark"
     private static let lastAppliedKey = "backupLastAppliedUpdatedAt"
     private static let debounceNs: UInt64 = 1_500_000_000
@@ -127,9 +128,19 @@ public final class BackupService: ObservableObject {
         }
         let access = folder.startAccessingSecurityScopedResource()
         defer { if access { folder.stopAccessingSecurityScopedResource() } }
-        let url = folder.appendingPathComponent(Self.fileName)
+        let primary = folder.appendingPathComponent(Self.fileName)
+        let legacy = folder.appendingPathComponent(Self.legacyFileName)
+        let url: URL
+        if FileManager.default.fileExists(atPath: primary.path) {
+            url = primary
+        } else if FileManager.default.fileExists(atPath: legacy.path) {
+            url = legacy
+        } else {
+            status = "Không thấy \(Self.fileName) (hoặc \(Self.legacyFileName))"
+            return false
+        }
         guard let data = try? Data(contentsOf: url) else {
-            status = "Không thấy \(Self.fileName)"
+            status = "Không đọc được \(url.lastPathComponent)"
             return false
         }
         do {

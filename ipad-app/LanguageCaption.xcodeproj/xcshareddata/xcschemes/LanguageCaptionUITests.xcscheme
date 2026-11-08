@@ -16,9 +16,23 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "10681A0CEEF696B999215B3E"
-               BuildableName = "YouTubeJPCaptionStudio.app"
-               BlueprintName = "YouTubeJPCaptionStudio"
-               ReferencedContainer = "container:YouTubeJPCaptionStudio.xcodeproj">
+               BuildableName = "LanguageCaption.app"
+               BlueprintName = "LanguageCaption"
+               ReferencedContainer = "container:LanguageCaption.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7C8BD6F7F88162817D22A1AB"
+               BuildableName = "LanguageCaptionUITests.xctest"
+               BlueprintName = "LanguageCaptionUITests"
+               ReferencedContainer = "container:LanguageCaption.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,14 +46,27 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "10681A0CEEF696B999215B3E"
-            BuildableName = "YouTubeJPCaptionStudio.app"
-            BlueprintName = "YouTubeJPCaptionStudio"
-            ReferencedContainer = "container:YouTubeJPCaptionStudio.xcodeproj">
+            BlueprintIdentifier = "7C8BD6F7F88162817D22A1AB"
+            BuildableName = "LanguageCaptionUITests.xctest"
+            BlueprintName = "LanguageCaptionUITests"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "7C8BD6F7F88162817D22A1AB"
+               BuildableName = "LanguageCaptionUITests.xctest"
+               BlueprintName = "LanguageCaptionUITests"
+               ReferencedContainer = "container:LanguageCaption.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -56,9 +83,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "10681A0CEEF696B999215B3E"
-            BuildableName = "YouTubeJPCaptionStudio.app"
-            BlueprintName = "YouTubeJPCaptionStudio"
-            ReferencedContainer = "container:YouTubeJPCaptionStudio.xcodeproj">
+            BuildableName = "LanguageCaption.app"
+            BlueprintName = "LanguageCaption"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -73,9 +100,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "10681A0CEEF696B999215B3E"
-            BuildableName = "YouTubeJPCaptionStudio.app"
-            BlueprintName = "YouTubeJPCaptionStudio"
-            ReferencedContainer = "container:YouTubeJPCaptionStudio.xcodeproj">
+            BuildableName = "LanguageCaption.app"
+            BlueprintName = "LanguageCaption"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -1677,8 +1677,12 @@
   }
 
   async function loadSettings() {
-    const data = await chrome.storage.local.get(["hardsubSettings", "userVocab", "savedCues"]);
-    settings = normalizeSettings(data.hardsubSettings);
+    const Keys = globalThis.LanguageCaptionSettings;
+    const stored = Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings;
+    const data = await chrome.storage.local.get(["userVocab", "savedCues"]);
+    settings = normalizeSettings(stored);
     if (!settings.barViDefaultMigratedV2) {
       settings.barShowVi = false;
       settings.barViDefaultMigratedV2 = true;
@@ -1689,7 +1693,9 @@
   }
 
   async function saveSettings() {
-    await chrome.storage.local.set({ hardsubSettings: settings });
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys) await Keys.writeSettings(settings, chrome.storage.local);
+    else await chrome.storage.local.set({ hardsubSettings: settings });
   }
 
   async function setUserVocabStatus(lemma, status) {
@@ -5610,7 +5616,7 @@
         .map(g => [g.id, sentenceTokens[g.id]])) };
   }
   function sentenceBackupSnapshot() {
-    return { format: "caption-studio-sentence-backup", version: 1, videoId: currentVideoId,
+    return { format: "language-caption-sentence-backup", version: 1, videoId: currentVideoId,
       sourceKey: sentenceTrackKey(), exportedAt: new Date().toISOString(),
       cues: structuredClone(cues), transcriptMeta: structuredClone(transcriptMeta),
       enhancement: structuredClone(sentenceStateSnapshot()),
@@ -5618,7 +5624,10 @@
   }
   function validateSentenceBackup(backup) {
     const object = value => value && typeof value === "object" && !Array.isArray(value);
-    if (currentSource !== "youtube" || backup?.format !== "caption-studio-sentence-backup" || backup.version !== 1 ||
+    if (currentSource !== "youtube" ||
+        (backup?.format !== "language-caption-sentence-backup" &&
+          backup?.format !== "caption-studio-sentence-backup") ||
+        backup.version !== 1 ||
         backup.videoId !== currentVideoId || backup.sourceKey !== sentenceTrackKey() ||
         JSON.stringify(backup).length > 10 * 1024 * 1024) throw new Error("Backup version, video or source does not match");
     const meta = backup.transcriptMeta, state = backup.enhancement;
@@ -6820,11 +6829,13 @@
       if (active) updateBar(active);
       publishSidePanelState();
     }
-    if (changes.hardsubSettings) {
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys?.changeTouchesSettings(changes) || changes.hardsubSettings) {
+      const nextSettings = Keys?.settingsFromChanges(changes) ?? changes.hardsubSettings?.newValue;
       const prevPlatEnabled = isCurrentPlatformEnabled();
       const flagsChanged = ["enhanced_subtitles_enabled", "sentence_grouping_enabled", "sentence_translation_prefetch_enabled"]
-        .some(key => settings[key] !== (changes.hardsubSettings.newValue?.[key] ?? DEFAULTS[key]));
-      settings = normalizeSettings(changes.hardsubSettings.newValue);
+        .some(key => settings[key] !== (nextSettings?.[key] ?? DEFAULTS[key]));
+      settings = normalizeSettings(nextSettings);
       if (flagsChanged) cancelSentencePrefetch();
       const nextPlatEnabled = isCurrentPlatformEnabled();
 

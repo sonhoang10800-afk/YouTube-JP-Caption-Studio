@@ -24,7 +24,7 @@ App vẫn chạy được nếu không có file (tra cứu từ điển offline 
 
 Làm **một lần** trên Mac + iPad (manual):
 
-1. Mở `ipad-app/YouTubeJPCaptionStudio.xcodeproj` trong Xcode.
+1. Mở `ipad-app/LanguageCaption.xcodeproj` trong Xcode.
 2. Chọn iPad làm destination → **Automatic Signing** + **Team** (Apple ID). Giữ nguyên Bundle ID.
 3. ⌘R. Trên iPad: **Settings → General → VPN & Device Management → Trust** developer cert.
 4. Smoke: Overlay / Side panel. Trong app: **Thư mục** → Connect Drive (OAuth). Cần iOS `client_id` trong `Info.plist` (`DRIVE_OAUTH_CLIENT_ID`) (xem mục OAuth bên dưới).
@@ -58,7 +58,7 @@ alias ipad-deploy='DEVICE_UDID=YOUR-UDID ~/Documents/YouTube\ JP\ Caption\ Studi
 
 Wireless: pair một lần (USB hoặc Xcode Devices), cùng Wi‑Fi, iPad mở khoá — `id=$DEVICE_UDID` vẫn dùng được.
 
-Log: `~/Library/Logs/YouTubeJPCaptionStudio-deploy.log`
+Log: `~/Library/Logs/LanguageCaption-deploy.log`
 
 ---
 
@@ -74,18 +74,18 @@ export TEAM='XXXXXXXXXX'   # hoặc DEVELOPMENT_TEAM
 
 ### LaunchAgent (mỗi 12 giờ)
 
-1. Sửa `DEVICE_UDID` / `TEAM` trong `com.youtubejpcaptionstudio.renew.plist`.
+1. Sửa `DEVICE_UDID` / `TEAM` trong `com.languagecaption.renew.plist`.
 2. Copy → `~/Library/LaunchAgents/`.
 3. Load:
 
 ```bash
-cp ipad-app/scripts/com.youtubejpcaptionstudio.renew.plist ~/Library/LaunchAgents/
+cp ipad-app/scripts/com.languagecaption.renew.plist ~/Library/LaunchAgents/
 # edit REPLACE_WITH_* trong plist trước khi load
-launchctl load ~/Library/LaunchAgents/com.youtubejpcaptionstudio.renew.plist
-launchctl start com.youtubejpcaptionstudio.renew
+launchctl load ~/Library/LaunchAgents/com.languagecaption.renew.plist
+launchctl start com.languagecaption.renew
 ```
 
-Logs: `~/Library/Logs/YouTubeJPCaptionStudio-renew.log` (+ `.launchd.out/err.log`).
+Logs: `~/Library/Logs/LanguageCaption-renew.log` (+ `.launchd.out/err.log`).
 
 > The plist runs `~/Documents/YouTube JP Caption Studio/...` — keep the repo in
 > that folder (or edit the path in the plist before loading it).
@@ -100,7 +100,7 @@ Chrome extension `client_id` **không** dùng được trên iOS — Google tr�
 
 Một lần trên GCP (cùng project với extension):
 
-1. Credentials → Create OAuth client ID → kiểu **iOS** → bundle `com.example.YouTubeJPCaptionStudio`.
+1. Credentials → Create OAuth client ID → kiểu **iOS** → bundle `com.example.LanguageCaption`.
 2. Paste full `….apps.googleusercontent.com` vào `DRIVE_OAUTH_CLIENT_ID` trong `ipad-app/Info.plist` (và `ipad-app/project.yml` để xcodegen không mất) — **không** paste client của Chrome extension.
 3. Đổi URL scheme trong `Info.plist` / `project.yml` thành reverse-client-id: `com.googleusercontent.apps.<prefix>` (bỏ `.apps.googleusercontent.com` khỏi client_id).
 4. Consent Testing → thêm email Test users (vd. `sonhoang236@gmail.com`) nếu app chưa publish.
@@ -151,6 +151,6 @@ xcrun xctrace list devices
 | `TEAM` / `DEVELOPMENT_TEAM` | renew (+ LaunchAgent) | Apple Team ID; deploy dùng `-allowProvisioningUpdates` |
 | `INSTALL_ONLY=1` | deploy | Skip build, chỉ `devicectl install` |
 | `APP_PATH` | cả hai | Đường dẫn `.app` tường minh |
-| `PROJECT` / `SCHEME` / `BUNDLE_ID` | cả hai | Default: xcodeproj trong `ipad-app/`, scheme `YouTubeJPCaptionStudio`, bundle `com.example.YouTubeJPCaptionStudio` |
+| `PROJECT` / `SCHEME` / `BUNDLE_ID` | cả hai | Default: xcodeproj trong `ipad-app/`, scheme `LanguageCaption`, bundle `com.example.LanguageCaption` |
 | `CONFIGURATION` | deploy | Default `Debug` |
 | `LOG` | deploy | Override log path |
