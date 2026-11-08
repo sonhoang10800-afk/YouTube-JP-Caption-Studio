@@ -524,9 +524,37 @@ export function SettingsPanel() {
           options={[
             { value: "ja", label: "Japanese" },
             { value: "en", label: "English" },
-            { value: "auto", label: "Auto (khóa 30s)" },
+            { value: "vi", label: "Vietnamese" },
+            { value: "auto", label: "Auto (nhận diện ja/en/vi)" },
           ]}
         />
+
+        <Fieldset legend="Ngôn ngữ đích (Gemini / cột EN·VI)">
+          <ToggleRow
+            id="target-en"
+            checked={settings.targetLangs?.includes("en") !== false}
+            onChange={(v) => {
+              const cur = new Set(settings.targetLangs?.length ? settings.targetLangs : ["en", "vi"]);
+              if (v) cur.add("en");
+              else cur.delete("en");
+              if (!cur.size) cur.add("vi");
+              patch({ targetLangs: Array.from(cur) as HardsubSettings["targetLangs"] });
+            }}
+            label="English"
+          />
+          <ToggleRow
+            id="target-vi"
+            checked={settings.targetLangs?.includes("vi") !== false}
+            onChange={(v) => {
+              const cur = new Set(settings.targetLangs?.length ? settings.targetLangs : ["en", "vi"]);
+              if (v) cur.add("vi");
+              else cur.delete("vi");
+              if (!cur.size) cur.add("en");
+              patch({ targetLangs: Array.from(cur) as HardsubSettings["targetLangs"] });
+            }}
+            label="Vietnamese"
+          />
+        </Fieldset>
 
         <SelectField
           id="copyFormat"

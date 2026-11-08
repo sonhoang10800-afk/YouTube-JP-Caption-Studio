@@ -1346,8 +1346,10 @@ function scoreTrack(track, preferLang) {
   const asr = track.kind === "asr";
   let s = 0;
   if (prefer === "auto") {
-    if (matchLangFamily(lang, "ja")) s += 90;
-    else if (matchLangFamily(lang, "en")) s += 40;
+    // M1: no hard JA bias — any ja/en/vi track is equally eligible as primary.
+    if (matchLangFamily(lang, "ja") || matchLangFamily(lang, "en") || matchLangFamily(lang, "vi")) {
+      s += 50;
+    }
   } else if (matchLangFamily(lang, prefer)) {
     s += 100;
   } else if (matchLangFamily(lang, "ja")) {

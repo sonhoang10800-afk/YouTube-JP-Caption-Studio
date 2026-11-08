@@ -20,6 +20,8 @@
     showFurigana: true,
     dimHardsub: false,
     sourceLang: "ja",
+    /** Gemini / display targets within the fixed EN/VI columns (M1). */
+    targetLangs: ["en", "vi"],
     copyFormat: "full",
     exportFormat: "ja_en_vi",
     roi: { top: 0.75, left: 0.05, width: 0.9, height: 0.2 },

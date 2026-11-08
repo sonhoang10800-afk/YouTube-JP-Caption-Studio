@@ -92,7 +92,14 @@ function normalizeRoi(raw: unknown): HardsubSettings["roi"] {
 }
 
 function normalizeSourceLang(v: unknown): HardsubSettings["sourceLang"] {
-  return v === "ja" || v === "en" || v === "auto" ? v : "ja";
+  return v === "ja" || v === "en" || v === "vi" || v === "auto" ? v : "ja";
+}
+
+function normalizeTargetLangs(raw: unknown): HardsubSettings["targetLangs"] {
+  const d = DEFAULT_HARDSUB_SETTINGS.targetLangs;
+  if (!Array.isArray(raw)) return [...d];
+  const picked = raw.filter((l): l is "en" | "vi" => l === "en" || l === "vi");
+  return picked.length ? picked : [...d];
 }
 
 function normalizeCopyFormat(v: unknown): HardsubSettings["copyFormat"] {
@@ -106,6 +113,7 @@ function normalizeEnabledPlatforms(raw: unknown): HardsubSettings["enabledPlatfo
     youtube: bool(raw.youtube, d.youtube),
     netflix: bool(raw.netflix, d.netflix),
     abema: bool(raw.abema, d.abema),
+    animevietsub: bool(raw.animevietsub, d.animevietsub ?? true),
     web: bool(raw.web, d.web),
   };
 }
@@ -124,6 +132,7 @@ export function normalizeSettings(raw: unknown): HardsubSettings {
     showFurigana: bool(raw.showFurigana, d.showFurigana),
     dimHardsub: bool(raw.dimHardsub, d.dimHardsub),
     sourceLang: normalizeSourceLang(raw.sourceLang),
+    targetLangs: normalizeTargetLangs(raw.targetLangs),
     copyFormat: normalizeCopyFormat(raw.copyFormat),
     exportFormat:
       typeof raw.exportFormat === "string" ? raw.exportFormat : d.exportFormat,

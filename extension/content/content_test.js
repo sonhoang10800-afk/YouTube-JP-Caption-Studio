@@ -159,10 +159,45 @@ assert.ok(settings && typeof settings === "object", "settings must be an object"
 assert.strictEqual(typeof settings.sourceLang, "string", "the default source language must be set");
 assert.strictEqual(content.normalizeSettings({ sourceLang: "en" }).sourceLang, "en",
   "a stored value must win over the default");
+assert.strictEqual(content.normalizeSettings({ sourceLang: "vi" }).sourceLang, "vi",
+  "Vietnamese is a valid M1 source language");
 assert.strictEqual(content.normalizeSettings({}).sourceLang, settings.sourceLang,
   "a missing value must fall back to the default");
+assert.deepStrictEqual(
+  Array.from(content.normalizeSettings({}).targetLangs || []),
+  ["en", "vi"],
+  "default targetLangs cover EN and VI",
+);
+assert.deepStrictEqual(
+  Array.from(content.normalizeSettings({ targetLangs: ["vi"] }).targetLangs || []),
+  ["vi"],
+  "a stored targetLangs subset must win",
+);
 assert.strictEqual(content.normalizeSettings({}).levelHighlightEnabled, true,
   "the level highlight default must be filled in");
+
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "こんにちは、今日はいい天気ですね" }]),
+  "ja",
+  "hiragana/kanji sample detects as ja",
+);
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "Xin chào, hôm nay trời đẹp" }]),
+  "vi",
+  "Vietnamese diacritics detect as vi",
+);
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "Hello, nice weather today" }]),
+  "en",
+  "Latin sample detects as en",
+);
+
+content.setSettingsForTest({ sourceLang: "en", targetLangs: ["vi"] });
+assert.strictEqual(content.resolvedSourceLangForTest(), "en");
+assert.strictEqual(content.shouldTokenizeJapaneseForTest(), false, "non-JA source skips Sudachi");
+assert.deepStrictEqual(Array.from(content.geminiTargetLanguagesForTest() || []), ["vi"]);
+content.setSettingsForTest({ sourceLang: "ja", targetLangs: ["en", "vi"] });
+assert.strictEqual(content.shouldTokenizeJapaneseForTest(), true, "JA source enables tokenize");
 
 // -------------------------------------------------------------------------
 // capAcceptsReply: a reply that OMITS the capability token must be rejected

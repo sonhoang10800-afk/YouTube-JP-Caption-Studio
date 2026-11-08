@@ -549,6 +549,33 @@
     return "unknown";
   }
 
+  /** Resolved primary language in {ja,en,vi} for NLP / Gemini pairing. */
+  function resolvedSourceLang() {
+    const sl = settings.sourceLang || "ja";
+    if (sl === "ja" || sl === "en" || sl === "vi") return sl;
+    const detected = detectCuesLanguage(cues);
+    return detected === "unknown" ? "ja" : detected;
+  }
+
+  /** M1 target columns for Gemini — settings.targetLangs, else bar/sidepanel flags. */
+  function geminiTargetLanguages() {
+    const raw = settings.targetLangs;
+    if (Array.isArray(raw) && raw.length) {
+      const picked = raw.filter((l) => l === "en" || l === "vi");
+      if (picked.length) return picked;
+    }
+    const languages = [
+      settings.barShowVi !== false || settings.sidepanelShowVi !== false ? "vi" : "",
+      settings.barShowEn !== false || settings.sidepanelShowEn === true ? "en" : "",
+    ].filter(Boolean);
+    return languages.length ? languages : ["vi"];
+  }
+
+  /** Sudachi/furigana/JLPT only make sense for Japanese primary text. */
+  function shouldTokenizeJapanese() {
+    return resolvedSourceLang() === "ja";
+  }
+
   function stampSecondaryStatus(enN, viN) {
     const base = String(captionsInfo || "").replace(/\s*·\s*en:\d+\s+vi:\d+\s*$/i, "");
     captionsInfo = `${base} · en:${enN} vi:${viN}`;
@@ -1626,6 +1653,15 @@
     if (s.barShowJa == null) s.barShowJa = true;
     if (s.barShowEn == null) s.barShowEn = true;
     if (s.barShowVi == null) s.barShowVi = false;
+    if (s.sourceLang !== "ja" && s.sourceLang !== "en" && s.sourceLang !== "vi" && s.sourceLang !== "auto") {
+      s.sourceLang = "ja";
+    }
+    if (!Array.isArray(s.targetLangs) || !s.targetLangs.length) {
+      s.targetLangs = [...(DEFAULTS.targetLangs || ["en", "vi"])];
+    } else {
+      s.targetLangs = s.targetLangs.filter((l) => l === "en" || l === "vi");
+      if (!s.targetLangs.length) s.targetLangs = ["en", "vi"];
+    }
     if (s.enableBilingualJlptColor == null) s.enableBilingualJlptColor = true;
     if (s.barScale == null || !Number.isFinite(Number(s.barScale))) {
       s.barScale = DEFAULTS.barScale;
@@ -2076,10 +2112,8 @@
         const canPrefetchBackground = force || (now - lastBackgroundPrefetchTime >= 6000);
         let queuedBackgroundCount = 0;
 
-        const languages = [
-          (settings.barShowVi !== false || settings.sidepanelShowVi !== false) ? "vi" : "",
-          (settings.barShowEn !== false || settings.sidepanelShowEn === true) ? "en" : "",
-        ].filter(Boolean);
+        const languages = geminiTargetLanguages();
+        const pairSource = resolvedSourceLang();
         const jobs = [];
         for (const group of projection.groups) {
           if (group.protected || !wantedGroupIds.has(group.id)) continue;
@@ -2093,6 +2127,7 @@
           const jobPriority = force ? (isVis ? 40 : (isAh ? 30 : 10)) : (isVis ? 30 : (isAh ? 20 : 10));
 
           for (const language of languages) {
+            if (language === pairSource) continue;
             if (!force && sentenceTranslations[group.id]?.revision === group.revision && sentenceTranslations[group.id]?.[language]) continue;
             // A language that just failed must not be retried for 30s, even when
             // the revision moved on (the group text is the same, only the
@@ -2100,7 +2135,8 @@
             // failing service.
             if (!force && (sentenceTranslations[group.id]?.retryAt?.[language] || 0) > Date.now()) continue;
             jobs.push({ id: group.id, revision: group.revision, source: group.text, sourceKey: projection.sourceKey,
-              algorithmVersion: projection.version, context: group.context, language, priority: jobPriority });
+              algorithmVersion: projection.version, context: group.context, language,
+              sourceLang: pairSource, priority: jobPriority });
             if (isBg) queuedBackgroundCount++;
           }
         }
@@ -2133,11 +2169,8 @@
           onProgress: p => { if (force && isCurrent()) toast(`Dịch câu: ${p.done}/${p.total} bản dịch · lỗi ${p.failed}`); },
         });
       } else {
-        const languages = [
-          (settings.barShowVi !== false || settings.sidepanelShowVi !== false) ? "vi" : "",
-          (settings.barShowEn !== false || settings.sidepanelShowEn === true) ? "en" : "",
-        ].filter(Boolean);
-        if (!languages.length) languages.push("vi");
+        const languages = geminiTargetLanguages();
+        const pairSource = resolvedSourceLang();
 
         let targetCues = input.filter(inWindow);
         if (!force && targetCues.length < 25) {
@@ -2146,12 +2179,13 @@
         }
 
         const reports = await Promise.all(
-          languages.map(language =>
+          languages.filter((language) => language !== pairSource).map(language =>
             translator.translateCues(targetCues, apiKey, p => {
               if (!isCurrent()) return;
               scheduleTranslationPaint(gen);
               if (force) toast(`Dịch (${language.toUpperCase()}): ${p.done}/${p.total} · lỗi ${p.failed}`);
-            }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic", sourceKey: `${currentSource}:${vid}:ja`, language, isCurrent,
+            }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic",
+              sourceKey: `${currentSource}:${vid}:${pairSource}`, language, sourceLang: pairSource, isCurrent,
               onQueued: jobs => trace?.translationsQueued?.(jobs, force, mode, performance.now()),
               onResult: (result, accepted) => {
                 trace?.request(result.request, performance.now());
@@ -5718,6 +5752,7 @@
    * Used after import and JA Enter. Retries later via syncHealth if bridge offline.
    */
   async function enrichTokensAfterImport(cueIds = null) {
+    if (!shouldTokenizeJapanese()) return 0;
     const idSet = cueIds
       ? new Set(Array.from(cueIds).map((x) => String(x)))
       : null;
@@ -6280,6 +6315,7 @@
   }
 
   async function enrichSentenceGroups() {
+    if (!shouldTokenizeJapanese()) return;
     if (captionMode !== "enhanced" || !sentenceEnhancementEnabled() || !bridgeReady) return;
     refreshSentenceProjection();
     const gen = navigateGen, input = cues, engine = globalThis.HardsubSentenceGroups;
@@ -6897,6 +6933,11 @@
       setCuesForTest: (newCues) => { cues = newCues; },
       setCurrentSourceForTest: (src) => { currentSource = src; },
       triggerGeminiTranslationIfNeededForTest: (force) => triggerGeminiTranslationIfNeeded(force),
+      detectCuesLanguageForTest: (list) => detectCuesLanguage(list),
+      resolvedSourceLangForTest: () => resolvedSourceLang(),
+      shouldTokenizeJapaneseForTest: () => shouldTokenizeJapanese(),
+      geminiTargetLanguagesForTest: () => geminiTargetLanguages(),
+      setSettingsForTest: (next) => { settings = normalizeSettings(next); },
       getSettings: () => settings,
       getCaptionMode: () => captionMode,
     };
