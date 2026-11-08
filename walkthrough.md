@@ -526,3 +526,8 @@ Nhật ký ngắn (không phải transcript). Runtime bridge: `local-bridge/erro
    - Mở bất kỳ tập phim nào trên `animevietsub.best` (ví dụ: `Mezametara Saikyou Soubi...`).
    - Mở Side Panel (bằng cách click nút `LR PANEL` trên video player hoặc icon Extension).
    - Phụ đề tiếng Nhật sẽ hiển thị với đầy đủ tính năng tra từ Mazii, đổi màu JLPT, tua khi click cue.
+
+
+## 2026-11-09 — Language Caption rebrand
+
+Product renamed to **Language Caption**. Side panel opens on any http(s) page. Source language: `auto` / `ja` / `en` / `vi` with EN/VI targets. Settings key `languageCaptionSettings` (dual-writes legacy `hardsubSettings`). Drive files `language-caption-*.json` dual-read legacy `caption-studio-*.json`. iOS bundle `com.example.LanguageCaption`. Try: load unpacked `extension/`, open example.com, click the toolbar icon — panel should enable. On YouTube, pill badge shows `LC`.

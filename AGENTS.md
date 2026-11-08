@@ -142,7 +142,7 @@ Exactly five skills live at repo root (`skills/`):
 |-------|------|
 | `skills/ponytail` | Any coding task (same as §0) |
 | `skills/codegraph` | Code navigation when a local `.codegraph/` index exists |
-| `skills/youtube-caption` | Extension / bridge domain |
+| `skills/language-caption` | Extension / bridge domain (ex-youtube-caption) |
 | `skills/local-bridge` | Bridge start / health / tokenize / IME |
 | `skills/tokenize-regression` | Regression on tokenize / import |
 

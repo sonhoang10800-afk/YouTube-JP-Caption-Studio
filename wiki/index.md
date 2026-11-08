@@ -31,6 +31,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | [topics/extension-ux-verify-2026-10-24.md](topics/extension-ux-verify-2026-10-24.md) | Overlay **FAIL → fix `b155a56` → PASS live**; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; **sidepanel PASS**; CI gap |
 | [topics/sidepanel-test-plan-2026-10-25.md](topics/sidepanel-test-plan-2026-10-25.md) | Side-panel full test **executed**: 64 PASS / 4 FAIL / 9 NOT TESTED; `⋯` menu overflow + Escape, saved-cue bridge mirror, long-video DOM |
 | [topics/anime-auto-inject-script-panel.md](topics/anime-auto-inject-script-panel.md) | AnimeVietSub auto-inject — **shipped on master**; branch docs cherry-picked 2026-11-09 |
+| [topics/language-caption-rebrand.md](topics/language-caption-rebrand.md) | Language Caption rebrand C + M1 + any-site panel — **shipped 2026-11-09**; GitHub rename manual |
 | [upstream/karpathy-llm-wiki.md](upstream/karpathy-llm-wiki.md) | Karpathy LLM-wiki gist (concept) |
 
 ## Active / recent work
@@ -46,6 +47,7 @@ LLM-maintained layer over immutable `plan/` and `review/` (Karpathy LLM-wiki pat
 | PASS after fix `b155a56`; F1/F2 `d3b53f7`; C-7 UI; star `6a70ea7`; MP4; reload `812799f`; sidepanel PASS; CI gap | [Extension UX verify 2026-10-24](topics/extension-ux-verify-2026-10-24.md) | [plan](../plan/extension-ux-verify-bsk-2026-10-24.md) | [pre-fix FAIL](../review/ux-verify-2026-10-24.md), [post-fix PASS](../review/ux-verify-fix-2026-10-24.md), [matrix](../review/ux-verify-matrix-postfix-2026-10-24.md), [F1/F2 fix](../review/ux-verify-matrix-fix-2026-10-24.md), [C-7 UI](../review/ux-verify-c7-ui-2026-10-24.md), [star](../review/star-rehydration-2026-10-24.md), [MP4](../review/ux-verify-mp4-2026-10-24.md), [reload](../review/reload-helper-hardening-2026-10-24.md), [sidepanel](../review/sidepanel-smoke-2026-10-24.md) |
 | executed — 64 PASS / 4 FAIL / 9 NOT TESTED (4 defects unfixed) | [Side-panel full test 2026-10-25](topics/sidepanel-test-plan-2026-10-25.md) | [plan](../plan/sidepanel-test-plan-2026-10-25.md) | [consolidated run](../review/sidepanel-test-run-2026-10-25.md), [A/B/C/E](../review/sidepanel-runs-2026-10-25/run-a-b-c-e.md), [H/I](../review/sidepanel-runs-2026-10-25/run-h-i.md), [D/F/J](../review/sidepanel-runs-2026-10-25/run-d-f-j.md), [G/K](../review/sidepanel-runs-2026-10-25/run-g-k.md), [prior smoke](../review/sidepanel-smoke-2026-10-24.md) |
 | shipped (code on master; docs cherry-picked) | [AnimeVietSub auto-inject](topics/anime-auto-inject-script-panel.md) | [plan](../plan/anime-auto-inject-script-panel-2026-11-02.md), [test plan](../plan/anime-auto-inject-avs-test-plan-2026-11-04.md) | [plan review](../review/anime-auto-inject-script-panel-plan-review-2026-11-02.md) |
+| shipped (owner: GitHub rename + EXTENSION_ID) | [Language Caption rebrand](topics/language-caption-rebrand.md) | [plan](../plan/language-caption-rebrand-m1-2026-11-09.md) | — |
 
 ## Raw catalogs (immutable)
 

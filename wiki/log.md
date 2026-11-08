@@ -1660,3 +1660,10 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Cherry-picked from `origin/anime_auto_inject_script_panel` without wholesale merge: plan/review/wiki topic, `scripts/animevietsub_translate_smoke.js`, dual-lang content_test asserts, sidepanel `translationPlaceholder` reorder.
 - Core AVS feature already on `master` (`cda2666`). Orphan `extension/content/frame_relay.js` stays unwired.
 - Remote branches `whisper_turbo_audio_evaluation` (merged ancestor) and `anime_auto_inject_script_panel` left for owner archive — not deleted.
+
+## [2026-11-09] ingest | Language Caption rebrand C + M1 + any-site
+
+- Filed `plan/language-caption-rebrand-m1-2026-11-09.md`; topic `wiki/topics/language-caption-rebrand.md`.
+- Shipped: any-site panel, M1 sourceLang/targetLangs, Language Caption branding, storage/Drive dual-read, iOS LanguageCaption bundle IDs.
+- Skill renamed `skills/youtube-caption` → `skills/language-caption`; AGENTS catalog updated.
+- Open owner steps: GitHub rename to `language-caption`, measure EXTENSION_ID after Load unpacked path change, OAuth allowlists.
