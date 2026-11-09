@@ -549,6 +549,33 @@
     return "unknown";
   }
 
+  /** Resolved primary language in {ja,en,vi} for NLP / Gemini pairing. */
+  function resolvedSourceLang() {
+    const sl = settings.sourceLang || "ja";
+    if (sl === "ja" || sl === "en" || sl === "vi") return sl;
+    const detected = detectCuesLanguage(cues);
+    return detected === "unknown" ? "ja" : detected;
+  }
+
+  /** M1 target columns for Gemini — settings.targetLangs, else bar/sidepanel flags. */
+  function geminiTargetLanguages() {
+    const raw = settings.targetLangs;
+    if (Array.isArray(raw) && raw.length) {
+      const picked = raw.filter((l) => l === "en" || l === "vi");
+      if (picked.length) return picked;
+    }
+    const languages = [
+      settings.barShowVi !== false || settings.sidepanelShowVi !== false ? "vi" : "",
+      settings.barShowEn !== false || settings.sidepanelShowEn === true ? "en" : "",
+    ].filter(Boolean);
+    return languages.length ? languages : ["vi"];
+  }
+
+  /** Sudachi/furigana/JLPT only make sense for Japanese primary text. */
+  function shouldTokenizeJapanese() {
+    return resolvedSourceLang() === "ja";
+  }
+
   function stampSecondaryStatus(enN, viN) {
     const base = String(captionsInfo || "").replace(/\s*·\s*en:\d+\s+vi:\d+\s*$/i, "");
     captionsInfo = `${base} · en:${enN} vi:${viN}`;
@@ -1626,6 +1653,15 @@
     if (s.barShowJa == null) s.barShowJa = true;
     if (s.barShowEn == null) s.barShowEn = true;
     if (s.barShowVi == null) s.barShowVi = false;
+    if (s.sourceLang !== "ja" && s.sourceLang !== "en" && s.sourceLang !== "vi" && s.sourceLang !== "auto") {
+      s.sourceLang = "ja";
+    }
+    if (!Array.isArray(s.targetLangs) || !s.targetLangs.length) {
+      s.targetLangs = [...(DEFAULTS.targetLangs || ["en", "vi"])];
+    } else {
+      s.targetLangs = s.targetLangs.filter((l) => l === "en" || l === "vi");
+      if (!s.targetLangs.length) s.targetLangs = ["en", "vi"];
+    }
     if (s.enableBilingualJlptColor == null) s.enableBilingualJlptColor = true;
     if (s.barScale == null || !Number.isFinite(Number(s.barScale))) {
       s.barScale = DEFAULTS.barScale;
@@ -1641,8 +1677,12 @@
   }
 
   async function loadSettings() {
-    const data = await chrome.storage.local.get(["hardsubSettings", "userVocab", "savedCues"]);
-    settings = normalizeSettings(data.hardsubSettings);
+    const Keys = globalThis.LanguageCaptionSettings;
+    const stored = Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings;
+    const data = await chrome.storage.local.get(["userVocab", "savedCues"]);
+    settings = normalizeSettings(stored);
     if (!settings.barViDefaultMigratedV2) {
       settings.barShowVi = false;
       settings.barViDefaultMigratedV2 = true;
@@ -1653,7 +1693,9 @@
   }
 
   async function saveSettings() {
-    await chrome.storage.local.set({ hardsubSettings: settings });
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys) await Keys.writeSettings(settings, chrome.storage.local);
+    else await chrome.storage.local.set({ hardsubSettings: settings });
   }
 
   async function setUserVocabStatus(lemma, status) {
@@ -2076,10 +2118,8 @@
         const canPrefetchBackground = force || (now - lastBackgroundPrefetchTime >= 6000);
         let queuedBackgroundCount = 0;
 
-        const languages = [
-          (settings.barShowVi !== false || settings.sidepanelShowVi !== false) ? "vi" : "",
-          (settings.barShowEn !== false || settings.sidepanelShowEn === true) ? "en" : "",
-        ].filter(Boolean);
+        const languages = geminiTargetLanguages();
+        const pairSource = resolvedSourceLang();
         const jobs = [];
         for (const group of projection.groups) {
           if (group.protected || !wantedGroupIds.has(group.id)) continue;
@@ -2093,6 +2133,7 @@
           const jobPriority = force ? (isVis ? 40 : (isAh ? 30 : 10)) : (isVis ? 30 : (isAh ? 20 : 10));
 
           for (const language of languages) {
+            if (language === pairSource) continue;
             if (!force && sentenceTranslations[group.id]?.revision === group.revision && sentenceTranslations[group.id]?.[language]) continue;
             // A language that just failed must not be retried for 30s, even when
             // the revision moved on (the group text is the same, only the
@@ -2100,7 +2141,8 @@
             // failing service.
             if (!force && (sentenceTranslations[group.id]?.retryAt?.[language] || 0) > Date.now()) continue;
             jobs.push({ id: group.id, revision: group.revision, source: group.text, sourceKey: projection.sourceKey,
-              algorithmVersion: projection.version, context: group.context, language, priority: jobPriority });
+              algorithmVersion: projection.version, context: group.context, language,
+              sourceLang: pairSource, priority: jobPriority });
             if (isBg) queuedBackgroundCount++;
           }
         }
@@ -2133,11 +2175,8 @@
           onProgress: p => { if (force && isCurrent()) toast(`Dịch câu: ${p.done}/${p.total} bản dịch · lỗi ${p.failed}`); },
         });
       } else {
-        const languages = [
-          (settings.barShowVi !== false || settings.sidepanelShowVi !== false) ? "vi" : "",
-          (settings.barShowEn !== false || settings.sidepanelShowEn === true) ? "en" : "",
-        ].filter(Boolean);
-        if (!languages.length) languages.push("vi");
+        const languages = geminiTargetLanguages();
+        const pairSource = resolvedSourceLang();
 
         let targetCues = input.filter(inWindow);
         if (!force && targetCues.length < 25) {
@@ -2146,12 +2185,13 @@
         }
 
         const reports = await Promise.all(
-          languages.map(language =>
+          languages.filter((language) => language !== pairSource).map(language =>
             translator.translateCues(targetCues, apiKey, p => {
               if (!isCurrent()) return;
               scheduleTranslationPaint(gen);
               if (force) toast(`Dịch (${language.toUpperCase()}): ${p.done}/${p.total} · lỗi ${p.failed}`);
-            }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic", sourceKey: `${currentSource}:${vid}:ja`, language, isCurrent,
+            }, { force, priority: force ? 0 : 10, scope: force ? "manual" : "automatic",
+              sourceKey: `${currentSource}:${vid}:${pairSource}`, language, sourceLang: pairSource, isCurrent,
               onQueued: jobs => trace?.translationsQueued?.(jobs, force, mode, performance.now()),
               onResult: (result, accepted) => {
                 trace?.request(result.request, performance.now());
@@ -4278,11 +4318,11 @@
     btn.classList.toggle("hardsub-ytp-toggle--off", !on);
     btn.setAttribute("aria-pressed", on ? "true" : "false");
     btn.title = on
-      ? "Language Reactor: BẬT (Bấm để tắt, ⚙ cài đặt)"
-      : "Language Reactor: TẮT (Bấm để bật, ⚙ cài đặt)";
+      ? "Language Caption: BẬT (Bấm để tắt, ⚙ cài đặt)"
+      : "Language Caption: TẮT (Bấm để bật, ⚙ cài đặt)";
     btn.setAttribute(
       "aria-label",
-      on ? "Language Reactor ON" : "Language Reactor OFF"
+      on ? "Language Caption ON" : "Language Caption OFF"
     );
     const label = btn.querySelector(".hardsub-ytp-toggle__label");
     if (label) label.textContent = playerToggleLabel();
@@ -4376,10 +4416,10 @@
     btn.className = isFloating
       ? "hardsub-generic-toggle hardsub-ytp-toggle"
       : "ytp-button hardsub-ytp-toggle";
-    btn.setAttribute("aria-label", "Language Reactor");
+    btn.setAttribute("aria-label", "Language Caption");
     btn.innerHTML =
       '<span class="hardsub-ytp-toggle__pill" aria-hidden="true">' +
-      '<span class="hardsub-ytp-toggle__badge">LR</span>' +
+      '<span class="hardsub-ytp-toggle__badge">LC</span>' +
       '<span class="hardsub-ytp-toggle__label">' + playerToggleLabel() + '</span>' +
       '<span class="hardsub-ytp-toggle__gear" title="Cài đặt">⚙</span></span>';
     const stopBubble = (e) => e.stopPropagation();
@@ -5576,7 +5616,7 @@
         .map(g => [g.id, sentenceTokens[g.id]])) };
   }
   function sentenceBackupSnapshot() {
-    return { format: "caption-studio-sentence-backup", version: 1, videoId: currentVideoId,
+    return { format: "language-caption-sentence-backup", version: 1, videoId: currentVideoId,
       sourceKey: sentenceTrackKey(), exportedAt: new Date().toISOString(),
       cues: structuredClone(cues), transcriptMeta: structuredClone(transcriptMeta),
       enhancement: structuredClone(sentenceStateSnapshot()),
@@ -5584,7 +5624,10 @@
   }
   function validateSentenceBackup(backup) {
     const object = value => value && typeof value === "object" && !Array.isArray(value);
-    if (currentSource !== "youtube" || backup?.format !== "caption-studio-sentence-backup" || backup.version !== 1 ||
+    if (currentSource !== "youtube" ||
+        (backup?.format !== "language-caption-sentence-backup" &&
+          backup?.format !== "caption-studio-sentence-backup") ||
+        backup.version !== 1 ||
         backup.videoId !== currentVideoId || backup.sourceKey !== sentenceTrackKey() ||
         JSON.stringify(backup).length > 10 * 1024 * 1024) throw new Error("Backup version, video or source does not match");
     const meta = backup.transcriptMeta, state = backup.enhancement;
@@ -5718,6 +5761,7 @@
    * Used after import and JA Enter. Retries later via syncHealth if bridge offline.
    */
   async function enrichTokensAfterImport(cueIds = null) {
+    if (!shouldTokenizeJapanese()) return 0;
     const idSet = cueIds
       ? new Set(Array.from(cueIds).map((x) => String(x)))
       : null;
@@ -6280,6 +6324,7 @@
   }
 
   async function enrichSentenceGroups() {
+    if (!shouldTokenizeJapanese()) return;
     if (captionMode !== "enhanced" || !sentenceEnhancementEnabled() || !bridgeReady) return;
     refreshSentenceProjection();
     const gen = navigateGen, input = cues, engine = globalThis.HardsubSentenceGroups;
@@ -6784,11 +6829,13 @@
       if (active) updateBar(active);
       publishSidePanelState();
     }
-    if (changes.hardsubSettings) {
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys?.changeTouchesSettings(changes) || changes.hardsubSettings) {
+      const nextSettings = Keys?.settingsFromChanges(changes) ?? changes.hardsubSettings?.newValue;
       const prevPlatEnabled = isCurrentPlatformEnabled();
       const flagsChanged = ["enhanced_subtitles_enabled", "sentence_grouping_enabled", "sentence_translation_prefetch_enabled"]
-        .some(key => settings[key] !== (changes.hardsubSettings.newValue?.[key] ?? DEFAULTS[key]));
-      settings = normalizeSettings(changes.hardsubSettings.newValue);
+        .some(key => settings[key] !== (nextSettings?.[key] ?? DEFAULTS[key]));
+      settings = normalizeSettings(nextSettings);
       if (flagsChanged) cancelSentencePrefetch();
       const nextPlatEnabled = isCurrentPlatformEnabled();
 
@@ -6897,6 +6944,11 @@
       setCuesForTest: (newCues) => { cues = newCues; },
       setCurrentSourceForTest: (src) => { currentSource = src; },
       triggerGeminiTranslationIfNeededForTest: (force) => triggerGeminiTranslationIfNeeded(force),
+      detectCuesLanguageForTest: (list) => detectCuesLanguage(list),
+      resolvedSourceLangForTest: () => resolvedSourceLang(),
+      shouldTokenizeJapaneseForTest: () => shouldTokenizeJapanese(),
+      geminiTargetLanguagesForTest: () => geminiTargetLanguages(),
+      setSettingsForTest: (next) => { settings = normalizeSettings(next); },
       getSettings: () => settings,
       getCaptionMode: () => captionMode,
     };

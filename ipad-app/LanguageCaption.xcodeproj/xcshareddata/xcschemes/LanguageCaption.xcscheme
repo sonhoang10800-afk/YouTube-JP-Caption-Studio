@@ -15,10 +15,10 @@
             buildForAnalyzing = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "3764802B6D24709B4D5CBE09"
-               BuildableName = "YouTubeJPCaptionStudioiPhone.app"
-               BlueprintName = "YouTubeJPCaptionStudioiPhone"
-               ReferencedContainer = "container:YouTubeJPCaptionStudioiPhone.xcodeproj">
+               BlueprintIdentifier = "10681A0CEEF696B999215B3E"
+               BuildableName = "LanguageCaption.app"
+               BlueprintName = "LanguageCaption"
+               ReferencedContainer = "container:LanguageCaption.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,10 +32,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3764802B6D24709B4D5CBE09"
-            BuildableName = "YouTubeJPCaptionStudioiPhone.app"
-            BlueprintName = "YouTubeJPCaptionStudioiPhone"
-            ReferencedContainer = "container:YouTubeJPCaptionStudioiPhone.xcodeproj">
+            BlueprintIdentifier = "10681A0CEEF696B999215B3E"
+            BuildableName = "LanguageCaption.app"
+            BlueprintName = "LanguageCaption"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,10 +55,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3764802B6D24709B4D5CBE09"
-            BuildableName = "YouTubeJPCaptionStudioiPhone.app"
-            BlueprintName = "YouTubeJPCaptionStudioiPhone"
-            ReferencedContainer = "container:YouTubeJPCaptionStudioiPhone.xcodeproj">
+            BlueprintIdentifier = "10681A0CEEF696B999215B3E"
+            BuildableName = "LanguageCaption.app"
+            BlueprintName = "LanguageCaption"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,10 +72,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "3764802B6D24709B4D5CBE09"
-            BuildableName = "YouTubeJPCaptionStudioiPhone.app"
-            BlueprintName = "YouTubeJPCaptionStudioiPhone"
-            ReferencedContainer = "container:YouTubeJPCaptionStudioiPhone.xcodeproj">
+            BlueprintIdentifier = "10681A0CEEF696B999215B3E"
+            BuildableName = "LanguageCaption.app"
+            BlueprintName = "LanguageCaption"
+            ReferencedContainer = "container:LanguageCaption.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

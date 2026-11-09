@@ -203,7 +203,7 @@ export function SettingsPanel() {
       setSource(src);
       setNote(
         src === "chrome.storage"
-          ? "Live · chrome.storage hardsubSettings"
+          ? "Live · chrome.storage languageCaptionSettings"
           : src === "bridge"
             ? "Live · bridge /extension_state"
             : "Đã cập nhật",
@@ -273,7 +273,7 @@ export function SettingsPanel() {
       setSource(src);
       setNote(
         src === "chrome.storage"
-          ? "Đã lưu chrome.storage · hardsubSettings"
+          ? "Đã lưu chrome.storage · languageCaptionSettings"
           : "Đã lưu localStorage + bridge",
       );
     });
@@ -309,7 +309,7 @@ export function SettingsPanel() {
     <div className="w-full px-1 pb-24">
       <header className="mb-5">
         <h1 className="font-[family-name:var(--font-brand)] text-[22px] font-normal tracking-wide text-white">
-          YT Caption
+          Language Caption
         </h1>
         <p
           className={cn(
@@ -524,9 +524,37 @@ export function SettingsPanel() {
           options={[
             { value: "ja", label: "Japanese" },
             { value: "en", label: "English" },
-            { value: "auto", label: "Auto (khóa 30s)" },
+            { value: "vi", label: "Vietnamese" },
+            { value: "auto", label: "Auto (nhận diện ja/en/vi)" },
           ]}
         />
+
+        <Fieldset legend="Ngôn ngữ đích (Gemini / cột EN·VI)">
+          <ToggleRow
+            id="target-en"
+            checked={settings.targetLangs?.includes("en") !== false}
+            onChange={(v) => {
+              const cur = new Set(settings.targetLangs?.length ? settings.targetLangs : ["en", "vi"]);
+              if (v) cur.add("en");
+              else cur.delete("en");
+              if (!cur.size) cur.add("vi");
+              patch({ targetLangs: Array.from(cur) as HardsubSettings["targetLangs"] });
+            }}
+            label="English"
+          />
+          <ToggleRow
+            id="target-vi"
+            checked={settings.targetLangs?.includes("vi") !== false}
+            onChange={(v) => {
+              const cur = new Set(settings.targetLangs?.length ? settings.targetLangs : ["en", "vi"]);
+              if (v) cur.add("vi");
+              else cur.delete("vi");
+              if (!cur.size) cur.add("en");
+              patch({ targetLangs: Array.from(cur) as HardsubSettings["targetLangs"] });
+            }}
+            label="Vietnamese"
+          />
+        </Fieldset>
 
         <SelectField
           id="copyFormat"

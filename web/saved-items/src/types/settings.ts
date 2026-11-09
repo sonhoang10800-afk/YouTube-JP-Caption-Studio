@@ -23,7 +23,9 @@ export interface HardsubSettings {
   autoOpen: boolean;
   showFurigana: boolean;
   dimHardsub: boolean;
-  sourceLang: "ja" | "en" | "auto";
+  sourceLang: "ja" | "en" | "vi" | "auto";
+  /** Gemini / display targets within fixed EN/VI columns (M1). */
+  targetLangs: Array<"en" | "vi">;
   copyFormat: "full" | "ja_vi" | "ja" | "vi";
   exportFormat: string;
   roi: HardsubRoi;
@@ -49,6 +51,7 @@ export interface HardsubSettings {
     youtube: boolean;
     netflix: boolean;
     abema: boolean;
+    animevietsub?: boolean;
     web: boolean;
   };
   /**
@@ -72,6 +75,7 @@ export const DEFAULT_HARDSUB_SETTINGS: HardsubSettings = {
   showFurigana: true,
   dimHardsub: false,
   sourceLang: "ja",
+  targetLangs: ["en", "vi"],
   copyFormat: "full",
   exportFormat: "ja_en_vi",
   roi: { top: 0.75, left: 0.05, width: 0.9, height: 0.2 },
@@ -94,6 +98,7 @@ export const DEFAULT_HARDSUB_SETTINGS: HardsubSettings = {
     youtube: true,
     netflix: true,
     abema: true,
+    animevietsub: true,
     web: true,
   },
 };

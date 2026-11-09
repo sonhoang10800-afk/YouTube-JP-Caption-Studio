@@ -3,6 +3,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
 const source = fs.readFileSync(require.resolve('../extension/content/content.js'), 'utf8');
 const projection = source.slice(source.indexOf('  let sortedCuesCache ='), source.indexOf('  /**\n   * Token enrich via /tokenize_batch'));
 const scheduler = source.slice(source.indexOf('  let sentencePublishTimer ='), source.indexOf('  function compactSource'));
+const langFns = source.slice(source.indexOf('  function detectCuesLanguage'), source.indexOf('  function stampSecondaryStatus'));
 const workerSource = fs.readFileSync(require.resolve('../extension/background/service_worker.js'), 'utf8');
 const workerFunctions = workerSource.slice(workerSource.indexOf('let savedStateWritePending'), workerSource.indexOf('async function ensureBridgePollAlarm'));
 const actualFetch = global.fetch;
@@ -44,6 +45,7 @@ const chrome={runtime:{id:'fixture',getURL:path=>'chrome-extension://fixture/'+p
  storage:{local:{get:async keys=>Object.fromEntries((Array.isArray(keys)?keys:[keys]).map(key=>[key,storage[key]])),
  set:async patch=>Object.assign(storage,structuredClone(patch))}}};
 const isSupportedUrl=url=>url.startsWith('https://www.youtube.com/');
+${langFns}
 ${workerFunctions}
 const findVideo=()=>({playbackRate:1}),toast=()=>{},scheduleSaveTranscript=()=>{};
 const updateBar=c=>{paints.push(c?.source||'')},publishSidePanelState=()=>{publishes++};
@@ -150,13 +152,12 @@ ${scheduler}
   }
   assert.equal(bilingual('enhancedCues[1].en'),'en: どこ?');
   assert.equal(bilingual('JSON.stringify(cues.map(c=>[c.vi,c.en]))'),'[[null,null],[null,null],[null,null]]');
-  assert.equal(bilingual('sentenceBenchmark.snapshot().requestCount'),1,'VI/EN jobs in same actual HTTP batch dedup receipt');
-  console.log('PASS: Enhanced VI/EN filtered submissions and accepted results have separate language events, one shared HTTP attempt and unchanged originals');
+  assert.equal(bilingual('sentenceBenchmark.snapshot().requestCount'),2,'VI and EN use separate prompts, so each language is its own HTTP attempt');
+  console.log('PASS: Enhanced VI/EN filtered submissions and accepted results have separate language events, one HTTP attempt per language and unchanged originals');
 
   const partial=createContent('original-partial');
   await partial('loadSentenceState()');
-  // More cues than one batch (the worker sends 30 per request), so the first
-  // batch can settle while the last one is held.
+  // BATCH_SIZE is 10, so 31 cues are four HTTP calls. Hold the last cue's batch.
   partial("captionMode='original';currentMediaTime=0;cues=Array.from({length:31},(_,i)=>({id:'partial-'+i,source:i===30?'遅い。':'速い'+i+'。',start_media_time:0,end_media_time:4}))");
   mode='hold-last';release={};const partialArrival=new Promise(resolve=>{arrived=resolve});
   const partialWork=partial('triggerGeminiTranslationIfNeeded()');
@@ -165,18 +166,20 @@ ${scheduler}
     for(let i=0;i<100&&partial("sentenceBenchmark.snapshot().events.filter(e=>e.type==='translation_ready').length")<30;i++)
       await new Promise(resolve=>setTimeout(resolve,10));
     assert.equal(partial("sentenceBenchmark.snapshot().events.filter(e=>e.type==='translation_ready').length"),30,'first real batch must settle while second is held');
-    assert.equal(partial('sentenceBenchmark.snapshot().requestCount'),1,'mid-flight export must retain receipt of first accepted batch before aggregate report');
+    assert.equal(partial('sentenceBenchmark.snapshot().requestCount'),3,'mid-flight export keeps the three settled batches of 10');
   } finally {release.resolve();release=null;await partialWork;mode='valid';}
-  assert.equal(partial('sentenceBenchmark.snapshot().requestCount'),2,'final aggregate dedups first batch instead of double counting');
-  console.log('PASS: mid-flight Original export keeps first HTTP receipt with 30 ready results while second batch held; final two attempts dedup');
+  assert.equal(partial('sentenceBenchmark.snapshot().requestCount'),4,'final aggregate adds the held last cue without recounting settled batches');
+  console.log('PASS: mid-flight Original export keeps three HTTP receipts with 30 ready results while the last cue is held; final four attempts do not double count');
 
   const failed = createContent('error');
   await failed('loadSentenceState()'); failed("refreshSentenceProjection(true);captionMode='enhanced'");
   mode = 'error'; const before = requests;
   await failed('triggerGeminiTranslationIfNeeded()');
+  // One batch: primary model retries once on HTTP 503, then the fallback model does the same.
+  assert.equal(requests, before + 4, 'a 503 batch tries the primary and fallback model once each');
   assert.equal(failed('enhancedCues[1].translationStates.vi'), 'error');
   await failed('triggerGeminiTranslationIfNeeded()');
-  assert.equal(requests, before + 1, 'Failure must not cause immediate prefetch retry loop');
+  assert.equal(requests, before + 4, 'Failure must not cause immediate prefetch retry loop');
   // One error event per failed job (three groups were prefetched).
   assert.equal(failed("sentenceBenchmark.snapshot().events.filter(e=>e.type==='translation_error'&&e.httpStatus===503).length"),3);
   const metrics=JSON.parse(failed('JSON.stringify(sentenceBenchmark.snapshot())'));

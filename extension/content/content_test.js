@@ -118,7 +118,7 @@ const source = fs.readFileSync(CONTENT_JS, "utf8");
 vm.createContext(context);
 // The content script reads its shared defaults from these two, exactly like the
 // manifest does; loading them keeps the sandbox a faithful page.
-for (const shared of ["shared/vocab_style.js", "shared/hardsub_defaults.js"]) {
+for (const shared of ["shared/vocab_style.js", "shared/settings_keys.js", "shared/hardsub_defaults.js"]) {
   const file = path.join(__dirname, "..", shared);
   vm.runInContext(fs.readFileSync(file, "utf8"), context, { filename: shared });
 }
@@ -159,10 +159,45 @@ assert.ok(settings && typeof settings === "object", "settings must be an object"
 assert.strictEqual(typeof settings.sourceLang, "string", "the default source language must be set");
 assert.strictEqual(content.normalizeSettings({ sourceLang: "en" }).sourceLang, "en",
   "a stored value must win over the default");
+assert.strictEqual(content.normalizeSettings({ sourceLang: "vi" }).sourceLang, "vi",
+  "Vietnamese is a valid M1 source language");
 assert.strictEqual(content.normalizeSettings({}).sourceLang, settings.sourceLang,
   "a missing value must fall back to the default");
+assert.deepStrictEqual(
+  Array.from(content.normalizeSettings({}).targetLangs || []),
+  ["en", "vi"],
+  "default targetLangs cover EN and VI",
+);
+assert.deepStrictEqual(
+  Array.from(content.normalizeSettings({ targetLangs: ["vi"] }).targetLangs || []),
+  ["vi"],
+  "a stored targetLangs subset must win",
+);
 assert.strictEqual(content.normalizeSettings({}).levelHighlightEnabled, true,
   "the level highlight default must be filled in");
+
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "こんにちは、今日はいい天気ですね" }]),
+  "ja",
+  "hiragana/kanji sample detects as ja",
+);
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "Xin chào, hôm nay trời đẹp" }]),
+  "vi",
+  "Vietnamese diacritics detect as vi",
+);
+assert.strictEqual(
+  content.detectCuesLanguageForTest([{ source: "Hello, nice weather today" }]),
+  "en",
+  "Latin sample detects as en",
+);
+
+content.setSettingsForTest({ sourceLang: "en", targetLangs: ["vi"] });
+assert.strictEqual(content.resolvedSourceLangForTest(), "en");
+assert.strictEqual(content.shouldTokenizeJapaneseForTest(), false, "non-JA source skips Sudachi");
+assert.deepStrictEqual(Array.from(content.geminiTargetLanguagesForTest() || []), ["vi"]);
+content.setSettingsForTest({ sourceLang: "ja", targetLangs: ["en", "vi"] });
+assert.strictEqual(content.shouldTokenizeJapaneseForTest(), true, "JA source enables tokenize");
 
 // -------------------------------------------------------------------------
 // capAcceptsReply: a reply that OMITS the capability token must be rejected
@@ -543,6 +578,34 @@ const avsVid = content.videoIdFromUrl();
 assert.ok(avsVid.startsWith("avs__"), `AVS videoId must start with avs__, got ${avsVid}`);
 assert.ok(avsVid.endsWith("__ep01"), `AVS videoId default episode must end with __ep01, got ${avsVid}`);
 assert.ok(avsVid.length <= 64, "AVS videoId must be <= 64 chars");
+
+// -------------------------------------------------------------------------
+// AnimeVietSub: dual-language translation routing (VI & EN)
+// -------------------------------------------------------------------------
+content.setCurrentSourceForTest("animevietsub");
+const testCues = [
+  { id: "c1", start_media_time: 1.0, end_media_time: 3.0, source: "こんにちは", text: "こんにちは", vi: "", en: "" },
+  { id: "c2", start_media_time: 4.0, end_media_time: 6.0, source: "ありがとう", text: "ありがとう", vi: "", en: "" },
+];
+content.setCuesForTest(testCues);
+const requestedLanguages = [];
+context.HardsubGeminiTranslate = {
+  getStoredApiKey: async () => "fake-test-key",
+  translateCues: async (cuesToTranslate, apiKey, onProgress, options) => {
+    requestedLanguages.push(options?.language);
+    for (const c of cuesToTranslate) {
+      if (options?.language === "vi") c.vi = "Xin chào";
+      if (options?.language === "en") c.en = "Hello";
+    }
+    return { completed: cuesToTranslate.length, failed: 0, total: cuesToTranslate.length, applied: cuesToTranslate.length };
+  },
+};
+
+await content.triggerGeminiTranslationIfNeededForTest(true);
+assert.ok(requestedLanguages.includes("vi"), "Must request VI translation");
+assert.ok(requestedLanguages.includes("en"), "Must request EN translation");
+assert.strictEqual(testCues[0].vi, "Xin chào", "Cue VI translation must be applied");
+assert.strictEqual(testCues[0].en, "Hello", "Cue EN translation must be applied");
 
 console.log("content_test: all assertions passed");
 })().catch((error) => {

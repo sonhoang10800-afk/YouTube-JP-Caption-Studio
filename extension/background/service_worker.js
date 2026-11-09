@@ -1,4 +1,5 @@
 importScripts("../shared/timedtext_parse.js");
+importScripts("../shared/settings_keys.js");
 importScripts("../shared/gemini_translate.js");
 importScripts("../shared/ass_parser.js");
 importScripts("../shared/anime_resolver.js");
@@ -181,16 +182,19 @@ function platformFromUrl(url) {
 }
 
 function isSupportedUrl(url) {
-  const p = platformFromUrl(url);
-  return p === "youtube" || p === "abema" || p === "netflix" || p === "animevietsub";
+  // Any http(s) page can open the panel; chrome:// and extension pages stay out.
+  return platformFromUrl(url) != null;
 }
 
 async function isPlatformEnabledForUrl(url) {
   const plat = platformFromUrl(url);
   if (!plat) return false;
   try {
-    const data = await chrome.storage.local.get("hardsubSettings");
-    const ep = data?.hardsubSettings?.enabledPlatforms || {
+    const Keys = globalThis.LanguageCaptionSettings;
+    const hs = Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings;
+    const ep = hs?.enabledPlatforms || {
       youtube: true,
       netflix: true,
       abema: true,
@@ -664,15 +668,20 @@ function schedulePushExtensionState() {
 async function pushExtensionStateToBridge() {
   if (_applyingBridgeState) return;
   try {
-    const data = await chrome.storage.local.get(["userVocab", "hardsubSettings", "savedCues"]);
+    const Keys = globalThis.LanguageCaptionSettings;
+    const data = await chrome.storage.local.get(["userVocab", "savedCues"]);
+    const hs = Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings;
     const body = {};
     // Never push a missing key over a non-empty bridge — an empty/fresh local
     // store must not wipe the bridge's vocab copy (see pull-first at startup).
     if (data.userVocab && typeof data.userVocab === "object") {
       body.userVocab = data.userVocab;
     }
-    if (data.hardsubSettings && typeof data.hardsubSettings === "object") {
-      body.hardsubSettings = data.hardsubSettings;
+    // Bridge wire field stays hardsubSettings for compat; local key migrated.
+    if (hs && typeof hs === "object") {
+      body.hardsubSettings = hs;
     }
     if (data.savedCues && typeof data.savedCues === "object") {
       body.savedCues = data.savedCues;
@@ -727,12 +736,16 @@ async function pullExtensionStateFromBridge() {
       await saveSwState();
       return;
     }
-    const local = await chrome.storage.local.get(["userVocab", "hardsubSettings", "savedCues"]);
+    const Keys = globalThis.LanguageCaptionSettings;
+    const local = await chrome.storage.local.get(["userVocab", "savedCues"]);
+    const localHs = Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings;
     const sameVocab =
       JSON.stringify(local.userVocab || {}) === JSON.stringify(patch.userVocab || local.userVocab || {});
     const sameSettings =
       !patch.hardsubSettings ||
-      JSON.stringify(local.hardsubSettings || {}) === JSON.stringify(patch.hardsubSettings);
+      JSON.stringify(localHs || {}) === JSON.stringify(patch.hardsubSettings);
     const sameSaved =
       !patch.savedCues ||
       JSON.stringify(local.savedCues || {}) === JSON.stringify(patch.savedCues);
@@ -743,7 +756,12 @@ async function pullExtensionStateFromBridge() {
     }
     _applyingBridgeState = true;
     try {
-      await withSavedStateWrite(() => chrome.storage.local.set(patch));
+      await withSavedStateWrite(async () => {
+        const { hardsubSettings: hsPatch, ...rest } = patch;
+        if (Object.keys(rest).length) await chrome.storage.local.set(rest);
+        if (hsPatch && Keys) await Keys.writeSettings(hsPatch, chrome.storage.local);
+        else if (hsPatch) await chrome.storage.local.set({ hardsubSettings: hsPatch });
+      });
       _lastPushedJson = JSON.stringify({
         ...patch,
         source: "extension",
@@ -760,7 +778,7 @@ async function pullExtensionStateFromBridge() {
 
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area !== "local") return;
-  if (changes.userVocab || changes.hardsubSettings) {
+  if (changes.userVocab || changes.hardsubSettings || changes.languageCaptionSettings) {
     schedulePushExtensionState();
   }
   if (changes.userVocab && !_applyingBridgeState) {
@@ -768,14 +786,14 @@ chrome.storage.onChanged.addListener((changes, area) => {
   }
   if (
     !_applyingSettings &&
-    (changes.hardsubSettings ||
+    (changes.hardsubSettings || changes.languageCaptionSettings ||
       changes.followTimeline ||
       changes.isDarkTheme ||
       changes.sidePanelFontScale)
   ) {
     scheduleSettingsDrivePush();
   }
-  if (changes.hardsubSettings) {
+  if (changes.hardsubSettings || changes.languageCaptionSettings) {
     chrome.tabs?.query?.({}).then((tabs) => {
       for (const tab of tabs || []) {
         if (tab.id != null && tab.url) {
@@ -1346,8 +1364,10 @@ function scoreTrack(track, preferLang) {
   const asr = track.kind === "asr";
   let s = 0;
   if (prefer === "auto") {
-    if (matchLangFamily(lang, "ja")) s += 90;
-    else if (matchLangFamily(lang, "en")) s += 40;
+    // M1: no hard JA bias — any ja/en/vi track is equally eligible as primary.
+    if (matchLangFamily(lang, "ja") || matchLangFamily(lang, "en") || matchLangFamily(lang, "vi")) {
+      s += 50;
+    }
   } else if (matchLangFamily(lang, prefer)) {
     s += 100;
   } else if (matchLangFamily(lang, "ja")) {
@@ -1456,13 +1476,15 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
-// --- Drive sync: vocab in caption-studio-backup.json, scripts as <videoId>/ folders ---
-const DRIVE_BACKUP_NAME = "caption-studio-backup.json";
+// --- Drive sync: vocab in language-caption-backup.json (legacy caption-studio-*), scripts as <videoId>/ folders ---
+const DRIVE_BACKUP_NAME = "language-caption-backup.json";
+const DRIVE_BACKUP_LEGACY = "caption-studio-backup.json";
 
 if (globalThis.__JP_CAP_SW_TEST__) {
   globalThis.__JP_CAP_SW_TEST__.sw = { mergeVocabSnapshot, mergeIosVocab, staleTtMissKeys, setTtMiss };
 }
-const DRIVE_SETTINGS_NAME = "caption-studio-settings.json";
+const DRIVE_SETTINGS_NAME = "language-caption-settings.json";
+const DRIVE_SETTINGS_LEGACY = "caption-studio-settings.json";
 const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const DRIVE_UPLOAD = "https://www.googleapis.com/upload/drive/v3";
 const DRIVE_FOLDER_MIME = "application/vnd.google-apps.folder";
@@ -1487,21 +1509,30 @@ async function getDriveFolderId(interactive = false) {
     _cachedDriveFolderId = stored.driveFolderId;
     return _cachedDriveFolderId;
   }
-  const q = encodeURIComponent("name = 'YouTube JP Caption Studio' and mimeType = 'application/vnd.google-apps.folder' and trashed = false");
-  const listRes = await driveRequest(`/files?q=${q}&fields=files(id,name)&spaces=drive&supportsAllDrives=true`, {}, interactive).catch(() => null);
-  if (listRes && listRes.ok) {
-    const list = await listRes.json().catch(() => null);
-    if (list?.files && list.files.length > 0) {
-      _cachedDriveFolderId = list.files[0].id;
-      await chrome.storage.local.set({ driveFolderId: _cachedDriveFolderId });
-      return _cachedDriveFolderId;
+  // Prefer new brand folder; fall back to legacy "YouTube JP Caption Studio".
+  for (const folderName of ["Language Caption", "YouTube JP Caption Studio"]) {
+    const q = encodeURIComponent(
+      `name = '${folderName}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`,
+    );
+    const listRes = await driveRequest(
+      `/files?q=${q}&fields=files(id,name)&spaces=drive&supportsAllDrives=true`,
+      {},
+      interactive,
+    ).catch(() => null);
+    if (listRes && listRes.ok) {
+      const list = await listRes.json().catch(() => null);
+      if (list?.files && list.files.length > 0) {
+        _cachedDriveFolderId = list.files[0].id;
+        await chrome.storage.local.set({ driveFolderId: _cachedDriveFolderId });
+        return _cachedDriveFolderId;
+      }
     }
   }
   const createRes = await driveRequest("/files?supportsAllDrives=true", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      name: "YouTube JP Caption Studio",
+      name: "Language Caption",
       mimeType: DRIVE_FOLDER_MIME,
     }),
   }, interactive).catch(() => null);
@@ -1513,7 +1544,7 @@ async function getDriveFolderId(interactive = false) {
       return _cachedDriveFolderId;
     }
   }
-  throw new Error("Không thể tìm hoặc tạo thư mục 'YouTube JP Caption Studio' trên Google Drive.");
+  throw new Error("Không thể tìm hoặc tạo thư mục 'Language Caption' trên Google Drive.");
 }
 
 async function setDriveFolderId(folderIdOrUrl) {
@@ -1642,20 +1673,24 @@ async function ensureDriveFileId(interactive = false) {
   if (stored.driveFileId) return stored.driveFileId;
   const folderId = await getDriveFolderId(interactive);
 
-  const q = encodeURIComponent(
-    `'${folderId}' in parents and name='${DRIVE_BACKUP_NAME}' and trashed=false`
-  );
-  const listRes = await driveRequest(
-    `/files?q=${q}&fields=files(id,name)&pageSize=5&supportsAllDrives=true&includeItemsFromAllDrives=true`,
-    {},
-    interactive
-  );
-  if (!listRes.ok) {
-    const errText = await listRes.text().catch(() => "");
-    throw new Error(`Drive list ${listRes.status}: ${errText.slice(0, 160)}`);
+  let fileId = "";
+  for (const name of [DRIVE_BACKUP_NAME, DRIVE_BACKUP_LEGACY]) {
+    const q = encodeURIComponent(
+      `'${folderId}' in parents and name='${name}' and trashed=false`
+    );
+    const listRes = await driveRequest(
+      `/files?q=${q}&fields=files(id,name)&pageSize=5&supportsAllDrives=true&includeItemsFromAllDrives=true`,
+      {},
+      interactive
+    );
+    if (!listRes.ok) {
+      const errText = await listRes.text().catch(() => "");
+      throw new Error(`Drive list ${listRes.status}: ${errText.slice(0, 160)}`);
+    }
+    const list = await listRes.json();
+    fileId = list?.files?.[0]?.id || "";
+    if (fileId) break;
   }
-  const list = await listRes.json();
-  let fileId = list?.files?.[0]?.id || "";
   if (!fileId) {
     const createRes = await driveRequest(
       `/files?supportsAllDrives=true`,
@@ -1697,7 +1732,18 @@ async function ensureDriveFileId(interactive = false) {
 }
 
 /** The iPad writes this vocab-only file through the Drive REST API (VocabSync); nothing read it. */
-const DRIVE_VOCAB_NAME = "caption-studio-vocab.json";
+const DRIVE_VOCAB_NAME = "language-caption-vocab.json";
+const DRIVE_VOCAB_LEGACY = "caption-studio-vocab.json";
+
+/** Prefer new Drive filename, fall back to legacy caption-studio-* name. */
+async function driveFileIdPrefer(names, interactive = false) {
+  const list = Array.isArray(names) ? names : [names];
+  for (const name of list) {
+    const id = await driveFileIdByName(name, interactive);
+    if (id) return { id, name };
+  }
+  return { id: "", name: list[0] };
+}
 
 /** Id of `name` in the sync folder, or "" when that file does not exist yet. */
 async function driveFileIdByName(name, interactive = false) {
@@ -1995,27 +2041,31 @@ function updatedAtMs(value) {
   return Number.isFinite(t) ? t : 0;
 }
 
-// --- caption-studio-settings.json (LWW; no geometry) ---
+// --- language-caption-settings.json (LWW; no geometry; dual-read legacy) ---
 
 async function ensureSettingsFileId(interactive = false, createIfMissing = true) {
   const stored = await chrome.storage.local.get(["driveSettingsFileId"]);
   if (stored.driveSettingsFileId) return stored.driveSettingsFileId;
   const folderId = await getDriveFolderId(interactive);
 
-  const q = encodeURIComponent(
-    `'${folderId}' in parents and name='${DRIVE_SETTINGS_NAME}' and trashed=false`
-  );
-  const listRes = await driveRequest(
-    `/files?q=${q}&fields=files(id,name)&pageSize=5&supportsAllDrives=true&includeItemsFromAllDrives=true`,
-    {},
-    interactive
-  );
-  if (!listRes.ok) {
-    const errText = await listRes.text().catch(() => "");
-    throw new Error(`Drive settings list ${listRes.status}: ${errText.slice(0, 160)}`);
+  let fileId = "";
+  for (const name of [DRIVE_SETTINGS_NAME, DRIVE_SETTINGS_LEGACY]) {
+    const q = encodeURIComponent(
+      `'${folderId}' in parents and name='${name}' and trashed=false`
+    );
+    const listRes = await driveRequest(
+      `/files?q=${q}&fields=files(id,name)&pageSize=5&supportsAllDrives=true&includeItemsFromAllDrives=true`,
+      {},
+      interactive
+    );
+    if (!listRes.ok) {
+      const errText = await listRes.text().catch(() => "");
+      throw new Error(`Drive settings list ${listRes.status}: ${errText.slice(0, 160)}`);
+    }
+    const list = await listRes.json();
+    fileId = list?.files?.[0]?.id || "";
+    if (fileId) break;
   }
-  const list = await listRes.json();
-  let fileId = list?.files?.[0]?.id || "";
   if (!fileId) {
     if (!createIfMissing) return "";
     const createRes = await driveRequest(
@@ -2043,13 +2093,15 @@ async function ensureSettingsFileId(interactive = false, createIfMissing = true)
 }
 
 async function buildLocalSettingsSnapshot() {
+  const Keys = globalThis.LanguageCaptionSettings;
   const data = await chrome.storage.local.get([
-    "hardsubSettings",
     "followTimeline",
     "isDarkTheme",
     "sidePanelFontScale",
   ]);
-  const s = data.hardsubSettings && typeof data.hardsubSettings === "object" ? data.hardsubSettings : {};
+  const s = (Keys
+    ? await Keys.readSettings(chrome.storage.local)
+    : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings) || {};
   return {
     version: 1,
     updatedAt: new Date().toISOString(),
@@ -2074,8 +2126,10 @@ async function applySettingsSnapshot(remote) {
   if (!remote || typeof remote !== "object") return;
   _applyingSettings = true;
   try {
-    const data = await chrome.storage.local.get(["hardsubSettings"]);
-    const prev = data.hardsubSettings && typeof data.hardsubSettings === "object" ? data.hardsubSettings : {};
+    const Keys = globalThis.LanguageCaptionSettings;
+    const prev = (Keys
+      ? await Keys.readSettings(chrome.storage.local)
+      : (await chrome.storage.local.get("hardsubSettings")).hardsubSettings) || {};
     const next = { ...prev };
     if (remote.showFurigana != null) next.showFurigana = !!remote.showFurigana;
     if (remote.barShowJa != null) next.barShowJa = !!remote.barShowJa;
@@ -2088,12 +2142,14 @@ async function applySettingsSnapshot(remote) {
     if (remote.dictShowSentence != null) next.dictShowSentence = !!remote.dictShowSentence;
     if (remote.levelHighlightEnabled != null) next.levelHighlightEnabled = !!remote.levelHighlightEnabled;
     if (remote.levelColors && typeof remote.levelColors === "object") next.levelColors = remote.levelColors;
-    const patch = { hardsubSettings: next };
+    const patch = {};
+    if (Keys) await Keys.writeSettings(next, chrome.storage.local);
+    else patch.hardsubSettings = next;
     if (remote.followTimeline != null) patch.followTimeline = !!remote.followTimeline;
     if (remote.isDarkTheme != null) patch.isDarkTheme = !!remote.isDarkTheme;
     if (remote.sidePanelFontScale != null) patch.sidePanelFontScale = Number(remote.sidePanelFontScale) || 1;
     if (remote.updatedAt) patch.settingsLastAppliedUpdatedAt = String(remote.updatedAt);
-    await chrome.storage.local.set(patch);
+    if (Object.keys(patch).length) await chrome.storage.local.set(patch);
   } finally {
     _applyingSettings = false;
   }
@@ -2212,7 +2268,7 @@ function mergeIosVocab(localVocab, entries) {
 
 /** Pull `caption-studio-vocab.json` from Drive and merge its words into `userVocab`. */
 async function pullIosVocabSnapshot() {
-  const fileId = await driveFileIdByName(DRIVE_VOCAB_NAME, false);
+  const fileId = (await driveFileIdPrefer([DRIVE_VOCAB_NAME, DRIVE_VOCAB_LEGACY], false)).id;
   if (!fileId) return { skipped: "absent" };
   const snap = await downloadDriveSnapshot(fileId, false);
   if (!snap || typeof snap !== "object") return { skipped: "empty" };

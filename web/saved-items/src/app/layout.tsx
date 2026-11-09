@@ -15,9 +15,9 @@ const varelaRound = Varela_Round({
 });
 
 export const metadata: Metadata = {
-  title: "YT Caption — Từ đã lưu",
+  title: "Language Caption — Từ đã lưu",
   description:
-    "Saved Items (Language Reactor–style) adapted for YT Caption JA→VI vocab (userVocab).",
+    "Saved Items for Language Caption (JA/EN/VI vocab via userVocab).",
 };
 
 export const viewport: Viewport = {

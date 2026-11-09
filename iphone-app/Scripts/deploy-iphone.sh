@@ -26,11 +26,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-PROJECT="${PROJECT:-${ROOT}/YouTubeJPCaptionStudioiPhone.xcodeproj}"
-SCHEME="${SCHEME:-YouTubeJPCaptionStudioiPhone}"
-BUNDLE_ID="${BUNDLE_ID:-com.example.YouTubeJPCaptionStudio.iPhone}"
+PROJECT="${PROJECT:-${ROOT}/LanguageCaptioniPhone.xcodeproj}"
+SCHEME="${SCHEME:-LanguageCaptioniPhone}"
+BUNDLE_ID="${BUNDLE_ID:-com.example.LanguageCaption.iPhone}"
 CONFIGURATION="${CONFIGURATION:-Debug}"
-LOG="${LOG:-${HOME}/Library/Logs/YouTubeJPCaptionStudio-iPhone-deploy.log}"
+LOG="${LOG:-${HOME}/Library/Logs/LanguageCaption-iPhone-deploy.log}"
 DEVICE_UDID="${DEVICE_UDID:-}"
 
 mkdir -p "$(dirname "$LOG")"

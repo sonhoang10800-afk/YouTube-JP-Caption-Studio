@@ -16,10 +16,12 @@ import { readEnvelope, writeEnvelope } from "@/lib/storage-version";
 
 export { BRIDGE_BASE };
 
-/** localStorage mirror (localhost / fallback). Extension uses chrome.storage key `hardsubSettings`. */
-export const SETTINGS_STORAGE_KEY = "ytcaption.hardsubSettings.v1";
+/** localStorage mirror (localhost / fallback). */
+export const SETTINGS_STORAGE_KEY = "languageCaption.settings.v1";
 
-export const CHROME_SETTINGS_KEY = "hardsubSettings";
+/** chrome.storage.local key (new). Legacy dual-read: hardsubSettings. */
+export const CHROME_SETTINGS_KEY = "languageCaptionSettings";
+export const CHROME_SETTINGS_LEGACY_KEY = "hardsubSettings";
 
 /** The mirror was written by a newer build: it is neither read nor overwritten. */
 function hasUnsupportedSettings(): boolean {
@@ -92,7 +94,14 @@ function normalizeRoi(raw: unknown): HardsubSettings["roi"] {
 }
 
 function normalizeSourceLang(v: unknown): HardsubSettings["sourceLang"] {
-  return v === "ja" || v === "en" || v === "auto" ? v : "ja";
+  return v === "ja" || v === "en" || v === "vi" || v === "auto" ? v : "ja";
+}
+
+function normalizeTargetLangs(raw: unknown): HardsubSettings["targetLangs"] {
+  const d = DEFAULT_HARDSUB_SETTINGS.targetLangs;
+  if (!Array.isArray(raw)) return [...d];
+  const picked = raw.filter((l): l is "en" | "vi" => l === "en" || l === "vi");
+  return picked.length ? picked : [...d];
 }
 
 function normalizeCopyFormat(v: unknown): HardsubSettings["copyFormat"] {
@@ -106,6 +115,7 @@ function normalizeEnabledPlatforms(raw: unknown): HardsubSettings["enabledPlatfo
     youtube: bool(raw.youtube, d.youtube),
     netflix: bool(raw.netflix, d.netflix),
     abema: bool(raw.abema, d.abema),
+    animevietsub: bool(raw.animevietsub, d.animevietsub ?? true),
     web: bool(raw.web, d.web),
   };
 }
@@ -124,6 +134,7 @@ export function normalizeSettings(raw: unknown): HardsubSettings {
     showFurigana: bool(raw.showFurigana, d.showFurigana),
     dimHardsub: bool(raw.dimHardsub, d.dimHardsub),
     sourceLang: normalizeSourceLang(raw.sourceLang),
+    targetLangs: normalizeTargetLangs(raw.targetLangs),
     copyFormat: normalizeCopyFormat(raw.copyFormat),
     exportFormat:
       typeof raw.exportFormat === "string" ? raw.exportFormat : d.exportFormat,
@@ -203,19 +214,26 @@ export async function loadSettingsAsync(): Promise<SettingsLoadResult> {
   if (hasChromeStorage()) {
     try {
       const store = getChromeStorage()!;
-      const data = await store.get(CHROME_SETTINGS_KEY);
-      const raw = data[CHROME_SETTINGS_KEY];
+      const data = await store.get([CHROME_SETTINGS_KEY, CHROME_SETTINGS_LEGACY_KEY]);
+      let raw = data[CHROME_SETTINGS_KEY];
+      if (raw == null && data[CHROME_SETTINGS_LEGACY_KEY] != null) {
+        raw = data[CHROME_SETTINGS_LEGACY_KEY];
+        await store.set({
+          [CHROME_SETTINGS_KEY]: raw,
+          [CHROME_SETTINGS_LEGACY_KEY]: raw,
+        });
+      }
       if (raw != null) {
         return {
           settings: normalizeSettings(raw),
           source: "chrome.storage",
-          note: "chrome.storage.local · hardsubSettings (live sync)",
+          note: "chrome.storage.local · languageCaptionSettings (live sync)",
         };
       }
       return {
         settings: normalizeSettings(null),
         source: "defaults",
-        note: "Chưa có hardsubSettings — dùng mặc định; Lưu sẽ ghi chrome.storage.",
+        note: "Chưa có languageCaptionSettings — dùng mặc định; Lưu sẽ ghi chrome.storage.",
       };
     } catch {
       /* fall through */
@@ -282,7 +300,10 @@ export async function persistSettingsAsync(
 
   if (hasChromeStorage()) {
     try {
-      await getChromeStorage()!.set({ [CHROME_SETTINGS_KEY]: next });
+      await getChromeStorage()!.set({
+        [CHROME_SETTINGS_KEY]: next,
+        [CHROME_SETTINGS_LEGACY_KEY]: next,
+      });
       writeLocalSettings(next);
       void pushSettingsToBridge(next);
       return "chrome.storage";
@@ -368,11 +389,16 @@ export function subscribeSettings(
       changes: Record<string, ChromeStorageChange>,
       area: string,
     ) => {
-      if (area !== "local" || !changes[CHROME_SETTINGS_KEY]) return;
-      onChange(
-        normalizeSettings(changes[CHROME_SETTINGS_KEY].newValue),
-        "chrome.storage",
-      );
+      if (
+        area !== "local" ||
+        (!changes[CHROME_SETTINGS_KEY] && !changes[CHROME_SETTINGS_LEGACY_KEY])
+      ) {
+        return;
+      }
+      const raw =
+        changes[CHROME_SETTINGS_KEY]?.newValue ??
+        changes[CHROME_SETTINGS_LEGACY_KEY]?.newValue;
+      onChange(normalizeSettings(raw), "chrome.storage");
     };
     onChanged.addListener(listener);
     return () => onChanged.removeListener(listener);

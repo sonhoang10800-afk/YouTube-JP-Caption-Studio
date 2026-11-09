@@ -78,7 +78,7 @@ export function SideNav({
         <LogoMark />
         {!collapsed && (
           <span className="font-[family-name:var(--font-brand)] text-[15px] font-normal tracking-wide text-white">
-            YT CAPTION
+            Language Caption
           </span>
         )}
         <button

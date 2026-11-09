@@ -26,7 +26,7 @@
 			containerPortal = 47827441BCC933DB390FD76D /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 3764802B6D24709B4D5CBE09;
-			remoteInfo = YouTubeJPCaptionStudioiPhone;
+			remoteInfo = LanguageCaptioniPhone;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -34,7 +34,7 @@
 		008AF8B086A96EBBC7D78A39 /* CueEditorRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CueEditorRow.swift; sourceTree = "<group>"; };
 		20A1F50D69CF63601A75839F /* ios-shared */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "ios-shared"; path = "../ios-shared"; sourceTree = SOURCE_ROOT; };
 		2E4172276AF5DA5F68946F3B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		3627E90D42E2DDF187019E44 /* YouTubeJPCaptionStudioiPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = YouTubeJPCaptionStudioiPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3627E90D42E2DDF187019E44 /* LanguageCaptioniPhone.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = LanguageCaptioniPhone.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4798C8E5139D68C60CD06753 /* DriveScriptsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveScriptsService.swift; sourceTree = "<group>"; };
 		57BA7E9650B4341DD812BA3E /* freq_ja.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = freq_ja.json; sourceTree = "<group>"; };
 		6AEF9CCD23B6B64200B0F3EA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -43,7 +43,7 @@
 		B883C2D182FCCB052DB62AB7 /* dict.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = dict.sqlite; sourceTree = "<group>"; };
 		C66AD16AEFDC8B15B969769E /* SidePanelToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidePanelToolbar.swift; sourceTree = "<group>"; };
 		D47933F6FA9CCFD2AA5A6D32 /* YouTubePlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubePlayerView.swift; sourceTree = "<group>"; };
-		E6F79535BA55C898E14ABE85 /* YouTubeJPCaptionStudioiPhoneUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = YouTubeJPCaptionStudioiPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E6F79535BA55C898E14ABE85 /* LanguageCaptioniPhoneUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = LanguageCaptioniPhoneUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,8 +61,8 @@
 		381997A0824CACFFE724B7F2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				3627E90D42E2DDF187019E44 /* YouTubeJPCaptionStudioiPhone.app */,
-				E6F79535BA55C898E14ABE85 /* YouTubeJPCaptionStudioiPhoneUITests.xctest */,
+				3627E90D42E2DDF187019E44 /* LanguageCaptioniPhone.app */,
+				E6F79535BA55C898E14ABE85 /* LanguageCaptioniPhoneUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,9 +129,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		3764802B6D24709B4D5CBE09 /* YouTubeJPCaptionStudioiPhone */ = {
+		3764802B6D24709B4D5CBE09 /* LanguageCaptioniPhone */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 981CF0B3DDD3B8A503F476B6 /* Build configuration list for PBXNativeTarget "YouTubeJPCaptionStudioiPhone" */;
+			buildConfigurationList = 981CF0B3DDD3B8A503F476B6 /* Build configuration list for PBXNativeTarget "LanguageCaptioniPhone" */;
 			buildPhases = (
 				5685A724A0234552EAB8AEFF /* Sources */,
 				1C75AEC55BA98498206D5456 /* Resources */,
@@ -141,17 +141,17 @@
 			);
 			dependencies = (
 			);
-			name = YouTubeJPCaptionStudioiPhone;
+			name = LanguageCaptioniPhone;
 			packageProductDependencies = (
 				6F5F463FE9D743F4BFF26E12 /* CaptionShared */,
 			);
-			productName = YouTubeJPCaptionStudioiPhone;
-			productReference = 3627E90D42E2DDF187019E44 /* YouTubeJPCaptionStudioiPhone.app */;
+			productName = LanguageCaptioniPhone;
+			productReference = 3627E90D42E2DDF187019E44 /* LanguageCaptioniPhone.app */;
 			productType = "com.apple.product-type.application";
 		};
-		676B6C1FA0D74DE721784187 /* YouTubeJPCaptionStudioiPhoneUITests */ = {
+		676B6C1FA0D74DE721784187 /* LanguageCaptioniPhoneUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 692B9E984D3F7E8E4E3C5053 /* Build configuration list for PBXNativeTarget "YouTubeJPCaptionStudioiPhoneUITests" */;
+			buildConfigurationList = 692B9E984D3F7E8E4E3C5053 /* Build configuration list for PBXNativeTarget "LanguageCaptioniPhoneUITests" */;
 			buildPhases = (
 				15B865A4A00625C0881E5FEE /* Sources */,
 			);
@@ -160,11 +160,11 @@
 			dependencies = (
 				0D533798D5B8DAB2FCED0BC3 /* PBXTargetDependency */,
 			);
-			name = YouTubeJPCaptionStudioiPhoneUITests;
+			name = LanguageCaptioniPhoneUITests;
 			packageProductDependencies = (
 			);
-			productName = YouTubeJPCaptionStudioiPhoneUITests;
-			productReference = E6F79535BA55C898E14ABE85 /* YouTubeJPCaptionStudioiPhoneUITests.xctest */;
+			productName = LanguageCaptioniPhoneUITests;
+			productReference = E6F79535BA55C898E14ABE85 /* LanguageCaptioniPhoneUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -185,7 +185,7 @@
 					};
 				};
 			};
-			buildConfigurationList = DBE556291F8444649957D2D0 /* Build configuration list for PBXProject "YouTubeJPCaptionStudioiPhone" */;
+			buildConfigurationList = DBE556291F8444649957D2D0 /* Build configuration list for PBXProject "LanguageCaptioniPhone" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -202,8 +202,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				676B6C1FA0D74DE721784187 /* YouTubeJPCaptionStudioiPhoneUITests */,
-				3764802B6D24709B4D5CBE09 /* YouTubeJPCaptionStudioiPhone */,
+				676B6C1FA0D74DE721784187 /* LanguageCaptioniPhoneUITests */,
+				3764802B6D24709B4D5CBE09 /* LanguageCaptioniPhone */,
 			);
 		};
 /* End PBXProject section */
@@ -248,7 +248,7 @@
 /* Begin PBXTargetDependency section */
 		0D533798D5B8DAB2FCED0BC3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 3764802B6D24709B4D5CBE09 /* YouTubeJPCaptionStudioiPhone */;
+			target = 3764802B6D24709B4D5CBE09 /* LanguageCaptioniPhone */;
 			targetProxy = 0AC9ADA25FF8AAEB3A6DAFC1 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -320,10 +320,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.YouTubeJPCaptionStudioiPhoneUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LanguageCaptioniPhoneUITests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = YouTubeJPCaptionStudioiPhone;
+				TEST_TARGET_NAME = LanguageCaptioniPhone;
 			};
 			name = Debug;
 		};
@@ -340,7 +340,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.YouTubeJPCaptionStudio.iPhone;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LanguageCaption.iPhone;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -357,10 +357,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.YouTubeJPCaptionStudioiPhoneUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LanguageCaptioniPhoneUITests;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = YouTubeJPCaptionStudioiPhone;
+				TEST_TARGET_NAME = LanguageCaptioniPhone;
 			};
 			name = Release;
 		};
@@ -377,7 +377,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.YouTubeJPCaptionStudio.iPhone;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.LanguageCaption.iPhone;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -448,7 +448,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		692B9E984D3F7E8E4E3C5053 /* Build configuration list for PBXNativeTarget "YouTubeJPCaptionStudioiPhoneUITests" */ = {
+		692B9E984D3F7E8E4E3C5053 /* Build configuration list for PBXNativeTarget "LanguageCaptioniPhoneUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				58012C8FB73F528AFE73BD92 /* Debug */,
@@ -457,7 +457,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		981CF0B3DDD3B8A503F476B6 /* Build configuration list for PBXNativeTarget "YouTubeJPCaptionStudioiPhone" */ = {
+		981CF0B3DDD3B8A503F476B6 /* Build configuration list for PBXNativeTarget "LanguageCaptioniPhone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B7A4764479056A404E6F7F83 /* Debug */,
@@ -466,7 +466,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		DBE556291F8444649957D2D0 /* Build configuration list for PBXProject "YouTubeJPCaptionStudioiPhone" */ = {
+		DBE556291F8444649957D2D0 /* Build configuration list for PBXProject "LanguageCaptioniPhone" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E204C14C39EC37DF780DA588 /* Debug */,

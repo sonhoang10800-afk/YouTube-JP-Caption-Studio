@@ -54,13 +54,13 @@ struct SidePanelToolbar: View {
 }
 
 struct SidePanelSettingsSheet: View {
-    @AppStorage("hardsubOverlayOn") var overlayOn = false
+    @AppStorage("languageCaptionOverlayOn") var overlayOn = false
     @AppStorage("sidePanelOn") var sidePanelOn = false
-    @AppStorage("hardsubShowJA") var showJA = true
-    @AppStorage("hardsubShowEN.v2") var showEN = true
-    @AppStorage("hardsubShowVI.v2") var showVI = true
-    @AppStorage("hardsubShowFurigana") var showFurigana = true
-    @AppStorage("hardsubBarScale") var overlayFontScale = 1.0
+    @AppStorage("languageCaptionShowJA") var showJA = true
+    @AppStorage("languageCaptionShowEN.v2") var showEN = true
+    @AppStorage("languageCaptionShowVI.v2") var showVI = true
+    @AppStorage("languageCaptionShowFurigana") var showFurigana = true
+    @AppStorage("languageCaptionBarScale") var overlayFontScale = 1.0
     @AppStorage("sidePanelFontScale") var sidePanelFontScale = 1.0
     @AppStorage("levelHighlightEnabled") var levelHighlightEnabled = true
     @AppStorage("levelColorsJSON") var levelColorsJSON = VocabStyle.defaultLevelColorsJSON

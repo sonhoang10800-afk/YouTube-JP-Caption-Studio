@@ -1,17 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "YouTube JP Caption Studio",
-  "version": "0.11.3",
-  "description": "Load captions (YouTube, ABEMA, Netflix, and other video sites), manual JA→EN/VI translate, Language Reactor-style dual captions locally.",
+  "name": "Language Caption",
+  "version": "0.12.0",
+  "description": "Language Caption — dual captions on any site (YouTube, ABEMA, Netflix, AnimeVietSub, and the open web) with JA/EN/VI modes and local NLP.",
   "minimum_chrome_version": "116",
   "permissions": ["storage", "cookies", "sidePanel", "tabs", "nativeMessaging", "alarms", "identity", "tabCapture", "offscreen", "scripting"],
   "host_permissions": [
-    "https://www.youtube.com/*",
-    "https://youtube.com/*",
-    "https://abema.tv/*",
-    "https://*.abema.tv/*",
-    "https://www.netflix.com/*",
-    "https://netflix.com/*",
+    "http://*/*",
+    "https://*/*",
     "http://127.0.0.1:8765/*",
     "http://localhost:8765/*",
     "http://127.0.0.1:3000/*",
@@ -19,12 +15,6 @@
     "https://www.googleapis.com/*",
     "https://accounts.google.com/o/oauth2/revoke",
     "https://generativelanguage.googleapis.com/*",
-    "https://*.animevietsub.best/*",
-    "https://animevietsub.best/*",
-    "https://*.animevietsub.news/*",
-    "https://animevietsub.news/*",
-    "https://*.animevietsub.tv/*",
-    "https://animevietsub.tv/*",
     "https://stream.googleapiscdn.com/*",
     "https://graphql.anilist.co/*",
     "https://jimaku.cc/*"
@@ -37,7 +27,7 @@
     "service_worker": "background/service_worker.js"
   },
   "action": {
-    "default_title": "Caption Studio — Settings & Saved Items"
+    "default_title": "Language Caption — Settings & Saved Items"
   },
   "commands": {
     "_execute_action": {
@@ -67,12 +57,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": ["shared/timedtext_parse.js", "injected/page_capture.js"],
       "run_at": "document_start",
@@ -80,21 +66,12 @@
     },
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*",
-        "https://animevietsub.best/*",
-        "https://*.animevietsub.best/*",
-        "https://animevietsub.news/*",
-        "https://*.animevietsub.news/*",
-        "https://animevietsub.tv/*",
-        "https://*.animevietsub.tv/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
         "shared/vocab_style.js",
+        "shared/settings_keys.js",
         "shared/hardsub_defaults.js",
         "shared/dfxp_parser.js",
         "shared/timedtext_parse.js",
@@ -116,18 +93,8 @@
     },
     {
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*",
-        "https://*.animevietsub.best/*",
-        "https://animevietsub.best/*",
-        "https://*.animevietsub.news/*",
-        "https://animevietsub.news/*",
-        "https://*.animevietsub.tv/*",
-        "https://animevietsub.tv/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": ["content/sp_test_bridge.js"],
       "run_at": "document_start"
@@ -145,12 +112,8 @@
     {
       "resources": ["shared/timedtext_parse.js", "injected/page_capture.js"],
       "matches": [
-        "https://www.youtube.com/*",
-        "https://youtube.com/*",
-        "https://abema.tv/*",
-        "https://*.abema.tv/*",
-        "https://www.netflix.com/*",
-        "https://netflix.com/*"
+        "http://*/*",
+        "https://*/*"
       ]
     }
   ]

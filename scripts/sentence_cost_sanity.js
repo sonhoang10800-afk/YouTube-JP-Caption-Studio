@@ -23,30 +23,36 @@ const server = http.createServer((req, res) => {
     source: '秘密の台詞', context: 'secret-context', sourceKey: 'cost-fixture' }));
   const trace = createTrace({ traceId: 'cost' });
   const report = await Gemini.translateGroups(jobs, { apiKey: 'test-only-key' });
-  assert.equal(report.completed, 2); assert.equal(hits, 1);
+  // One HTTP call per target language: the system prompt is pair-specific.
+  const unit = 0.0011775; // 800*.75 + 200*.075 + 150*3.75 per million
+  assert.equal(report.completed, 2); assert.equal(hits, 2);
   for (const result of report.results) trace.request(result.request, 1);
   const attempt = report.results[0].request.attempts[0];
   assert.equal(attempt.status, 200);
   assert.deepEqual(attempt.usage, Object.fromEntries(Object.entries(usage).filter(([key]) => key !== 'secret')));
   assert.ok(Number.isFinite(attempt.startedAtMs));
   const cost = trace.snapshot().apiCostEstimate;
-  assert.equal(cost.currency, 'USD'); assert.equal(cost.pricedAttempts, 1); assert.equal(cost.totalAttempts, 1);
-  assert.ok(Math.abs(cost.amount - 0.0011775) < 1e-12); // 800*.75 + 200*.075 + 150*3.75 per million
-  assert.equal(cost.status, 'ESTIMATE'); assert.equal(trace.snapshot().apiCost, null);
+  // gemini-3.6-flash is the live model and has no verified list price.
+  assert.equal(attempt.model, 'gemini-3.6-flash');
+  assert.equal(cost.currency, 'USD'); assert.equal(cost.pricedAttempts, 0); assert.equal(cost.totalAttempts, 2);
+  assert.equal(cost.amount, null);
+  assert.equal(cost.status, 'NOT VERIFIED'); assert.equal(trace.snapshot().apiCost, null);
   const cached = await Gemini.translateGroups(jobs, { apiKey: 'test-only-key' });
-  assert.equal(hits, 1); assert.ok(cached.results.every(r => !r.request));
+  assert.equal(hits, 2); assert.ok(cached.results.every(r => !r.request));
   invalid = true;
   const rejected = await Gemini.translateGroups([{ ...jobs[0], sourceKey: 'invalid-cost' }], { apiKey: 'test-only-key' });
   assert.equal(rejected.failed, 1);
   assert.deepEqual(rejected.results[0].request.attempts[0].usage, attempt.usage);
   trace.request(rejected.results[0].request, 2);
-  assert.equal(trace.snapshot().apiCostEstimate.pricedAttempts, 2);
-  assert.ok(Math.abs(trace.snapshot().apiCostEstimate.amount - 0.002355) < 1e-12);
+  assert.equal(trace.snapshot().apiCostEstimate.pricedAttempts, 0);
+  assert.equal(trace.snapshot().apiCostEstimate.totalAttempts, 3);
+  assert.equal(trace.snapshot().apiCostEstimate.amount, null);
+  const priced = { ...attempt, model: 'gemini-3.8-flash' };
   assert.ok(!JSON.stringify(trace.snapshot()).includes('secret-context'));
   assert.ok(!JSON.stringify(trace.snapshot()).includes('test-only-key'));
   assert.ok(!JSON.stringify(trace.snapshot()).includes('must-not-export'));
   assert.ok(!JSON.stringify(trace.snapshot()).includes('秘密の台詞'));
-  console.log('PASS: actual HTTP200 VI/EN batch dedup keeps thinking/cache usage; rejected translation retains usage; cache exports no historical request; list-price estimate is separate from unverified billing');
+  console.log('PASS: actual HTTP200 VI and EN are separate calls and keep thinking/cache usage; rejected translation retains usage; cache exports no historical request; list-price estimate is separate from unverified billing');
   for (const patch of [
     { model: 'unknown' }, { startedAtMs: Date.parse('2027-01-01') }, { status: 503, usage: undefined },
     { usage: { ...attempt.usage, totalTokenCount: 999 } },
@@ -55,16 +61,16 @@ const server = http.createServer((req, res) => {
     { usage: { ...attempt.usage, toolUsePromptTokenCount: 1 } },
   ]) {
     const partial = createTrace();
-    partial.request({ id: 'known', attempts: [attempt] }, 1);
-    partial.request({ id: 'unknown', attempts: [{ ...attempt, ...patch }] }, 2);
+    partial.request({ id: 'known', attempts: [priced] }, 1);
+    partial.request({ id: 'unknown', attempts: [{ ...priced, ...patch }] }, 2);
     const estimate = partial.snapshot().apiCostEstimate;
     assert.equal(estimate.status, 'PARTIAL ESTIMATE'); assert.equal(estimate.pricedAttempts, 1);
-    assert.equal(estimate.totalAttempts, 2); assert.equal(estimate.amount, cost.amount);
+    assert.equal(estimate.totalAttempts, 2); assert.ok(Math.abs(estimate.amount - unit) < 1e-12);
   }
   const inferred = createTrace();
   const withoutThoughts = { ...attempt.usage }; delete withoutThoughts.thoughtsTokenCount;
-  inferred.request({ id: 'inferred', attempts: [{ ...attempt, usage: withoutThoughts }] }, 1);
-  assert.equal(inferred.snapshot().apiCostEstimate.amount, cost.amount);
+  inferred.request({ id: 'inferred', attempts: [{ ...priced, usage: withoutThoughts }] }, 1);
+  assert.ok(Math.abs(inferred.snapshot().apiCostEstimate.amount - unit) < 1e-12);
   const empty = createTrace().snapshot().apiCostEstimate;
   assert.equal(empty.amount, null); assert.equal(empty.status, 'NOT VERIFIED');
   console.log('PASS: missing/expired/unknown/invalid usage never becomes zero-cost success; totals include thinking; incomplete trace estimates are explicitly partial');

@@ -1,4 +1,4 @@
-name: YouTubeJPCaptionStudio
+name: LanguageCaption
 options:
   bundleIdPrefix: com.example
   developmentLanguage: en
@@ -6,20 +6,20 @@ packages:
   CaptionShared:
     path: ../ios-shared
 schemes:
-  YouTubeJPCaptionStudio:
+  LanguageCaption:
     build:
       targets:
-        YouTubeJPCaptionStudio: [run]
-  YouTubeJPCaptionStudioUITests:
+        LanguageCaption: [run]
+  LanguageCaptionUITests:
     build:
       targets:
-        YouTubeJPCaptionStudio: [run]
-        YouTubeJPCaptionStudioUITests: [test]
+        LanguageCaption: [run]
+        LanguageCaptionUITests: [test]
     test:
       targets:
-        - YouTubeJPCaptionStudioUITests
+        - LanguageCaptionUITests
 targets:
-  YouTubeJPCaptionStudioUITests:
+  LanguageCaptionUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "17.0"
@@ -29,8 +29,8 @@ targets:
     sources:
       - path: ../uitests-shared
     dependencies:
-      - target: YouTubeJPCaptionStudio
-  YouTubeJPCaptionStudio:
+      - target: LanguageCaption
+  LanguageCaption:
     type: application
     platform: iOS
     deploymentTarget: "17.0"
@@ -100,7 +100,7 @@ targets:
         NSAppTransportSecurity:
           NSAllowsLocalNetworking: true
         CFBundleURLTypes:
-          - CFBundleURLName: com.example.YouTubeJPCaptionStudio.drive-oauth
+          - CFBundleURLName: com.example.LanguageCaption.drive-oauth
             CFBundleURLSchemes:
               - com.googleusercontent.apps.886146342458-ik5d09sgushl9itr8csk6mj1ordv8ii2
         # Drive OAuth config lives in the bundle, not in Swift source.

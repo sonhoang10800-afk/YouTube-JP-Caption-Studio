@@ -1,5 +1,12 @@
 # TODOS
 
+## 2026-11-09 — Language Caption rebrand (done on feature branch)
+
+See `wiki/topics/language-caption-rebrand.md` and `plan/language-caption-rebrand-m1-2026-11-09.md`.
+Owner follow-ups: rename GitHub repo → `language-caption`; set `EXTENSION_ID` after path change; archive remote branches `whisper_turbo_audio_evaluation` / `anime_auto_inject_script_panel`.
+
+---
+
 Durable backlog for this repo. Item format: `~/.agents/skills/gstack/review/TODOS-format.md`.
 Last re-check: **2026-10-24** — Plan v3 (`plan/extension-ux-verify-bsk-2026-10-24.md`) vs
 evidence after fix `b155a56` and reviews in `review/ux-verify-2026-10-24.md` /

@@ -142,7 +142,7 @@ Exactly five skills live at repo root (`skills/`):
 |-------|------|
 | `skills/ponytail` | Any coding task (same as §0) |
 | `skills/codegraph` | Code navigation when a local `.codegraph/` index exists |
-| `skills/youtube-caption` | Extension / bridge domain |
+| `skills/language-caption` | Extension / bridge domain (ex-youtube-caption) |
 | `skills/local-bridge` | Bridge start / health / tokenize / IME |
 | `skills/tokenize-regression` | Regression on tokenize / import |
 
@@ -269,7 +269,7 @@ Every agent interacting with the user or evaluating video content, captions, or 
 
 ## 9. Extension reload (no manual clicks)
 - Never ask the user to click **Reload** or **Load unpacked** when the extension is already installed.
-- Run `./scripts/reload-extension.sh` from the project root. It wraps `~/.local/bin/reload-chrome-extension`: opens `chrome-extension://oiocgalcdfmkbcikemohekbjjmlbpoll/reload.html`, waits for the extension to reload, restores the previous tab, refreshes the YouTube tab, and verifies the popup page.
+- Run `./scripts/reload-extension.sh` from the project root. It wraps `~/.local/bin/reload-chrome-extension`: opens `chrome-extension://$EXTENSION_ID/reload.html` (default historical ID `oiocgalcdfmkbcikemohekbjjmlbpoll`; after renaming the Load unpacked path, set `EXTENSION_ID` to the new chrome://extensions id), waits for the extension to reload, restores the previous tab, refreshes the YouTube tab, and verifies the popup page.
 - First install is the only manual step: stock Google Chrome ignores `--load-extension`, so `chrome://extensions` -> Developer mode -> Load unpacked is done once, never repeated.
 - Do not use System Events/AX clicks on `chrome://extensions`; use the extension's own reload page.
 - If the script exits `3` (`extension_not_loaded`), report the one-time Load unpacked step; do not claim the reload succeeded.

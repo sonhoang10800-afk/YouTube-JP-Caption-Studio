@@ -6,7 +6,7 @@ REPO="$(cd "$ROOT/.." && pwd)"
 BRIDGE="$REPO/local-bridge"
 SRC_ICON="${SRC_ICON:-$REPO/ipad-app/Assets.xcassets/AppIcon.appiconset/AppIcon.png}"
 OUT_DIR="${OUT_DIR:-$ROOT/dist}"
-APP_NAME="Caption Studio Bridge"
+APP_NAME="Language Caption Bridge"
 APP="$OUT_DIR/$APP_NAME.app"
 BIN="$APP/Contents/MacOS/CaptionStudioBridge"
 RES="$APP/Contents/Resources"
@@ -69,7 +69,7 @@ echo "  sdk:    $SDK"
   -o "$BIN"
 
 chmod +x "$BIN"
-codesign --force --deep --sign - --identifier com.example.YouTubeJPCaptionStudio.Bridge "$APP" 2>/dev/null \
+codesign --force --deep --sign - --identifier com.example.LanguageCaption.Bridge "$APP" 2>/dev/null \
   || codesign --force --sign - "$BIN" 2>/dev/null \
   || true
 

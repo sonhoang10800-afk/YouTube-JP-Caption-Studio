@@ -4,8 +4,9 @@ import SwiftData
 import AVFoundation
 
 @main
-struct YouTubeJPCaptionStudioApp: App {
+struct LanguageCaptionApp: App {
     init() {
+        SettingsSync.migrateLegacyDefaults()
         try? AVAudioSession.sharedInstance().setCategory(.playback)
         try? AVAudioSession.sharedInstance().setActive(true)
         #if DEBUG

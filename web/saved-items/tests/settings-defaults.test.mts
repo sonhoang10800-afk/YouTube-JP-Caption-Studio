@@ -89,11 +89,15 @@ test("every shared settings default matches the extension", () => {
   }
 });
 
-test("nested defaults match (roi, barPos, platforms)", () => {
+test("nested defaults match (roi, barPos, platforms, targetLangs)", () => {
   const ext = loadExtensionDefaults();
   assert.deepEqual(DEFAULT_HARDSUB_SETTINGS.roi, ext.roi);
   assert.deepEqual(DEFAULT_HARDSUB_SETTINGS.barPos, ext.barPos);
   assert.deepEqual(DEFAULT_HARDSUB_SETTINGS.enabledPlatforms, ext.enabledPlatforms);
+  assert.deepEqual(
+    DEFAULT_HARDSUB_SETTINGS.targetLangs,
+    (ext as ExtensionDefaults & { targetLangs?: string[] }).targetLangs,
+  );
 });
 
 test("the JLPT highlight default is enabled, as a missing value means enabled", () => {

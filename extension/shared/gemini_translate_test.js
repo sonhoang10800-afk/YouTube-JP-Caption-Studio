@@ -83,6 +83,9 @@ const server = http.createServer((req,res)=>{
   assert.match(instructionsByLanguage.get('vi'), /self-edit the Vietnamese text/);
   assert.match(instructionsByLanguage.get('en'), /Japanese-to-English subtitle editor/);
   assert.match(instructionsByLanguage.get('en'), /self-edit the English text/);
+  assert.match(Gemini.translationInstruction('vi', 'en'), /English-to-Vietnamese subtitle editor/);
+  assert.match(Gemini.translationInstruction('en', 'vi'), /Vietnamese-to-English subtitle editor/);
+  assert.match(Gemini.translationInstruction('vi', 'ja'), /Japanese-to-Vietnamese subtitle editor/);
   mode='transient-503';
   const transient=await Gemini.translateGroups([{...jobs[0],id:'transient-503',sourceKey:'transient-503'}],{apiKey:'test-only'});
   assert.equal(transient.completed,1);

@@ -26,7 +26,7 @@ data/   # runtime — mostly gitignored
 
 ## Skill catalog (5 core skills)
 
-`skills/ponytail`, `skills/codegraph`, `skills/youtube-caption`, `skills/local-bridge`, `skills/tokenize-regression`. `.cursor/skills` is a local symlink (gitignored).
+`skills/ponytail`, `skills/codegraph`, `skills/language-caption`, `skills/local-bridge`, `skills/tokenize-regression`. `.cursor/skills` is a local symlink (gitignored).
 
 ## Knowledge map (§G — schema in CLAUDE.md §8)
 

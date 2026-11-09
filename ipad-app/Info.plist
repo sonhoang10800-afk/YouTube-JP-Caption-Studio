@@ -34,7 +34,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.example.YouTubeJPCaptionStudio.drive-oauth</string>
+			<string>com.example.LanguageCaption.drive-oauth</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.886146342458-ik5d09sgushl9itr8csk6mj1ordv8ii2</string>

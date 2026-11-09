@@ -11,7 +11,7 @@ final class SmokeTests: XCTestCase {
             app.wait(for: .runningForeground, timeout: 30),
             "app must reach foreground"
         )
-        let urlField = app.textFields["JP Caption Studio URL"]
+        let urlField = app.textFields["Language Caption URL"]
         XCTAssertTrue(
             urlField.waitForExistence(timeout: 30),
             "URL field must render (proves the main view loaded, not a black screen)"

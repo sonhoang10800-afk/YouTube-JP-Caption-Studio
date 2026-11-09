@@ -14,6 +14,9 @@
 # first YouTube tab.
 set -euo pipefail
 
+# Unpacked ID is a path-hash of the Load unpacked folder. After a repo/folder
+# rename, measure the new ID in chrome://extensions and export EXTENSION_ID.
+# Default kept for the historical youtube-jp-caption-studio load path.
 EXTENSION_ID="${EXTENSION_ID:-oiocgalcdfmkbcikemohekbjjmlbpoll}"
 HELPER="${RELOAD_HELPER:-$HOME/.local/bin/reload-chrome-extension}"
 REFRESH_PREFIX="${RELOAD_REFRESH_PREFIX:-https://www.youtube.com/}"

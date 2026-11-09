@@ -25,8 +25,8 @@ App vẫn chạy được nếu không có file (tra cứu từ điển offline 
 
 Làm **một lần** trên Mac + iPhone (manual):
 
-1. Mở `iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj` trong Xcode.
-2. Chọn iPhone làm destination → **Automatic Signing** + **Team** (Apple ID). Giữ nguyên Bundle ID `com.example.YouTubeJPCaptionStudio.iPhone`.
+1. Mở `iphone-app/LanguageCaptioniPhone.xcodeproj` trong Xcode.
+2. Chọn iPhone làm destination → **Automatic Signing** + **Team** (Apple ID). Giữ nguyên Bundle ID `com.example.LanguageCaption.iPhone`.
 3. ⌘R. Trên iPhone: **Settings → General → VPN & Device Management → Trust** developer cert.
 4. Smoke: xoay portrait ↔ landscape (layout đổi); Overlay / Side panel. Trong app: **Thư mục** → Connect Drive (OAuth). Cần iOS `client_id` trong `Info.plist` (`DRIVE_OAUTH_CLIENT_ID`) (cùng client với iPad nếu GCP đã đăng ký; hoặc thêm iOS client cho Bundle ID iPhone).
 
@@ -59,7 +59,7 @@ alias iphone-deploy='DEVICE_UDID=YOUR-UDID ~/Documents/YouTube\ JP\ Caption\ Stu
 
 Wireless: pair một lần (USB hoặc Xcode Devices), cùng Wi‑Fi, iPhone mở khoá — `id=$DEVICE_UDID` vẫn dùng được.
 
-Log: `~/Library/Logs/YouTubeJPCaptionStudio-iPhone-deploy.log`
+Log: `~/Library/Logs/LanguageCaption-iPhone-deploy.log`
 
 ---
 
@@ -75,18 +75,18 @@ export TEAM='XXXXXXXXXX'   # hoặc DEVELOPMENT_TEAM
 
 ### LaunchAgent (mỗi 12 giờ)
 
-1. Sửa `DEVICE_UDID` / `TEAM` trong `com.youtubejpcaptionstudio.iphone.renew.plist`.
+1. Sửa `DEVICE_UDID` / `TEAM` trong `com.languagecaption.iphone.renew.plist`.
 2. Copy → `~/Library/LaunchAgents/`.
 3. Load:
 
 ```bash
-cp iphone-app/Scripts/com.youtubejpcaptionstudio.iphone.renew.plist ~/Library/LaunchAgents/
+cp iphone-app/Scripts/com.languagecaption.iphone.renew.plist ~/Library/LaunchAgents/
 # edit REPLACE_WITH_* trong plist trước khi load
-launchctl load ~/Library/LaunchAgents/com.youtubejpcaptionstudio.iphone.renew.plist
-launchctl start com.youtubejpcaptionstudio.iphone.renew
+launchctl load ~/Library/LaunchAgents/com.languagecaption.iphone.renew.plist
+launchctl start com.languagecaption.iphone.renew
 ```
 
-Logs: `~/Library/Logs/YouTubeJPCaptionStudio-iPhone-renew.log` (+ `.launchd.out/err.log`).
+Logs: `~/Library/Logs/LanguageCaption-iPhone-renew.log` (+ `.launchd.out/err.log`).
 
 > The plist runs `~/Documents/YouTube JP Caption Studio/...` — keep the repo in
 > that folder (or edit the path in the plist before loading it).
@@ -99,7 +99,7 @@ Paid Developer Program: bỏ qua chu kỳ ~7 ngày free.
 
 Cùng flow iPad: `ASWebAuthenticationSession` + PKCE + reverse-client-id redirect. URL scheme giữ nguyên với iPad (cùng `DRIVE_OAUTH_CLIENT_ID` trong `Info.plist`).
 
-Nếu GCP iOS client chỉ gắn Bundle ID iPad, tạo thêm client iOS cho `com.example.YouTubeJPCaptionStudio.iPhone` (hoặc thêm Bundle ID nếu console cho phép).
+Nếu GCP iOS client chỉ gắn Bundle ID iPad, tạo thêm client iOS cho `com.example.LanguageCaption.iPhone` (hoặc thêm Bundle ID nếu console cho phép).
 
 Chi tiết: mirror `ipad-app/Scripts/COMMANDS.md` mục OAuth. Folder Drive cố định: khai báo ở `DRIVE_FOLDER_ID` (`Info.plist`).
 
@@ -129,6 +129,6 @@ xcrun xctrace list devices
 | `TEAM` / `DEVELOPMENT_TEAM` | renew (+ LaunchAgent) | Apple Team ID; deploy dùng `-allowProvisioningUpdates` |
 | `INSTALL_ONLY=1` | deploy | Skip build, chỉ `devicectl install` |
 | `APP_PATH` | cả hai | Đường dẫn `.app` tường minh |
-| `PROJECT` / `SCHEME` / `BUNDLE_ID` | cả hai | Default: xcodeproj trong `iphone-app/`, scheme `YouTubeJPCaptionStudioiPhone`, bundle `com.example.YouTubeJPCaptionStudio.iPhone` |
+| `PROJECT` / `SCHEME` / `BUNDLE_ID` | cả hai | Default: xcodeproj trong `iphone-app/`, scheme `LanguageCaptioniPhone`, bundle `com.example.LanguageCaption.iPhone` |
 | `CONFIGURATION` | deploy | Default `Debug` |
 | `LOG` | deploy | Override log path |

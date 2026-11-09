@@ -107,6 +107,18 @@
     toggleFuriBtn?.classList.toggle("active", !!state.showFurigana);
   }
 
+  /** Keys of the shared settings blob that this panel owns. */
+  async function readHardsubSettings() {
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys) return (await Keys.readSettings(chrome.storage.local)) || {};
+    const data = await chrome.storage.local.get("hardsubSettings");
+    return data?.hardsubSettings || {};
+  }
+  async function writeHardsubSettings(s) {
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (Keys) return Keys.writeSettings(s, chrome.storage.local);
+    return chrome.storage.local.set({ hardsubSettings: s });
+  }
   /** Keys of the shared `hardsubSettings` blob that this panel owns. */
   const SUB_VIS_KEYS = ["sidepanelShowJa", "sidepanelShowVi", "sidepanelShowEn", "sidepanelShowFurigana"];
 
@@ -124,12 +136,10 @@
       // this panel. If a competing writer lands in between, merge again: their
       // update is kept and our toggle is re-applied.
       for (let attempt = 0; attempt < 3; attempt++) {
-        const data = await chrome.storage.local.get("hardsubSettings");
-        const s = { ...(data?.hardsubSettings || {}) };
+        const s = { ...(await readHardsubSettings()) };
         Object.assign(s, mine);
-        await chrome.storage.local.set({ hardsubSettings: s });
-        const after = await chrome.storage.local.get("hardsubSettings");
-        const cur = after?.hardsubSettings || {};
+        await writeHardsubSettings(s);
+        const cur = await readHardsubSettings();
         if (SUB_VIS_KEYS.every((k) => cur[k] === mine[k])) return;
       }
     } catch (_) {}
@@ -138,8 +148,7 @@
   async function loadSubVisibilitySettings() {
     try {
       if (chrome?.storage?.local) {
-        const data = await chrome.storage.local.get("hardsubSettings");
-        const s = data?.hardsubSettings || {};
+        const s = await readHardsubSettings();
         if (s.sidepanelShowJa != null) state.showJa = !!s.sidepanelShowJa;
         if (s.sidepanelShowVi != null) state.showVi = !!s.sidepanelShowVi;
         if (s.sidepanelShowEn != null) state.showEn = !!s.sidepanelShowEn;
@@ -417,7 +426,7 @@
         state.videoId = "";
         listDirty = true;
         renderList(true);
-        setStatus("Side panel chỉ hoạt động trên YouTube, Netflix hoặc ABEMA.");
+        setStatus("Side panel hoạt động trên mọi trang http(s). Mở một tab web rồi thử lại.");
       }
     } catch (_) {}
   }
@@ -580,8 +589,7 @@
     let s = {};
     try {
       if (chrome?.storage?.local) {
-        const data = await chrome.storage.local.get("hardsubSettings");
-        s = data?.hardsubSettings || {};
+        s = await readHardsubSettings();
       }
     } catch (_) {}
     levelSettings = {
@@ -1463,9 +1471,10 @@
 
   function translationPlaceholder(cue, lang) {
     const label = lang.toUpperCase();
-    if (!cue.enhanced || cue[lang]) return label;
+    if (cue[lang]) return label;
     if (cue.translationStates?.[lang] === "error") return `${label} · Dịch lỗi, sẽ thử lại`;
     if (cue.translationStates?.[lang] === "protected") return `${label} · Bản gốc đã khóa`;
+    if (!cue.enhanced) return label;
     return `${label} · chờ dịch câu`;
   }
 
@@ -2406,7 +2415,7 @@
     try {
       if (file.size > 10 * 1024 * 1024) throw new Error("File lớn hơn 10 MB");
       const backup = JSON.parse(await file.text());
-      if (backup?.format !== "caption-studio-sentence-backup" || backup.version !== 1 || !Array.isArray(backup.cues)) {
+      if (backup?.format !== "language-caption-sentence-backup" && backup?.format !== "caption-studio-sentence-backup" || backup.version !== 1 || !Array.isArray(backup.cues)) {
         throw new Error("Chọn file từ Sao lưu JSON; file dịch thông thường dùng Import");
       }
       pendingSentenceBackup = backup;
@@ -2495,7 +2504,7 @@
       if (/\.json$/i.test(name) || text.trimStart().startsWith("{") || text.trimStart().startsWith("[")) {
         try {
           const parsed = JSON.parse(text);
-          if (parsed?.format === "caption-studio-sentence-backup") {
+          if (parsed?.format === "language-caption-sentence-backup" || parsed?.format === "caption-studio-sentence-backup") {
             toast("File backup: dùng Khôi phục JSON để giữ khóa và dữ liệu Enhanced");
             closeImportPanel();
             return;
@@ -2653,7 +2662,7 @@
           state.videoId = "";
           listDirty = true;
           renderList(true);
-          setStatus("Side panel chỉ hoạt động trên YouTube, Netflix hoặc ABEMA.");
+          setStatus("Side panel hoạt động trên mọi trang http(s). Mở một tab web rồi thử lại.");
         }
       } catch (_) {}
     }
@@ -2685,8 +2694,9 @@
     if (area === "local" && changes.driveSyncStatus) {
       setDriveStatus(changes.driveSyncStatus.newValue || "");
     }
-    if (area !== "local" || !changes.hardsubSettings) return;
-    const s = changes.hardsubSettings.newValue || {};
+    const Keys = globalThis.LanguageCaptionSettings;
+    if (area !== "local" || !(Keys?.changeTouchesSettings(changes) || changes.hardsubSettings)) return;
+    const s = (Keys?.settingsFromChanges(changes) || changes.hardsubSettings?.newValue) || {};
     const nextColors = Vocab.normalizeLevelColors(
       s.levelColors || Vocab.DEFAULT_LEVEL_COLORS
     );
@@ -2722,7 +2732,7 @@
     }
     applyListHighlightVars();
     // Level colors are CSS-var only; re-render when status-class settings change.
-    const prev = changes.hardsubSettings.oldValue || {};
+    const prev = (changes.languageCaptionSettings || changes.hardsubSettings)?.oldValue || {};
     const statusDirty =
       s.vocabHighlight !== prev.vocabHighlight ||
       s.vocabLevel !== prev.vocabLevel ||
@@ -2741,25 +2751,7 @@
     if (!url || typeof url !== "string") return false;
     try {
       const u = new URL(url);
-      if (u.protocol !== "http:" && u.protocol !== "https:") return false;
-      const h = u.hostname.toLowerCase();
-      return (
-        h === "www.youtube.com" ||
-        h === "youtube.com" ||
-        h === "m.youtube.com" ||
-        h === "music.youtube.com" ||
-        h === "youtu.be" ||
-        h.endsWith(".youtu.be") ||
-        h === "youtube-nocookie.com" ||
-        h.endsWith(".youtube-nocookie.com") ||
-        h === "abema.tv" ||
-        h.endsWith(".abema.tv") ||
-        h === "www.netflix.com" ||
-        h === "netflix.com" ||
-        h.endsWith(".netflix.com") ||
-        h === "animevietsub.best" ||
-        h.includes("animevietsub")
-      );
+      return u.protocol === "http:" || u.protocol === "https:";
     } catch (_) {
       return false;
     }

@@ -9,14 +9,14 @@ struct ContentView: View {
     @AppStorage("sidePanelFractionPortrait") private var panelFractionPortrait = 0.42
     @AppStorage("sidePanelFractionLandscape") private var panelFractionLandscape = 0.28
     /// Match desktop `showOnVideo: false` — user enables on a watch page.
-    @AppStorage("hardsubOverlayOn") private var overlayOn = false
+    @AppStorage("languageCaptionOverlayOn") private var overlayOn = false
     @AppStorage("sidePanelOn") private var sidePanelOn = false
-    @AppStorage("hardsubShowJA") private var showJA = true
+    @AppStorage("languageCaptionShowJA") private var showJA = true
     /// Desktop defaults: barShowEn / barShowVi are on unless explicitly off.
     /// `.v2` keys: older builds stored false; rename so new defaults apply once.
-    @AppStorage("hardsubShowEN.v2") private var showEN = true
-    @AppStorage("hardsubShowVI.v2") private var showVI = true
-    @AppStorage("hardsubShowFurigana") private var showFurigana = true
+    @AppStorage("languageCaptionShowEN.v2") private var showEN = true
+    @AppStorage("languageCaptionShowVI.v2") private var showVI = true
+    @AppStorage("languageCaptionShowFurigana") private var showFurigana = true
     @AppStorage("isDarkTheme") private var isDarkTheme = true
     @AppStorage("followTimeline") private var followTimeline = true
     @AppStorage("sidePanelFontScale") private var sidePanelFontScale = 1.0
@@ -406,7 +406,7 @@ struct ContentView: View {
                     .focused($urlFocused)
                     .font(.subheadline)
                     .onSubmit(loadAndRefresh)
-                    .accessibilityLabel("JP Caption Studio URL")
+                    .accessibilityLabel("Language Caption URL")
                 if !urlField.isEmpty {
                     Button {
                         urlField = ""

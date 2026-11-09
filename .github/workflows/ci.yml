@@ -253,14 +253,14 @@ jobs:
           : > iphone-app/Resources/dict.sqlite
       - name: Build the iPad app
         run: |
-          xcodebuild -project ipad-app/YouTubeJPCaptionStudio.xcodeproj \
-            -scheme YouTubeJPCaptionStudio \
+          xcodebuild -project ipad-app/LanguageCaption.xcodeproj \
+            -scheme LanguageCaption \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath /tmp/dd-ipad build
       - name: Build the iPhone app
         run: |
-          xcodebuild -project iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj \
-            -scheme YouTubeJPCaptionStudioiPhone \
+          xcodebuild -project iphone-app/LanguageCaptioniPhone.xcodeproj \
+            -scheme LanguageCaptioniPhone \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath /tmp/dd-iphone build
       # The Swift store self-test (snapshot encode/apply/merge, wipe tombstones)
@@ -277,14 +277,14 @@ jobs:
       - name: Run the iPad UI launch test
         run: |
           UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; ds=json.load(sys.stdin)['devices']; all=[d for ds in ds.values() for d in ds if 'iPad' in d['name']]; b=[d for d in all if d['state']=='Booted']; print((b+all)[0]['udid'])")
-          xcodebuild test -project ipad-app/YouTubeJPCaptionStudio.xcodeproj \
-            -scheme YouTubeJPCaptionStudioUITests \
+          xcodebuild test -project ipad-app/LanguageCaption.xcodeproj \
+            -scheme LanguageCaptionUITests \
             -destination "platform=iOS Simulator,id=$UDID" \
             -derivedDataPath /tmp/dd-ipad-uitest
       - name: Run the iPhone UI launch test
         run: |
           UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; ds=json.load(sys.stdin)['devices']; all=[d for ds in ds.values() for d in ds if 'iPhone' in d['name']]; b=[d for d in all if d['state']=='Booted']; print((b+all)[0]['udid'])")
-          xcodebuild test -project iphone-app/YouTubeJPCaptionStudioiPhone.xcodeproj \
-            -scheme YouTubeJPCaptionStudioiPhoneUITests \
+          xcodebuild test -project iphone-app/LanguageCaptioniPhone.xcodeproj \
+            -scheme LanguageCaptioniPhoneUITests \
             -destination "platform=iOS Simulator,id=$UDID" \
             -derivedDataPath /tmp/dd-iphone-uitest

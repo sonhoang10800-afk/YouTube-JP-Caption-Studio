@@ -8,7 +8,7 @@ import Foundation
 public enum DriveOAuthConfig {
     /// iOS client id (`….apps.googleusercontent.com`) and Drive folder id are read
     /// from the app bundle (`Info.plist` → `DRIVE_OAUTH_CLIENT_ID` / `DRIVE_FOLDER_ID`)
-    /// instead of being hardcoded in the source tree. Bundle: `com.example.YouTubeJPCaptionStudio`.
+    /// instead of being hardcoded in the source tree. Bundle: `com.example.LanguageCaption`.
     /// Then update `Info.plist` / `project.yml` URL scheme to `com.googleusercontent.apps.<prefix>`.
     static let clientId = Bundle.main.object(forInfoDictionaryKey: "DRIVE_OAUTH_CLIENT_ID") as? String ?? ""
     public static let folderId = Bundle.main.object(forInfoDictionaryKey: "DRIVE_FOLDER_ID") as? String ?? ""

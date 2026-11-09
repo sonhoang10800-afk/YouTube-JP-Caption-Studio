@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>Label</key>
-	<string>com.youtubejpcaptionstudio.renew</string>
+	<string>com.languagecaption.renew</string>
 	<key>ProgramArguments</key>
 	<array>
 		<string>/bin/bash</string>

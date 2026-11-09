@@ -1,12 +1,12 @@
 ---
-name: youtube-caption
+name: language-caption
 description: >-
-  Architects and edits the YouTube caption extension and local bridge.
+  Architects and edits the Language Caption extension and local bridge.
   Use when working on timedtext LOAD_CAPTIONS, cue normalize, import EN/VI,
   dual captions, furigana panel, Language Reactor-style UI, media_time, or cache merge.
 ---
 
-# YouTube Caption (no MT / OCR)
+# Language Caption (extension + bridge)
 
 ## Architecture
 
