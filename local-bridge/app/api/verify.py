@@ -25,10 +25,13 @@ def verify_transcript(body: VerifyTranscriptRequest) -> VerifyTranscriptResponse
     if not body.query or not body.query.strip():
         raise HTTPException(status_code=400, detail="query cannot be empty")
 
-    from reliable_agent.orchestrator import Orchestrator
-    from reliable_agent.providers.base import LLMProvider
-    from reliable_agent.providers.gemini import GeminiProvider
-    from reliable_agent.providers.mock import MockLLMProvider
+    try:
+        from reliable_agent.orchestrator import Orchestrator
+        from reliable_agent.providers.base import LLMProvider
+        from reliable_agent.providers.gemini import GeminiProvider
+        from reliable_agent.providers.mock import MockLLMProvider
+    except ModuleNotFoundError as exc:
+        raise HTTPException(status_code=503, detail="reliable_agent is not installed") from exc
 
     provider: LLMProvider
     if body.provider == "gemini":

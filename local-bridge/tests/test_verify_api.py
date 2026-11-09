@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import importlib.util
+
+import pytest
 from fastapi.testclient import TestClient
 from app.main import app
 
@@ -50,7 +53,25 @@ def test_verify_transcript_empty_query():
     assert "query cannot be empty" in resp.json()["detail"]
 
 
+def test_verify_transcript_engine_missing_returns_503():
+    if importlib.util.find_spec("reliable_agent") is not None:
+        pytest.skip("reliable_agent is installed")
+    resp = client.post(
+        "/verify/transcript",
+        json={
+            "video_id": "dQw4w9WgXcQ",
+            "query": "Tóm tắt nội dung video",
+            "transcript_text": "Đây là video giới thiệu công nghệ mới được phát hành năm 2024.",
+            "force_deep": True,
+            "provider": "mock",
+        },
+    )
+    assert resp.status_code == 503
+    assert resp.json()["detail"] == "reliable_agent is not installed"
+
+
 def test_verify_transcript_success_with_mock():
+    pytest.importorskip("reliable_agent")
     resp = client.post(
         "/verify/transcript",
         json={
