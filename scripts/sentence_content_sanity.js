@@ -12,7 +12,8 @@ const commandFunction = source.slice(source.indexOf("  async function handleSide
 const originalTokens = source.slice(source.indexOf('  function originalTokensMatch'), source.indexOf('  /** cues.json'));
 // The star helpers are a small block; anchor the end on the next helper so the
 // slice cannot swallow unrelated production code (the trigger lives further down).
-const starFunctions = source.slice(source.indexOf("  function isCueStarred"), source.indexOf("  function findVideo()"));
+const normalizeCueTextFn = source.slice(source.indexOf("  function normalizeCueText"), source.indexOf("  function findCueIndexById"));
+const starFunctions = source.slice(source.indexOf("  function savedCueMatches"), source.indexOf("  function findVideo()"));
 const metadata = source.slice(source.indexOf("  function cachedSourceMetadata("), source.indexOf("  function cacheCueScore("));
 const cacheWrapper = source.slice(source.indexOf("  async function loadCachedCues"), source.indexOf("  async function loadLegacyCachedCues"));
 const writes = source.slice(source.indexOf("  let transcriptWritePending"), source.indexOf("  async function saveTranscript(opts"));
@@ -76,6 +77,7 @@ ${publishFunction}
 ${projectionFunctions}
 ${originalTokens}
 ${commandFunction}
+${normalizeCueTextFn}
 ${starFunctions}
 const loadLegacyCachedCues=async()=>cues;
 const isOwnedCue=c=>c.mt_locked || ['edit','import','manual'].includes(c.text_source);
@@ -105,7 +107,7 @@ const run = expression => vm.runInContext(expression, context);
   run("sentenceRawTrack={version:1,sourceKey:sentenceTrackKey(),cues:[{text:'どこ',start:0,end:1},{text:'行くんですか?',start:1,end:3}]}");
   await run("handleSidePanelCmd({cmd:'export_json'})");
   const backup=JSON.parse(run('downloaded.text'));
-  assert.equal(backup.format,'caption-studio-sentence-backup');assert.equal(backup.version,1);
+  assert.equal(backup.format,'language-caption-sentence-backup');assert.equal(backup.version,1);
   assert.equal(backup.enhancement.algorithmVersion,context.HardsubSentenceGroups.VERSION,
     'Backup metadata must describe the loaded grouping algorithm, not a hardcoded old version');
   assert.equal(backup.enhancement.rawTrack.cues[0].text,'どこ');
@@ -239,7 +241,7 @@ const run = expression => vm.runInContext(expression, context);
   const acceptRes = await run(`handleSidePanelCmd({ cmd: 'accept_asr_candidate', id: '${candEnhancedId}' })`);
   assert.equal(acceptRes.ok, true, "accept_asr_candidate must succeed with enhanced cue ID");
   assert.equal(run("cues.find(c => c.id === 'c1').source"), "飴");
-  assert.equal(run("cues.find(c => c.id === 'c1').text_source"), "asr:whisper-large-v3-turbo");
+  assert.equal(run("cues.find(c => c.id === 'c1').text_source"), "asr:kaiinui/kotoba-whisper-v2.0-mlx");
 
   // Check that publishSidePanelState now reflects hasUndo: true
   run("publishSidePanelState({ forceList: true })");

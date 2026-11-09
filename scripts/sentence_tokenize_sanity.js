@@ -3,6 +3,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
 const source = fs.readFileSync(require.resolve('../extension/content/content.js'), 'utf8');
 const projection = source.slice(source.indexOf('  let sortedCuesCache ='), source.indexOf('  /**\n   * Token enrich via /tokenize_batch'));
 const enrich = source.slice(source.indexOf('  async function enrichSentenceGroups'), source.indexOf('  function syncCueAtMediaTime'));
+const langFns = source.slice(source.indexOf('  function detectCuesLanguage'), source.indexOf('  function stampSecondaryStatus'));
 let requests = 0, actualRows = [];
 let holdNext = null;
 async function bridgeFetch(path, options) {
@@ -27,6 +28,7 @@ let currentSource='youtube',currentVideoId='token-fixture',captionMode='original
  listDirty=true,currentMediaTime=1.5,navigateGen=1,bridgeReady=true,sentenceBenchmark=null,sentenceRawTrack=null;
 const settings={sourceLang:'ja'},sentenceTokenPending=new Set(),sentenceTokenRetryAt=new Map();
 const findVideo=()=>({playbackRate:1}),scheduleTranslationPaint=()=>{};
+${langFns}
 ${projection}
 ${enrich}
 refreshSentenceProjection(true);captionMode='enhanced';
