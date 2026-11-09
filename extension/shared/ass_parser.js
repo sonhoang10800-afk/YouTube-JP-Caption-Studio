@@ -99,7 +99,12 @@
         continue;
       }
 
-      if (!inEvents) continue;
+      if (!inEvents) {
+        // Headerless dumps are only Dialogue lines. The Format fallback below
+        // already parses those once Events mode is on.
+        if (line.toLowerCase().startsWith("dialogue:")) inEvents = true;
+        else continue;
+      }
 
       if (line.toLowerCase().startsWith("format:")) {
         const parts = line.slice(7).split(",").map(p => p.trim().toLowerCase());
@@ -160,7 +165,9 @@
 
   function parseAssOrSrt(content) {
     if (!content || typeof content !== "string") return [];
-    if (content.includes("[Events]") || content.includes("[Script Info]") || content.includes("Dialogue:")) {
+    const head = content.replace(/^\uFEFF/, "");
+    // Line-start only: a cue that merely mentions "dialogue:" must stay SRT.
+    if (/(?:^|\n)\s*\[events\]/i.test(head) || /(?:^|\n)\s*\[script info\]/i.test(head) || /(?:^|\n)\s*dialogue:/i.test(head)) {
       return parseAss(content);
     }
     return parseSrt(content);
