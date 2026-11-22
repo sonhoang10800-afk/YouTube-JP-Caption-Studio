@@ -47,7 +47,9 @@ const server = http.createServer((req, res) => {
   assert.equal(trace.snapshot().apiCostEstimate.pricedAttempts, 0);
   assert.equal(trace.snapshot().apiCostEstimate.totalAttempts, 3);
   assert.equal(trace.snapshot().apiCostEstimate.amount, null);
-  const priced = { ...attempt, model: 'gemini-3.8-flash' };
+  // priceEvidence.validUntil is 2026-11-10. A wall-clock startedAtMs after that
+  // date is correctly unpriced (NOT VERIFIED). Pin inside the published window.
+  const priced = { ...attempt, model: 'gemini-3.8-flash', startedAtMs: Date.parse('2026-10-15T00:00:00Z') };
   assert.ok(!JSON.stringify(trace.snapshot()).includes('secret-context'));
   assert.ok(!JSON.stringify(trace.snapshot()).includes('test-only-key'));
   assert.ok(!JSON.stringify(trace.snapshot()).includes('must-not-export'));

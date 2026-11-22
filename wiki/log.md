@@ -1667,3 +1667,17 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Shipped: any-site panel, M1 sourceLang/targetLangs, Language Caption branding, storage/Drive dual-read, iOS LanguageCaption bundle IDs.
 - Skill renamed `skills/youtube-caption` → `skills/language-caption`; AGENTS catalog updated.
 - Open owner steps: GitHub rename to `language-caption`, measure EXTENSION_ID after Load unpacked path change, OAuth allowlists.
+
+## [2026-11-22] ingest | Quét điểm chưa hợp lý
+
+- Filed `review/codebase-unreasonable-points-2026-11-22.md` and
+  `wiki/topics/codebase-unreasonable-points-2026-11-22.md`.
+- Sixteen read-only region scans. Parent re-read the P0 and P1 quotes on disk.
+- P0: page `postMessage` in `extension/content/content.js` can set Jimaku/Gemini
+  keys, leak cue text, and force a Gemini translate. No product fix in this ingest.
+- Index rows for the 2026-10-22 audit, Swift C-1, and P0 data-loss were stale
+  relative to their topic pages. A-4 remains partial (`pageCapToken` empty).
+  `swift-shared-package.md` Open section no longer says the package was never committed.
+- CI `sanity-scripts` then failed: `sentence_cost_sanity.js` expected `PARTIAL ESTIMATE`
+  and got `NOT VERIFIED` because `priceEvidence.validUntil` is `2026-11-10` and the
+  fixture used the wall clock. Test now pins `startedAtMs` to `2026-10-15T00:00:00Z`.

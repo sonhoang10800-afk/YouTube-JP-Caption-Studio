@@ -7,6 +7,8 @@
 **Đang remediate.** Audit read-only; từ 2026-10-22 đã sửa một phần (xem bảng dưới).
 Raw review đã file và **không sửa** (§4).
 
+Quét 2026-11-22 đọc lại A-4: thiếu `cap` vẫn bị từ chối, nhưng `pageCapToken == ""` vẫn nhận mọi reply có token. Chi tiết: [codebase-unreasonable-points-2026-11-22.md](codebase-unreasonable-points-2026-11-22.md).
+
 | Finding | Trạng thái | Commit |
 |---|---|---|
 | A-1 vocab `meaning`/`status` + merge khi upload Drive | **đã sửa** | `f669bcd9c` |
