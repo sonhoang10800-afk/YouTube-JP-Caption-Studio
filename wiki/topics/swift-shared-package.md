@@ -30,7 +30,9 @@ User chọn **chỉ lập plan, chưa refactor** trong phiên này. Plan đầy 
 
 ## Open
 
-- Chưa có commit nào cho C-1. Khi làm: bắt đầu ở **bước A** (8 file thuần logic), không đụng Models.
+- A–E đã có trên disk (`ios-shared/`, plan ghi **HOÀN TẤT**). Dòng “chưa có commit” là lệch.
+- Vẫn tách mỗi app: `DriveScriptsService.swift`, `ContentView.swift` (quét 2026-11-22).
+- Header `MIRRORED FILE` còn trong vài file `ios-shared` dù plan ghi grep = 0.
 
 ## Liên quan
 
