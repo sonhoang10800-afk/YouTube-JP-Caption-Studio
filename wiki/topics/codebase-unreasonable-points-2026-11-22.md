@@ -13,6 +13,10 @@
 - **P1 JLPT.** `BILINGUAL_MAP` khóa `どうして` và `出す` khai hai lần; bản sau thắng.
 - **P1 test secret.** `anime_resolver_test.js` có fallback Jimaku key.
 
+## CI
+
+`sanity-scripts` fail vì `sentence_cost_sanity.js` lấy `startedAtMs` theo đồng hồ, trong khi bảng giá chỉ hợp lệ đến `2026-11-10`. Test được ghim vào `2026-10-15T00:00:00Z`.
+
 ## Còn mở
 
 Toàn bộ mục trên. Chưa có commit sửa.

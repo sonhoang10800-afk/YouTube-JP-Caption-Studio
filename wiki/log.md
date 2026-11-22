@@ -1678,3 +1678,6 @@ Proof sau fix (Chromium + YouTube live): `captureApiVer: 7`, `hasHandler: true`,
 - Index rows for the 2026-10-22 audit, Swift C-1, and P0 data-loss were stale
   relative to their topic pages. A-4 remains partial (`pageCapToken` empty).
   `swift-shared-package.md` Open section no longer says the package was never committed.
+- CI `sanity-scripts` then failed: `sentence_cost_sanity.js` expected `PARTIAL ESTIMATE`
+  and got `NOT VERIFIED` because `priceEvidence.validUntil` is `2026-11-10` and the
+  fixture used the wall clock. Test now pins `startedAtMs` to `2026-10-15T00:00:00Z`.

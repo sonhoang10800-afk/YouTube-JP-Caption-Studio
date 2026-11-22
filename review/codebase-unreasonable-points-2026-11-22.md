@@ -202,6 +202,10 @@ Bridge localhost không có secret. `main.py` CORS cho mọi `chrome-extension:/
 | security sweep | repo, bỏ `node_modules` / `.next` |
 | docs | `wiki/`, `README.md`, `TODOS.md` |
 
+## CI sau khi mở PR
+
+Job `sanity-scripts` trên commit docs fail `scripts/sentence_cost_sanity.js` dòng 67: actual `NOT VERIFIED`, expected `PARTIAL ESTIMATE`. Master lần xanh gần nhất là 2026-11-09. `sentence_benchmark.js` chỉ tính giá khi `startedAtMs` nằm trước `priceEvidence.validUntil` = `2026-11-10`. Fixture lấy `startedAtMs` từ đồng hồ lúc chạy, nên sau ngày đó attempt “đã có giá” cũng thành null và status rơi xuống `NOT VERIFIED`. Sửa test: ghim `startedAtMs` vào `2026-10-15T00:00:00Z`, trong cửa sổ đã công bố. Không bịa giá mới.
+
 ## Chưa kiểm
 
 Không có bằng chứng runtime: không bật Chrome, không POST bridge, không build iOS, không đo Netflix đổi track trên player thật. Mức P0/P1 ở trên là từ luồng code, không từ lần repro trên máy.
